@@ -590,37 +590,52 @@ async function fetchApod(): Promise<Apod | null> {
     console.warn(`   NASA API 실패(${(e as Error).message}) → APOD 웹페이지에서 직접 읽기`);
   }
 
+  // API가 안 되면 APOD 웹페이지에서 직접 읽음.
+  // APOD는 science.nasa.gov/apod/ 로 이사함 (apod.nasa.gov는 거기로 넘어감)
   try {
-    const base = "https://apod.nasa.gov/apod/";
-    const { document } = parseHTML(await fetchHtml(`${base}astropix.html`));
-    const img = document.querySelector("img")?.getAttribute("src");
-    if (!img) throw new Error("오늘은 사진이 아니라 영상");
-    const hd = document.querySelector('a[href^="image/"]')?.getAttribute("href");
-    const title = document.querySelector("center b")?.textContent?.trim() ?? "Astronomy Picture of the Day";
+    const page = "https://science.nasa.gov/apod/";
+    const { document } = parseHTML(await fetchHtml(page));
+    // 본문 사진: assets.science.nasa.gov 의 apod 폴더 이미지 (헤더 NASA 로고 제외)
+    const imgEl = [...document.querySelectorAll("img")].find((el) =>
+      /assets\.science\.nasa\.gov\/.*\/apod\//.test(el.getAttribute("src") ?? ""),
+    );
+    const src = imgEl?.getAttribute("src");
+    if (!src) throw new Error("오늘은 사진이 아니라 영상");
+    const entry = imgEl?.closest("a")?.getAttribute("href") ?? page;
+    const title = document.querySelector("h2")?.textContent?.trim();
+    const bodyText = document.body?.textContent ?? "";
     const explanation = [...document.querySelectorAll("p")]
-      .map((p) => p.textContent ?? "")
-      .find((t) => t.includes("Explanation:"))
-      ?.replace(/[\s\S]*Explanation:/, "")
-      .replace(/\s+/g, " ")
-      .trim();
-    const credit = document.body?.textContent?.match(/(?:Image Credit|Credit)[^:]*:\s*([^\n]+)/)?.[1]?.trim();
-    // 페이지에 날짜가 "2026 October 26" 형식으로 있음
-    const dateText = document.body?.textContent?.match(/(\d{4}) (January|February|March|April|May|June|July|August|September|October|November|December) (\d{1,2})/);
-    const date = dateText ? new Date(`${dateText[2]} ${dateText[3]}, ${dateText[1]} UTC`).toISOString().slice(0, 10) : kstToday();
+      .map((el) => (el.textContent ?? "").replace(/\s+/g, " ").trim())
+      .find((t) => t.length > 150 && !/Authors|Service of/i.test(t));
+    if (!title || !explanation) throw new Error("제목/설명을 못 찾음");
+    const credit = bodyText.match(/Credit[^:\n]*:\s*([^\n]+)/)?.[1]?.replace(/\s+/g, " ").trim();
+    const m = bodyText.match(
+      /(January|February|March|April|May|June|July|August|September|October|November|December) (\d{1,2}), (\d{4})/,
+    );
+    const date = m ? new Date(`${m[1]} ${m[2]}, ${m[3]} UTC`).toISOString().slice(0, 10) : kstToday();
+    const url = new URL(src, page);
     return {
       date,
       title,
-      explanation: explanation ?? title,
+      explanation,
       media_type: "image",
-      url: new URL(img, base).href,
-      hdurl: hd ? new URL(hd, base).href : undefined,
+      url: url.href,
+      // 같은 이미지를 더 크게 (크기 파라미터만 바꿈)
+      hdurl: `${url.origin}${url.pathname}?w=4096&h=4096&fit=clip`,
       copyright: credit,
-    };
+      link: new URL(entry, page).href,
+    } as Apod & { link: string };
   } catch (e) {
-    console.warn(`⚠️  오늘의 우주 사진 실패: ${(e as Error).message}`);
-    return null;
+    console.warn(`   APOD 웹페이지 실패: ${(e as Error).message}`);
   }
+
+  console.warn("⚠️  오늘의 우주 사진 실패: API와 APOD 페이지 모두 못 읽음");
+  return null;
 }
+
+// 진짜 APOD 사진인지 확인 (NASA 로고 같은 엉뚱한 이미지 방지)
+const APOD_IMAGE = /apod\.nasa\.gov\/apod\/image\/|assets\.science\.nasa\.gov\/.*\/apod\/|img\.youtube\.com|vimeocdn/;
+const isApodImage = (url?: string) => !!url && APOD_IMAGE.test(url);
 
 async function makeSpacePhoto(): Promise<void> {
   const geminiKey = process.env.GEMINI_API_KEY;
@@ -636,7 +651,12 @@ async function makeSpacePhoto(): Promise<void> {
 
   const apod = await fetchApod();
   if (!apod) return;
-  if (current?.date === apod.date) return; // 새 사진 없음
+  if (!isApodImage(apod.url) && !isApodImage(apod.thumbnail_url)) {
+    console.warn(`⚠️  오늘의 우주 사진 건너뜀: APOD 사진이 아님 (${apod.url})`);
+    return;
+  }
+  // 같은 날짜라도 예전에 잘못 저장된 사진이면 다시 만듦
+  if (current?.date === apod.date && isApodImage(current.image)) return; // 새 사진 없음
 
   const prompt = `NASA의 오늘의 천문 사진 설명이야. JSON 객체 하나로만 답해.
 {
@@ -658,7 +678,9 @@ async function makeSpacePhoto(): Promise<void> {
       image: apod.media_type === "image" ? apod.url : apod.thumbnail_url!,
       hdImage: apod.media_type === "image" ? apod.hdurl : undefined,
       credit: apod.copyright ? apod.copyright.replace(/\s+/g, " ").trim() : "NASA",
-      link: `https://apod.nasa.gov/apod/ap${apod.date.slice(2).replace(/-/g, "")}.html`,
+      link:
+        (apod as Apod & { link?: string }).link ??
+        `https://apod.nasa.gov/apod/ap${apod.date.slice(2).replace(/-/g, "")}.html`,
     };
     await mkdir(DATA_DIR, { recursive: true });
     await writeFile(file, JSON.stringify(photo, null, 2));
