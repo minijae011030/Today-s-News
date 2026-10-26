@@ -10,7 +10,6 @@
   --color-muted: #727272;
   --color-rule: #dfdfdf;
   --color-paper: #ffffff;
-  --color-highlight: #fbe7a1;
 }
 
 :root {
@@ -26,12 +25,6 @@ html {
   word-break: keep-all;
 }
 
-/* 논술 포인트: 형광펜으로 그은 듯한 밑줄 */
-.highlight {
-  background: linear-gradient(transparent 58%, var(--color-highlight) 58%);
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-}
 
 :focus-visible {
   outline: 2px solid var(--color-ink);

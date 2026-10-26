@@ -22,5 +22,9 @@
 
   { "category": "엔터", "type": "naver", "query": "K팝" },
   { "category": "엔터", "type": "naver", "query": "영화 개봉" },
-  { "category": "엔터", "type": "naver", "query": "드라마 시청률" }
+  { "category": "엔터", "type": "naver", "query": "드라마 시청률" },
+
+  { "category": "책", "type": "naver", "query": "신간" },
+  { "category": "책", "type": "naver", "query": "책 추천" },
+  { "category": "책", "type": "naver", "query": "베스트셀러" }
 ]

@@ -17,18 +17,21 @@ type NewsItem = {
 
 const titleOf = (n: NewsItem) => n.titleKo ?? n.title;
 
-const SECTIONS = ["경제", "우주", "IT", "예술", "엔터"] as const;
+const SECTIONS = ["경제", "우주", "IT", "예술", "엔터", "책"] as const;
 
 /* ---------- 해시 라우팅: #/ , #/section/경제 , #/article/<id> ---------- */
 type Route =
   | { name: "front" }
-  | { name: "section"; section: string }
+  | { name: "section"; section: string; page: number }
   | { name: "article"; id: string };
 
 function parseHash(): Route {
-  const [, kind, raw] = window.location.hash.split("/");
+  const [path, query = ""] = window.location.hash.split("?");
+  const [, kind, raw] = path.split("/");
   const value = raw ? decodeURIComponent(raw) : "";
-  if (kind === "section" && value) return { name: "section", section: value };
+  const page = Math.max(1, Number(new URLSearchParams(query).get("page")) || 1);
+  if (kind === "section" && value)
+    return { name: "section", section: value, page };
   if (kind === "article" && value) return { name: "article", id: value };
   return { name: "front" };
 }
@@ -48,18 +51,23 @@ function useRoute(): Route {
 
 const href = {
   front: "#/",
-  section: (s: string) => `#/section/${encodeURIComponent(s)}`,
+  section: (s: string, page = 1) =>
+    `#/section/${encodeURIComponent(s)}${page > 1 ? `?page=${page}` : ""}`,
   article: (id: string) => `#/article/${encodeURIComponent(id)}`,
 };
 
-/* ---------- 포맷 ---------- */
-const longDate = new Intl.DateTimeFormat("en-US", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-  weekday: "long",
-});
+/* ---------- 데이터 ---------- */
+// 로컬 개발 중에는 내가 직접 수집한 data-local을 먼저 보고, 없으면 배포용 data로
+function fetchData(name: string): Promise<Response> {
+  const base = import.meta.env.BASE_URL;
+  const shared = () => fetch(`${base}data/${name}`);
+  if (!import.meta.env.DEV) return shared();
+  return fetch(`${base}data-local/${name}`)
+    .then((r) => (r.ok && r.headers.get("content-type")?.includes("json") ? r : shared()))
+    .catch(shared);
+}
 
+/* ---------- 포맷 ---------- */
 function timeAgo(iso: string): string {
   const min = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
   if (min < 1) return "방금";
@@ -76,7 +84,7 @@ export default function App() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}data/news.json`)
+    fetchData("news.json")
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
       .then(setItems)
       .catch(() => setError(true));
@@ -112,6 +120,7 @@ export default function App() {
       {items && route.name === "section" && (
         <SectionPage
           section={route.section}
+          page={route.page}
           items={items.filter((n) => n.category === route.section)}
         />
       )}
@@ -121,6 +130,8 @@ export default function App() {
           items={items}
         />
       )}
+
+      <Footer items={items} />
     </div>
   );
 }
@@ -129,10 +140,6 @@ export default function App() {
 function Masthead({ active, isFront }: { active?: string; isFront: boolean }) {
   return (
     <header className="pt-4">
-      <div className="flex items-end justify-between gap-4 text-xs text-ink-soft">
-        <span>{longDate.format(new Date())}</span>
-      </div>
-
       <a href={href.front} className="block py-3 text-center sm:py-5">
         <h1 className="font-masthead text-[clamp(2.6rem,9vw,5rem)] leading-none font-black tracking-tight">
           Today&rsquo;s News
@@ -199,7 +206,7 @@ function FrontPage({ items }: { items: NewsItem[] }) {
             )}
           </a>
           {lead.essayPoint && (
-            <EssayPoint text={lead.essayPoint} className="mt-5" />
+            <EssayPoint text={lead.essayPoint} className="mt-8" />
           )}
         </article>
 
@@ -221,7 +228,7 @@ function FrontPage({ items }: { items: NewsItem[] }) {
         </ol>
       </section>
 
-      <div className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
         {SECTIONS.map((s) => {
           const list = items.filter((n) => n.category === s).slice(0, 5);
           if (list.length === 0) return null;
@@ -257,13 +264,21 @@ function FrontPage({ items }: { items: NewsItem[] }) {
 }
 
 /* ---------- 섹션 ---------- */
+const PAGE_SIZE = 10;
+
 function SectionPage({
   section,
+  page,
   items,
 }: {
   section: string;
+  page: number;
   items: NewsItem[];
 }) {
+  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const current = Math.min(page, totalPages);
+  const visible = items.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
+
   return (
     <main className="mx-auto max-w-190">
       <h2 className="mt-8 font-serif text-4xl font-bold">{section}</h2>
@@ -272,7 +287,7 @@ function SectionPage({
       {items.length === 0 && <Notice>이 섹션에는 아직 기사가 없어요.</Notice>}
 
       <ul className="mt-6 border-t border-ink">
-        {items.map((n) => (
+        {visible.map((n) => (
           <li key={n.id} className="border-b border-rule py-6">
             <a
               href={href.article(n.id)}
@@ -298,7 +313,91 @@ function SectionPage({
           </li>
         ))}
       </ul>
+
+      <Pagination
+        current={current}
+        total={totalPages}
+        hrefFor={(p) => href.section(section, p)}
+      />
     </main>
+  );
+}
+
+/* ---------- 페이지네이션 (신문 하단 쪽번호 느낌) ---------- */
+// 1 … 4 5 6 … 12 처럼 현재 페이지 주변만 보여줌
+function pageList(current: number, total: number): (number | "gap")[] {
+  const pages = new Set([1, total, current - 1, current, current + 1]);
+  const sorted = [...pages]
+    .filter((p) => p >= 1 && p <= total)
+    .sort((a, b) => a - b);
+  const out: (number | "gap")[] = [];
+  sorted.forEach((p, i) => {
+    if (i > 0 && p - sorted[i - 1] > 1) out.push("gap");
+    out.push(p);
+  });
+  return out;
+}
+
+function Pagination({
+  current,
+  total,
+  hrefFor,
+}: {
+  current: number;
+  total: number;
+  hrefFor: (page: number) => string;
+}) {
+  if (total <= 1) return null;
+  const edge = "px-2 py-1 text-sm";
+  return (
+    <nav
+      aria-label="페이지"
+      className="mt-10 flex items-center justify-between gap-4 font-sans"
+    >
+      {current > 1 ? (
+        <a href={hrefFor(current - 1)} className={`${edge} hover:underline`}>
+          이전
+        </a>
+      ) : (
+        <span className={`${edge} text-rule`} aria-hidden>
+          이전
+        </span>
+      )}
+
+      <ol className="flex items-center gap-1">
+        {pageList(current, total).map((p, i) =>
+          p === "gap" ? (
+            <li key={`gap-${i}`} className="px-1 text-muted" aria-hidden>
+              …
+            </li>
+          ) : (
+            <li key={p}>
+              <a
+                href={hrefFor(p)}
+                aria-current={p === current ? "page" : undefined}
+                className={`inline-block min-w-9 py-1.5 text-center font-serif tabular-nums ${
+                  p === current
+                    ? "border-b-2 border-ink font-bold text-ink"
+                    : "text-ink-soft hover:text-ink"
+                }`}
+              >
+                {p}
+              </a>
+            </li>
+          ),
+        )}
+      </ol>
+
+      {current < total ? (
+        <a href={hrefFor(current + 1)} className={`${edge} hover:underline`}>
+          다음
+        </a>
+      ) : (
+        <span className={`${edge} text-rule`} aria-hidden>
+          다음
+        </span>
+      )}
+    </nav>
   );
 }
 
@@ -356,8 +455,8 @@ function ArticlePage({ item, items }: { item?: NewsItem; items: NewsItem[] }) {
 
       {item.essayPoint && (
         <section className="mt-8">
-          <h3 className="font-sans text-sm font-semibold">논술 포인트</h3>
-          <EssayPoint text={item.essayPoint} className="mt-2 text-lg" />
+          <h3 className="font-sans text-sm font-semibold">생각해볼 점</h3>
+          <EssayPoint text={item.essayPoint} className="mt-6 text-lg" />
         </section>
       )}
 
@@ -446,6 +545,8 @@ function Kicker({
   );
 }
 
+// 논술 포인트: 색 대신 타이포로 강조 (흑백 화면에서도 그대로 보이게)
+// 왼쪽 굵은 세로 괘선 + 걸린 큰따옴표
 function EssayPoint({
   text,
   className = "",
@@ -454,9 +555,17 @@ function EssayPoint({
   className?: string;
 }) {
   return (
-    <p className={`font-serif leading-[1.9] ${className}`}>
-      <span className="highlight">{text}</span>
-    </p>
+    <figure className={`relative border-l-[3px] border-ink pl-5 ${className}`}>
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -top-5 left-3 font-masthead text-6xl leading-none text-ink select-none"
+      >
+        &ldquo;
+      </span>
+      <blockquote className="pt-5 font-serif leading-[1.85] font-medium text-ink">
+        {text}
+      </blockquote>
+    </figure>
   );
 }
 
@@ -465,5 +574,128 @@ function Notice({ children }: { children: ReactNode }) {
     <p className="mx-auto mt-16 max-w-[60ch] text-center text-ink-soft">
       {children}
     </p>
+  );
+}
+
+/* ---------- 푸터 ---------- */
+const REPO_URL = "https://github.com/minijae011030/TodaysNews";
+
+const fullDate = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+const stamp = new Intl.DateTimeFormat("ko-KR", {
+  month: "long",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+function Footer({ items }: { items: NewsItem[] | null }) {
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchData("meta.json")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((m) => m?.updatedAt && setUpdatedAt(m.updatedAt))
+      .catch(() => {});
+  }, []);
+
+  const summarized = items?.filter((n) => n.summary).length ?? 0;
+
+  return (
+    <footer className="mt-24 border-t-4 border-double border-ink pt-8 text-sm text-ink-soft">
+      <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+        <div>
+          <a
+            href={href.front}
+            className="font-masthead text-3xl font-black text-ink"
+          >
+            Today&rsquo;s News
+          </a>
+          <p className="mt-3 max-w-[42ch] font-serif leading-[1.75]">
+            경제, 우주, IT, 예술, 엔터, 책 소식을 매시간 모아 원문을 읽고 요약해
+            두는 개인 신문입니다.
+          </p>
+        </div>
+
+        <nav aria-label="섹션">
+          <h2 className="font-semibold text-ink">섹션</h2>
+          <ul className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2">
+            <li>
+              <a href={href.front} className="hover:text-ink hover:underline">
+                1면
+              </a>
+            </li>
+            {SECTIONS.map((s) => (
+              <li key={s}>
+                <a
+                  href={href.section(s)}
+                  className="hover:text-ink hover:underline"
+                >
+                  {s}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div>
+          <h2 className="font-semibold text-ink">이번 호</h2>
+          <dl className="mt-3 space-y-2">
+            {updatedAt && (
+              <div className="flex justify-between gap-4">
+                <dt>마지막 수집</dt>
+                <dd className="tabular-nums text-ink">
+                  {stamp.format(new Date(updatedAt))}
+                </dd>
+              </div>
+            )}
+            {items && (
+              <>
+                <div className="flex justify-between gap-4">
+                  <dt>보관 중인 기사</dt>
+                  <dd className="tabular-nums text-ink">{items.length}건</dd>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <dt>요약 완료</dt>
+                  <dd className="tabular-nums text-ink">{summarized}건</dd>
+                </div>
+              </>
+            )}
+            <div className="flex justify-between gap-4">
+              <dt>보관 기간</dt>
+              <dd className="text-ink">최근 3일</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <div className="mt-10 border-t border-rule pt-5 text-xs leading-[1.8] text-muted">
+        <p>
+          기사 출처는 네이버 뉴스 검색, NASA, 각 언론사 RSS입니다. 기사의
+          저작권은 각 언론사에 있습니다.
+        </p>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <span>{fullDate.format(new Date())}</span>
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 text-ink-soft hover:text-ink hover:underline"
+          >
+            <svg
+              aria-hidden
+              viewBox="0 0 16 16"
+              className="size-4 fill-current"
+            >
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+            </svg>
+            minijae011030/TodaysNews
+          </a>
+        </div>
+      </div>
+    </footer>
   );
 }
