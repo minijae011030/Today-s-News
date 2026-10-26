@@ -35,6 +35,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          NASA_API_KEY: ${{ secrets.NASA_API_KEY }}
 
       - name: Count new stories
         id: count
@@ -43,9 +44,9 @@ jobs:
       - name: Commit data
         id: commit
         run: |
-          # 기사나 오늘의 개념이 바뀌었을 때만 커밋 (수집 시각만 바뀐 건 무시)
-          if git diff --quiet -- public/data/news.json public/data/concept.json && \
-             [ -z "$(git status --porcelain public/data/concept.json)" ]; then
+          # 기사, 오늘의 개념, 우주 사진이 바뀌었을 때만 커밋 (수집 시각만 바뀐 건 무시)
+          if git diff --quiet -- public/data/news.json public/data/concept.json public/data/space.json && \
+             [ -z "$(git status --porcelain public/data/concept.json public/data/space.json)" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "변경 없음 → 커밋/배포 건너뜀" >> "$GITHUB_STEP_SUMMARY"
             exit 0

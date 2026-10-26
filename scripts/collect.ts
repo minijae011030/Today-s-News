@@ -59,6 +59,7 @@ const report = {
   failedFeeds: [] as { category: string; source: string; error: string }[],
   llmFailedBatches: 0,
   concept: null as string | null,
+  spacePhoto: null as string | null,
   hidden: 0, // 섹션에 안 맞아서 숨긴 기사 수
   moved: [] as string[], // 섹션을 옮긴 기사 (예: "우주→IT")
 };
@@ -543,6 +544,95 @@ async function enrich(items: NewsItem[]): Promise<void> {
   await runPool(batches, 2, runBatch);
 }
 
+/* ================= 오늘의 우주 사진 (NASA APOD) ================= */
+// NASA "Astronomy Picture of the Day": 매일 한 장의 진짜 우주 사진 + 천문학자 설명
+// 새 사진이 올라왔을 때만 Gemini로 한국어 제목·설명을 만들어 space.json에 저장
+
+type SpacePhoto = {
+  date: string; // APOD 날짜 (YYYY-MM-DD, 미국 기준)
+  title: string;
+  titleKo: string;
+  story: string; // 한국어로 쉽게 풀어쓴 설명
+  image: string;
+  hdImage?: string;
+  credit: string;
+  link: string;
+};
+
+type Apod = {
+  date: string;
+  title: string;
+  explanation: string;
+  media_type: string;
+  url: string;
+  hdurl?: string;
+  thumbnail_url?: string;
+  copyright?: string;
+};
+
+async function makeSpacePhoto(): Promise<void> {
+  const geminiKey = process.env.GEMINI_API_KEY;
+  if (!geminiKey) return;
+  const file = `${DATA_DIR}/space.json`;
+  let current: SpacePhoto | null = null;
+  for (const f of [file, "public/data/space.json"]) {
+    try {
+      current = JSON.parse(await readFile(f, "utf8"));
+      break;
+    } catch {}
+  }
+
+  // 최근 7일 중 가장 최신 "사진" (가끔 영상인 날이 있어서)
+  const start = new Date(Date.now() - 7 * 86400_000).toISOString().slice(0, 10);
+  const key = process.env.NASA_API_KEY || "DEMO_KEY";
+  let list: Apod[];
+  try {
+    const res = await fetch(
+      `https://api.nasa.gov/planetary/apod?api_key=${key}&start_date=${start}&thumbs=true`,
+      { signal: AbortSignal.timeout(20_000) },
+    );
+    if (!res.ok) throw new Error(`NASA ${res.status}`);
+    list = await res.json();
+  } catch (e) {
+    console.warn(`⚠️  오늘의 우주 사진 실패: ${(e as Error).message}`);
+    return;
+  }
+  const apod = list
+    .filter((a) => a.media_type === "image" || a.thumbnail_url)
+    .sort((a, b) => b.date.localeCompare(a.date))[0];
+  if (!apod || current?.date === apod.date) return; // 새 사진 없음
+
+  const prompt = `NASA의 오늘의 천문 사진 설명이야. JSON 객체 하나로만 답해.
+{
+  "titleKo": "자연스러운 한국어 제목",
+  "story": "일반인이 '오 신기하다' 할 수 있게 사진 속 천체나 현상을 3~4문장으로 쉽게 설명. 원문 설명에 있는 사실만 써. 문체는 '~입니다/~습니다'"
+}
+
+제목: ${apod.title}
+설명: ${apod.explanation}`;
+
+  try {
+    const text = await callGemini(geminiKey, prompt);
+    const o = JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1));
+    const photo: SpacePhoto = {
+      date: apod.date,
+      title: apod.title,
+      titleKo: String(o.titleKo ?? apod.title),
+      story: String(o.story ?? ""),
+      image: apod.media_type === "image" ? apod.url : apod.thumbnail_url!,
+      hdImage: apod.media_type === "image" ? apod.hdurl : undefined,
+      credit: apod.copyright ? apod.copyright.replace(/\s+/g, " ").trim() : "NASA",
+      link: `https://apod.nasa.gov/apod/ap${apod.date.slice(2).replace(/-/g, "")}.html`,
+    };
+    await mkdir(DATA_DIR, { recursive: true });
+    await writeFile(file, JSON.stringify(photo, null, 2));
+    report.spacePhoto = photo.titleKo;
+    console.log(`🌌 오늘의 우주 사진: ${photo.titleKo}`);
+  } catch (e) {
+    console.warn(`⚠️  오늘의 우주 사진 설명 실패: ${(e as Error).message}`);
+  }
+}
+
 /* ================= 오늘의 개념 (하루 한 번) ================= */
 
 type Concept = {
@@ -639,6 +729,7 @@ async function writeActionsSummary(total: number): Promise<void> {
   ];
   if (newCount > 0) lines.push("", categoryLine(report.newByCategory));
   if (report.concept) lines.push("", `📘 오늘의 개념: **${report.concept}**`);
+  if (report.spacePhoto) lines.push("", `🌌 오늘의 우주 사진: **${report.spacePhoto}**`);
   if (report.hidden) lines.push("", `🙈 섹션에 안 맞아서 숨긴 기사 ${report.hidden}건`);
   if (report.moved.length) lines.push("", `↪️ 섹션을 옮긴 기사: ${report.moved.join(", ")}`);
   if (report.llmFailedBatches) lines.push("", `⚠️ 요약 실패한 배치 ${report.llmFailedBatches}개 (다음 수집 때 다시 시도)`);
@@ -707,6 +798,7 @@ async function main() {
   for (const n of freshVisible) report.newByCategory[n.category] = (report.newByCategory[n.category] ?? 0) + 1;
   await save(items);
   await makeConcept(items.filter((n) => !n.hidden));
+  await makeSpacePhoto();
   await save(items); // 오늘의 개념까지 meta.json에 반영
   await writeActionsSummary(items.length);
   console.log(`✅ ${items.length}건 저장 → ${OUTPUT} (새 기사 ${newCount}건)`);

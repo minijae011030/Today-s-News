@@ -1,21 +1,27 @@
 import { titleOf } from "../../lib/format";
 import { href } from "../../lib/route";
+import type { ReactNode } from "react";
 import type { NewsItem } from "../../types/news";
 import { HeadlineLink } from "../atoms/HeadlineLink";
 import { StoryImage } from "../atoms/StoryImage";
 import { EssayPoint } from "../molecules/EssayPoint";
 import { Kicker } from "../molecules/Kicker";
 
-/** 1면 상단: 왼쪽 톱기사 + 오른쪽 주요 기사 5개 */
+/** 1면 상단: 왼쪽 톱(우주 사진 또는 톱기사) + 오른쪽 주요 기사 5개 */
 export function LeadStory({
   lead,
   side,
+  feature,
 }: {
   lead: NewsItem;
   side: NewsItem[];
+  feature?: ReactNode;
 }) {
   return (
     <section className="grid gap-8 border-b border-rule py-6 md:grid-cols-3 md:gap-0">
+      {feature ? (
+        <div className="md:col-span-2 md:border-r md:border-rule md:pr-8">{feature}</div>
+      ) : (
       <article className="md:col-span-2 md:border-r md:border-rule md:pr-8">
         <a href={href.article(lead.id)} tabIndex={-1} aria-hidden>
           <StoryImage src={lead.image} credit={lead.source} ratio="natural" maxHeight="max-h-[26rem]" className="mb-4" priority />
@@ -35,6 +41,7 @@ export function LeadStory({
           <EssayPoint text={lead.essayPoint} className="mt-8" />
         )}
       </article>
+      )}
 
       <ol className="md:pl-8">
         {side.map((n, i) => (

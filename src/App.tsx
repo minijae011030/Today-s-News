@@ -8,7 +8,7 @@ import { SectionPage } from "./pages/SectionPage";
 
 export default function App() {
   const route = useRoute();
-  const { items, error, version, concept, refresh } = useNews();
+  const { items, error, version, concept, space, refresh } = useNews();
 
   const activeSection =
     route.name === "section"
@@ -30,7 +30,7 @@ export default function App() {
       {!error && items && items.length === 0 && <Notice>No stories yet.</Notice>}
 
       {items && items.length > 0 && route.name === "front" && (
-        <FrontPage items={items} concept={concept} />
+        <FrontPage items={items} concept={concept} space={space} />
       )}
       {items && items.length > 0 && route.name === "section" && (
         <SectionPage

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchData } from "../lib/data";
-import type { Concept, NewsItem } from "../types/news";
+import type { Concept, NewsItem, SpacePhoto } from "../types/news";
 
 /** 기사 목록 + 오늘의 개념 + 당겨서 새로고침 */
 export function useNews() {
@@ -8,6 +8,7 @@ export function useNews() {
   const [error, setError] = useState(false);
   const [version, setVersion] = useState(0); // 새로고침할 때마다 +1 (푸터도 다시 불러오게)
   const [concept, setConcept] = useState<Concept | null>(null);
+  const [space, setSpace] = useState<SpacePhoto | null>(null);
 
   const load = useCallback(async (): Promise<NewsItem[]> => {
     const r = await fetchData("news.json");
@@ -28,6 +29,11 @@ export function useNews() {
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => setConcept(d?.history?.[0] ?? null))
       .catch(() => {});
+    // 오늘의 우주 사진 (NASA APOD)
+    fetchData("space.json")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setSpace(d?.image ? d : null))
+      .catch(() => {});
   }, [version]);
 
   // 당겨서 새로고침: 새로 들어온 기사 수를 돌려줌
@@ -44,5 +50,5 @@ export function useNews() {
     }
   }, [load, items]);
 
-  return { items, error, version, concept, refresh };
+  return { items, error, version, concept, space, refresh };
 }

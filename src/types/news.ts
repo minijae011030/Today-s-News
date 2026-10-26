@@ -23,3 +23,14 @@ export type Concept = {
   essayAngle: string;
   relatedIds: string[];
 };
+
+export type SpacePhoto = {
+  date: string;
+  title: string;
+  titleKo: string;
+  story: string;
+  image: string;
+  hdImage?: string;
+  credit: string;
+  link: string;
+};
