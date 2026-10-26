@@ -1,19 +1,15 @@
 {
-  "updatedAt": "2026-10-26T14:54:02.680Z",
-  "count": 96,
-  "newCount": 48,
-  "summarized": 95,
+  "updatedAt": "2026-10-26T14:59:32.258Z",
+  "count": 104,
+  "newCount": 8,
+  "summarized": 103,
   "fetched": 245,
   "newByCategory": {
-    "경제": 17,
-    "예술": 6,
-    "엔터": 6,
-    "사회": 10,
-    "IT": 5,
-    "우주": 4
+    "경제": 6,
+    "엔터": 2
   },
-  "summarizedNow": 48,
-  "bodyFound": 41,
+  "summarizedNow": 8,
+  "bodyFound": 8,
   "failedFeeds": [
     {
       "category": "IT",
@@ -23,27 +19,14 @@
   ],
   "llmFailedBatches": 0,
   "concept": null,
-  "spacePhoto": null,
+  "spacePhoto": "오리온 대성운의 신비로운 모습",
   "hidden": 0,
   "moved": [
     "국제→경제",
-    "엔터→예술",
-    "국제→예술",
-    "엔터→사회",
-    "국제→경제",
-    "예술→엔터",
-    "우주→경제",
-    "국제→경제",
-    "우주→경제",
-    "예술→사회",
     "국제→경제",
     "국제→경제",
-    "책→사회",
-    "책→경제",
-    "책→경제",
-    "책→사회",
-    "책→경제",
-    "책→엔터",
-    "IT→경제"
+    "국제→경제",
+    "국제→경제",
+    "국제→경제"
   ]
 }
