@@ -1,15 +1,17 @@
 {
-  "updatedAt": "2026-10-26T14:59:32.258Z",
-  "count": 104,
-  "newCount": 8,
-  "summarized": 103,
+  "updatedAt": "2026-10-26T15:07:34.984Z",
+  "count": 129,
+  "newCount": 25,
+  "summarized": 128,
   "fetched": 245,
   "newByCategory": {
-    "경제": 6,
-    "엔터": 2
+    "경제": 12,
+    "사회": 5,
+    "엔터": 3,
+    "예술": 5
   },
-  "summarizedNow": 8,
-  "bodyFound": 8,
+  "summarizedNow": 25,
+  "bodyFound": 24,
   "failedFeeds": [
     {
       "category": "IT",
@@ -18,13 +20,15 @@
     }
   ],
   "llmFailedBatches": 0,
-  "concept": null,
-  "spacePhoto": "오리온 대성운의 신비로운 모습",
+  "concept": "반사회적 대부계약 무효확인서",
+  "spacePhoto": null,
   "hidden": 0,
   "moved": [
     "국제→경제",
     "국제→경제",
     "국제→경제",
+    "사회→경제",
+    "책→예술",
     "국제→경제",
     "국제→경제",
     "국제→경제"
