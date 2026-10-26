@@ -2,7 +2,7 @@ name: Collect & Deploy
 
 on:
   schedule:
-    - cron: "7 * * * *" # 매시 7분 (UTC)
+    - cron: "37 * * * *" # 매시 37분 (UTC). 정시 근처는 GitHub이 붐벼서 자주 밀려
   workflow_dispatch:
   push:
     branches: [main]
@@ -19,6 +19,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      new_count: ${{ steps.count.outputs.new_count }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -35,13 +37,22 @@ jobs:
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
 
+      - name: Count new stories
+        id: count
+        run: |
+          n=$(node -p "try{require('./public/data/meta.json').newCount||0}catch{0}")
+          if [ "${{ github.event_name }}" = "push" ]; then n=0; fi
+          echo "new_count=$n" >> "$GITHUB_OUTPUT"
+
       - name: Commit data
         if: github.event_name != 'push'
         run: |
           git config user.name "news-bot"
           git config user.email "news-bot@users.noreply.github.com"
-          git add public/data/news.json
-          git diff --staged --quiet || git commit -m "chore: update news $(date -u +%FT%TZ)"
+          git add public/data
+          git diff --staged --quiet && exit 0
+          git commit -m "chore: update news $(date -u +%FT%TZ)"
+          git pull --rebase origin main
           git push
 
       - name: Build
@@ -49,6 +60,9 @@ jobs:
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
           VITE_VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
@@ -62,3 +76,22 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  notify:
+    needs: [build, deploy]
+    if: needs.build.outputs.new_count != '0'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run notify
+        env:
+          NEW_COUNT: ${{ needs.build.outputs.new_count }}
+          VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
