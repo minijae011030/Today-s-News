@@ -17,10 +17,11 @@ try {
   process.loadEnvFile();
 } catch {}
 
-type FeedSource =
-  | { category: string; type: "rss"; url: string }
-  | { category: string; type: "naver"; query: string }
-  | { category: string; type: "google"; query: string };
+type FeedSource = { category: string; keepDays?: number } & (
+  | { type: "rss"; url: string }
+  | { type: "naver"; query: string }
+  | { type: "google"; query: string }
+);
 
 export type NewsItem = {
   id: string; // URL용 짧은 ID (key의 해시)
@@ -34,7 +35,8 @@ export type NewsItem = {
   // LLM이 채우는 필드
   summary?: string;
   tags?: string[];
-  essayPoint?: string; // 경제 전용: 논술 포인트
+  essayPoint?: string; // 경제·국제·사회: 논술 포인트
+  keepDays?: number; // 기술 블로그처럼 뜸하게 올라오는 소스는 더 오래 보관
   spaceFact?: string; // 우주 전용: 흥미로운 우주 지식
   titleKo?: string; // 영어 기사면 한국어 제목
 };
@@ -42,6 +44,7 @@ export type NewsItem = {
 // 공식 데이터(public/data)는 GitHub Actions 봇만 커밋하고,
 // 로컬에서 돌린 결과는 git에 안 올라가는 public/data-local에 따로 저장 (main과 충돌 방지)
 const IS_CI = !!process.env.CI;
+let newCount = 0; // 이번 수집에서 처음 들어온 기사 수 (알림용)
 const DATA_DIR = IS_CI ? "public/data" : "public/data-local";
 const OUTPUT = `${DATA_DIR}/news.json`;
 const SHARED = "public/data/news.json"; // 로컬 첫 실행 때 봇이 만든 요약을 재사용
@@ -141,6 +144,7 @@ async function fetchRss(src: FeedSource): Promise<NewsItem[]> {
     return {
       ...withIds(normalizeTitle(title)),
       category: src.category,
+      ...(src.keepDays ? { keepDays: src.keepDays } : {}),
       title,
       link: it.link ?? "",
       source: String((it as { source?: string }).source ?? feed.title ?? pressName(url)),
@@ -154,7 +158,7 @@ async function fetchRss(src: FeedSource): Promise<NewsItem[]> {
 
 type NaverNews = { title: string; originallink: string; link: string; description: string; pubDate: string };
 
-async function fetchNaver(src: { category: string; query: string }): Promise<NewsItem[]> {
+async function fetchNaver(src: { category: string; query: string; keepDays?: number }): Promise<NewsItem[]> {
   const id = process.env.NAVER_CLIENT_ID;
   const secret = process.env.NAVER_CLIENT_SECRET;
   if (!id || !secret) throw new Error("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET 없음");
@@ -175,6 +179,7 @@ async function fetchNaver(src: { category: string; query: string }): Promise<New
     return {
       ...withIds(normalizeTitle(title)),
       category: src.category,
+      ...(src.keepDays ? { keepDays: src.keepDays } : {}),
       title,
       link,
       source: pressName(link),
@@ -338,7 +343,7 @@ async function save(items: NewsItem[]): Promise<void> {
   // 푸터의 "마지막 수집" 표시용
   await writeFile(
     `${DATA_DIR}/meta.json`,
-    JSON.stringify({ updatedAt: new Date().toISOString(), count: items.length }, null, 2),
+    JSON.stringify({ updatedAt: new Date().toISOString(), count: items.length, newCount }, null, 2),
   );
 }
 
@@ -348,7 +353,7 @@ const PROMPT = `다음 뉴스 목록 각각에 대해 JSON 배열로만 답해.
   "titleKo": "제목이 한국어가 아니면 자연스러운 한국어 제목, 한국어면 null",
   "summary": "한국어 요약. body가 있으면 핵심 사실(누가, 무엇을, 왜, 수치)을 담아 3~4문장. body가 null이면 snippet 기준으로 1~2문장",
   "tags": ["키워드", 최대 3개],
-  "essayPoint": "경제 카테고리만: 금융감독원 논술 관점에서 이 기사의 쟁점과 연결되는 개념(예: 금융소비자보호, 건전성 규제, 시스템 리스크)을 2문장으로. 다른 카테고리는 null",
+  "essayPoint": "경제·국제·사회 카테고리만: 금융감독원 논술 관점에서 이 기사의 쟁점과 연결되는 개념을 2문장으로 (경제: 금융소비자보호, 건전성 규제, 자본시장 공정성 등 / 국제: 통화정책 파급, 환율과 금융안정, 글로벌 리스크 등 / 사회: 저출생·고령화·기후 같은 사회 문제가 금융과 가계에 미치는 영향 등). 다른 카테고리는 null",
   "spaceFact": "우주 카테고리만: 이 기사와 연결된, 일반인이 '오 신기하다' 할 만한 우주 지식을 2~3문장으로 쉽게 설명 (기사에 나온 천체나 현상이 무엇이고 왜 흥미로운지). 다른 카테고리는 null"
 }
 summary와 essayPoint는 제공된 title, snippet, body에 있는 내용만 근거로 쓰고 지어내지 마. spaceFact는 널리 확립된 과학 지식만 써.`;
@@ -427,6 +432,76 @@ async function enrich(items: NewsItem[]): Promise<void> {
   }
 }
 
+/* ================= 오늘의 개념 (하루 한 번) ================= */
+
+type Concept = {
+  date: string; // KST 기준 YYYY-MM-DD
+  term: string;
+  definition: string;
+  issues: string[];
+  essayAngle: string;
+  relatedIds: string[];
+};
+
+const kstToday = () => new Date(Date.now() + 9 * 3600_000).toISOString().slice(0, 10);
+
+async function makeConcept(items: NewsItem[]): Promise<void> {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return;
+  const file = `${DATA_DIR}/concept.json`;
+  let history: Concept[] = [];
+  for (const f of [file, "public/data/concept.json"]) {
+    try {
+      history = JSON.parse(await readFile(f, "utf8")).history ?? [];
+      break;
+    } catch {}
+  }
+  const today = kstToday();
+  if (history[0]?.date === today) return; // 오늘 건 이미 있음
+
+  const pool = items
+    .filter((n) => ["경제", "국제", "사회"].includes(n.category) && n.summary)
+    .slice(0, 20)
+    .map((n) => ({ id: n.id, category: n.category, title: n.title, summary: n.summary, essayPoint: n.essayPoint }));
+  if (pool.length < 3) return;
+
+  const recent = history.slice(0, 30).map((c) => c.term);
+  const prompt = `너는 금융감독원 논술을 준비하는 사람의 스터디 코치야.
+아래 오늘 기사들을 보고, 논술에 가장 쓸모 있는 경제·금융 개념 하나를 골라 정리해서 JSON 객체 하나로만 답해.
+최근에 다룬 개념은 피해: ${JSON.stringify(recent)}
+
+형식: {
+  "term": "개념 이름 (예: 책무구조도, 스트레스 DSR, 공매도 전산화)",
+  "definition": "이 개념이 무엇인지 2~3문장. 교과서적으로 정확하게",
+  "issues": ["찬반이나 쟁점 한 줄씩, 2~3개"],
+  "essayAngle": "논술 답안에서 이 개념을 어떻게 끌어다 쓰면 좋은지 1~2문장",
+  "relatedIds": ["이 개념과 관련된 기사 id, 1~3개"]
+}
+definition과 issues는 널리 알려진 사실만 쓰고, 기사 내용은 relatedIds로만 연결해.
+
+기사: ${JSON.stringify(pool)}`;
+
+  try {
+    const text = await callGemini(apiKey, prompt);
+    const c = JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1));
+    const ids = new Set(pool.map((p) => p.id));
+    const concept: Concept = {
+      date: today,
+      term: String(c.term),
+      definition: String(c.definition),
+      issues: (c.issues ?? []).map(String).slice(0, 3),
+      essayAngle: String(c.essayAngle ?? ""),
+      relatedIds: (c.relatedIds ?? []).map(String).filter((id: string) => ids.has(id)).slice(0, 3),
+    };
+    history = [concept, ...history].slice(0, 30);
+    await mkdir(DATA_DIR, { recursive: true });
+    await writeFile(file, JSON.stringify({ history }, null, 2));
+    console.log(`📘 오늘의 개념: ${concept.term}`);
+  } catch (e) {
+    console.warn(`⚠️  오늘의 개념 실패: ${(e as Error).message}`);
+  }
+}
+
 /* ================= main ================= */
 
 async function loadPrevious(): Promise<Map<string, NewsItem>> {
@@ -458,10 +533,11 @@ async function main() {
     if (!merged.has(n.key)) merged.set(n.key, cleanGoogle(n));
   }
 
-  const cutoff = Date.now() - KEEP_DAYS * 24 * 60 * 60 * 1000;
+  const DAY = 24 * 60 * 60 * 1000;
   const items = [...merged.values()]
-    .filter((n) => new Date(n.publishedAt).getTime() >= cutoff)
+    .filter((n) => Date.now() - new Date(n.publishedAt).getTime() <= (n.keepDays ?? KEEP_DAYS) * DAY)
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  newCount = items.filter((n) => !prev.has(n.key)).length;
 
   console.log(
     `📥 수집 ${fetched.length}건 → 유지 ${items.length}건 (요약 필요 ${items.filter((n) => !n.summary).length}건)`,
@@ -469,7 +545,8 @@ async function main() {
   await fixTruncatedTitles(items);
   await enrich(items);
   await save(items);
-  console.log(`✅ ${items.length}건 저장 → ${OUTPUT}`);
+  await makeConcept(items);
+  console.log(`✅ ${items.length}건 저장 → ${OUTPUT} (새 기사 ${newCount}건)`);
 }
 
 main();

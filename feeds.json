@@ -2,18 +2,33 @@
   { "category": "경제", "type": "naver", "query": "금융감독원" },
   { "category": "경제", "type": "naver", "query": "기준금리" },
   { "category": "경제", "type": "naver", "query": "가계부채" },
+  { "category": "경제", "type": "naver", "query": "자본시장 제도" },
+  { "category": "경제", "type": "naver", "query": "공매도" },
+  { "category": "경제", "type": "naver", "query": "불공정거래" },
   { "category": "경제", "type": "rss", "url": "http://www.yonhapnewstv.co.kr/category/news/economy/feed/" },
-  { "category": "경제", "type": "rss", "url": "https://www.federalreserve.gov/feeds/press_all.xml" },
+
+  { "category": "국제", "type": "naver", "query": "미국 연준" },
+  { "category": "국제", "type": "naver", "query": "환율" },
+  { "category": "국제", "type": "naver", "query": "관세 무역" },
+  { "category": "국제", "type": "rss", "url": "https://www.federalreserve.gov/feeds/press_all.xml" },
+
+  { "category": "사회", "type": "naver", "query": "저출생" },
+  { "category": "사회", "type": "naver", "query": "고령화 사회" },
+  { "category": "사회", "type": "naver", "query": "기후 위기" },
+  { "category": "사회", "type": "naver", "query": "청년 고용" },
+
+  { "category": "IT", "type": "rss", "url": "https://news.hada.io/rss/news" },
+  { "category": "IT", "type": "rss", "url": "https://toss.tech/rss.xml", "keepDays": 14 },
+  { "category": "IT", "type": "rss", "url": "https://techblog.woowahan.com/feed/", "keepDays": 14 },
+  { "category": "IT", "type": "rss", "url": "https://tech.kakao.com/feed/", "keepDays": 14 },
+  { "category": "IT", "type": "rss", "url": "https://d2.naver.com/d2.atom", "keepDays": 14 },
+  { "category": "IT", "type": "naver", "query": "개발자 채용" },
 
   { "category": "우주", "type": "naver", "query": "천문학 연구" },
   { "category": "우주", "type": "naver", "query": "블랙홀" },
   { "category": "우주", "type": "naver", "query": "외계행성" },
   { "category": "우주", "type": "rss", "url": "https://science.nasa.gov/feed/" },
   { "category": "우주", "type": "rss", "url": "https://www.nasa.gov/feeds/iotd-feed/" },
-
-  { "category": "IT", "type": "naver", "query": "프론트엔드" },
-  { "category": "IT", "type": "naver", "query": "개발자 채용" },
-  { "category": "IT", "type": "naver", "query": "생성형 AI" },
 
   { "category": "예술", "type": "naver", "query": "미술관 전시" },
   { "category": "예술", "type": "naver", "query": "클래식 공연" },
