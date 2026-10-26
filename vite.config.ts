@@ -11,7 +11,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["image.png"],
+      includeAssets: ["favicon-32x32.png", "favicon-64x64.png", "apple-touch-icon.png"],
       manifest: {
         name: "Today's News",
         short_name: "Today",
@@ -23,13 +23,10 @@ export default defineConfig({
         start_url: "./",
         scope: "./",
         icons: [
-          // TODO: 192/512 PNG 아이콘 만들어서 public/에 넣기
-          {
-            src: "image.png",
-            sizes: "any",
-            type: "image/svg+xml",
-            purpose: "any",
-          },
+          { src: "pwa-192x192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+          { src: "pwa-512x512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+          // 안드로이드 원형/둥근 마스크용 (여백 있는 버전)
+          { src: "maskable-icon-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
         ],
       },
       workbox: {
