@@ -1,26 +1,26 @@
 [
-  { "category": "경제", "type": "google", "query": "금융감독원" },
-  { "category": "경제", "type": "google", "query": "기준금리" },
-  { "category": "경제", "type": "google", "query": "가계부채" },
+  { "category": "경제", "type": "naver", "query": "금융감독원" },
+  { "category": "경제", "type": "naver", "query": "기준금리" },
+  { "category": "경제", "type": "naver", "query": "가계부채" },
   { "category": "경제", "type": "rss", "url": "http://www.yonhapnewstv.co.kr/category/news/economy/feed/" },
   { "category": "경제", "type": "rss", "url": "https://www.federalreserve.gov/feeds/press_all.xml" },
 
-  { "category": "우주", "type": "google", "query": "천문학 연구" },
-  { "category": "우주", "type": "google", "query": "블랙홀" },
-  { "category": "우주", "type": "google", "query": "외계행성" },
+  { "category": "우주", "type": "naver", "query": "천문학 연구" },
+  { "category": "우주", "type": "naver", "query": "블랙홀" },
+  { "category": "우주", "type": "naver", "query": "외계행성" },
   { "category": "우주", "type": "rss", "url": "https://science.nasa.gov/feed/" },
   { "category": "우주", "type": "rss", "url": "https://www.nasa.gov/feeds/iotd-feed/" },
 
-  { "category": "IT", "type": "google", "query": "프론트엔드" },
-  { "category": "IT", "type": "google", "query": "개발자 채용" },
-  { "category": "IT", "type": "google", "query": "생성형 AI" },
+  { "category": "IT", "type": "naver", "query": "프론트엔드" },
+  { "category": "IT", "type": "naver", "query": "개발자 채용" },
+  { "category": "IT", "type": "naver", "query": "생성형 AI" },
 
-  { "category": "예술", "type": "google", "query": "미술관 전시" },
-  { "category": "예술", "type": "google", "query": "클래식 공연" },
-  { "category": "예술", "type": "google", "query": "연극" },
+  { "category": "예술", "type": "naver", "query": "미술관 전시" },
+  { "category": "예술", "type": "naver", "query": "클래식 공연" },
+  { "category": "예술", "type": "naver", "query": "연극" },
   { "category": "예술", "type": "rss", "url": "https://mediahub.seoul.go.kr/news/rss/06" },
 
-  { "category": "엔터", "type": "google", "query": "K팝" },
-  { "category": "엔터", "type": "google", "query": "영화 개봉" },
-  { "category": "엔터", "type": "google", "query": "드라마 시청률" }
+  { "category": "엔터", "type": "naver", "query": "K팝" },
+  { "category": "엔터", "type": "naver", "query": "영화 개봉" },
+  { "category": "엔터", "type": "naver", "query": "드라마 시청률" }
 ]
