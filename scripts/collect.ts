@@ -6,7 +6,7 @@
  * 실행: npm run collect
  * 필요한 환경변수(.env): GEMINI_API_KEY, NAVER_CLIENT_ID, NAVER_CLIENT_SECRET
  */
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, appendFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import Parser from "rss-parser";
 import { Readability } from "@mozilla/readability";
@@ -37,6 +37,8 @@ export type NewsItem = {
   tags?: string[];
   essayPoint?: string; // 경제·국제·사회: 논술 포인트
   keepDays?: number; // 기술 블로그처럼 뜸하게 올라오는 소스는 더 오래 보관
+  checked?: boolean; // LLM이 섹션에 맞는지 확인했는지
+  hidden?: boolean; // 어느 섹션에도 안 맞음 → 화면에서 숨김 (다시 수집·요약하지 않으려고 데이터엔 남겨둠)
   spaceFact?: string; // 우주 전용: 흥미로운 우주 지식
   titleKo?: string; // 영어 기사면 한국어 제목
 };
@@ -45,6 +47,19 @@ export type NewsItem = {
 // 로컬에서 돌린 결과는 git에 안 올라가는 public/data-local에 따로 저장 (main과 충돌 방지)
 const IS_CI = !!process.env.CI;
 let newCount = 0; // 이번 수집에서 처음 들어온 기사 수 (알림용)
+
+// 실행 결과 기록 (meta.json + GitHub Actions 요약 카드용)
+const report = {
+  fetched: 0,
+  newByCategory: {} as Record<string, number>,
+  summarizedNow: 0,
+  bodyFound: 0,
+  failedFeeds: [] as { category: string; source: string; error: string }[],
+  llmFailedBatches: 0,
+  concept: null as string | null,
+  hidden: 0, // 섹션에 안 맞아서 숨긴 기사 수
+  moved: [] as string[], // 섹션을 옮긴 기사 (예: "우주→IT")
+};
 const DATA_DIR = IS_CI ? "public/data" : "public/data-local";
 const OUTPUT = `${DATA_DIR}/news.json`;
 const SHARED = "public/data/news.json"; // 로컬 첫 실행 때 봇이 만든 요약을 재사용
@@ -194,7 +209,9 @@ async function fetchSource(src: FeedSource): Promise<NewsItem[]> {
     return src.type === "naver" ? await fetchNaver(src) : await fetchRss(src);
   } catch (e) {
     const label = src.type === "rss" ? src.url : src.query;
-    console.warn(`⚠️  피드 실패 (${src.category}) ${label}: ${(e as Error).message}`);
+    const message = (e as Error).message.split("\n")[0].slice(0, 120);
+    console.warn(`⚠️  피드 실패 (${src.category}) ${label}: ${message}`);
+    report.failedFeeds.push({ category: src.category, source: label, error: message });
     return [];
   }
 }
@@ -343,19 +360,31 @@ async function save(items: NewsItem[]): Promise<void> {
   // 푸터의 "마지막 수집" 표시용
   await writeFile(
     `${DATA_DIR}/meta.json`,
-    JSON.stringify({ updatedAt: new Date().toISOString(), count: items.length, newCount }, null, 2),
+    JSON.stringify(
+      {
+        updatedAt: new Date().toISOString(),
+        count: items.length,
+        newCount,
+        summarized: items.filter((n) => n.summary).length,
+        ...report,
+      },
+      null,
+      2,
+    ),
   );
 }
 
 const PROMPT = `다음 뉴스 목록 각각에 대해 JSON 배열로만 답해.
 각 원소: {
   "idx": number,
+  "fit": "이 기사가 실제로 속하는 섹션 하나 (경제, 국제, 사회, IT, 우주, 예술, 엔터, 책 중). 검색 키워드가 비유로만 쓰였거나(예: '의료의 블랙홀', '우주 최강') 어느 섹션에도 안 맞으면 null",
   "titleKo": "제목이 한국어가 아니면 자연스러운 한국어 제목, 한국어면 null",
   "summary": "한국어 요약. body가 있으면 핵심 사실(누가, 무엇을, 왜, 수치)을 담아 3~4문장. body가 null이면 snippet 기준으로 1~2문장",
   "tags": ["키워드", 최대 3개],
   "essayPoint": "경제·국제·사회 카테고리만: 금융감독원 논술 관점에서 이 기사의 쟁점과 연결되는 개념을 2문장으로 (경제: 금융소비자보호, 건전성 규제, 자본시장 공정성 등 / 국제: 통화정책 파급, 환율과 금융안정, 글로벌 리스크 등 / 사회: 저출생·고령화·기후 같은 사회 문제가 금융과 가계에 미치는 영향 등). 다른 카테고리는 null",
   "spaceFact": "우주 카테고리만: 이 기사와 연결된, 일반인이 '오 신기하다' 할 만한 우주 지식을 2~3문장으로 쉽게 설명 (기사에 나온 천체나 현상이 무엇이고 왜 흥미로운지). 다른 카테고리는 null"
 }
+category는 검색 키워드로 붙은 임시 섹션이라 틀릴 수 있어. essayPoint와 spaceFact는 category가 아니라 fit 기준으로 판단해.
 summary와 essayPoint는 제공된 title, snippet, body에 있는 내용만 근거로 쓰고 지어내지 마. spaceFact는 널리 확립된 과학 지식만 써.`;
 
 // 이미 요약된 기사 중 제목이 잘린 것만 원문 제목으로 복원 (LLM 호출 없음)
@@ -373,7 +402,13 @@ async function fixTruncatedTitles(items: NewsItem[]): Promise<void> {
 }
 
 async function enrich(items: NewsItem[]): Promise<void> {
-  const todo = items.filter((n) => !n.summary || (n.category === "우주" && !n.spaceFact));
+  const SECTIONS_ALL = ["경제", "국제", "사회", "IT", "우주", "예술", "엔터", "책"];
+  const needsSummary = items.filter(
+    (n) => !n.hidden && (!n.summary || (n.category === "우주" && !n.spaceFact)),
+  );
+  // 섹션 확인을 아직 안 한 예전 기사는 한 번에 40건씩만 다시 확인 (매시간 조금씩 정리)
+  const recheck = items.filter((n) => !n.hidden && n.summary && !n.checked && !needsSummary.includes(n)).slice(0, 40);
+  const todo = [...needsSummary, ...recheck];
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     console.log("ℹ️  GEMINI_API_KEY 없음 → LLM 요약 건너뜀");
@@ -408,6 +443,7 @@ async function enrich(items: NewsItem[]): Promise<void> {
       const json = text.slice(text.indexOf("["), text.lastIndexOf("]") + 1);
       const out: {
         idx: number;
+        fit: string | null;
         summary: string;
         tags: string[];
         essayPoint: string | null;
@@ -417,16 +453,31 @@ async function enrich(items: NewsItem[]): Promise<void> {
       for (const o of out) {
         const n = batch[o.idx];
         if (!n) continue;
+        n.checked = true;
+        if (!o.fit || !SECTIONS_ALL.includes(o.fit)) {
+          n.hidden = true; // 어디에도 안 맞는 기사
+          report.hidden++;
+          continue;
+        }
+        if (o.fit !== n.category) {
+          report.moved.push(`${n.category}→${o.fit}`);
+          n.category = o.fit;
+          delete n.essayPoint;
+          delete n.spaceFact;
+        }
         n.summary = o.summary;
         n.tags = o.tags;
         if (o.essayPoint) n.essayPoint = o.essayPoint;
         if (o.spaceFact) n.spaceFact = o.spaceFact;
         if (o.titleKo) n.titleKo = o.titleKo;
       }
+      report.summarizedNow += out.filter((o) => batch[o.idx] && o.summary).length;
+      report.bodyFound += gotBody;
       console.log(`🤖 요약 ${i + batch.length}/${todo.length} (본문 확보 ${gotBody}/${batch.length})`);
       await save(items); // 중간에 끊겨도 여기까지는 저장
       await sleep(4000); // 무료 티어 분당 제한 대비
     } catch (e) {
+      report.llmFailedBatches++;
       console.warn(`⚠️  LLM 배치 실패: ${(e as Error).message}`);
     }
   }
@@ -496,10 +547,46 @@ definition과 issues는 널리 알려진 사실만 쓰고, 기사 내용은 rela
     history = [concept, ...history].slice(0, 30);
     await mkdir(DATA_DIR, { recursive: true });
     await writeFile(file, JSON.stringify({ history }, null, 2));
+    report.concept = concept.term;
     console.log(`📘 오늘의 개념: ${concept.term}`);
   } catch (e) {
     console.warn(`⚠️  오늘의 개념 실패: ${(e as Error).message}`);
   }
+}
+
+/* ================= GitHub Actions 요약 카드 ================= */
+
+const ORDER = ["경제", "국제", "사회", "IT", "우주", "예술", "엔터", "책"];
+
+const rank = (c: string) => (ORDER.includes(c) ? ORDER.indexOf(c) : ORDER.length);
+
+function categoryLine(byCat: Record<string, number>): string {
+  return Object.entries(byCat)
+    .sort(([a], [b]) => rank(a) - rank(b))
+    .map(([c, n]) => `${c} ${n}`)
+    .join(" · ");
+}
+
+async function writeActionsSummary(total: number): Promise<void> {
+  const file = process.env.GITHUB_STEP_SUMMARY;
+  if (!file) return;
+  const lines = [
+    "## 📰 뉴스 수집 결과",
+    "",
+    newCount > 0
+      ? `**새 기사 ${newCount}건** · 이번에 요약 ${report.summarizedNow}건 (본문 확보 ${report.bodyFound}건) · 보관 중 ${total}건`
+      : `**새 기사 없음** · 보관 중 ${total}건`,
+  ];
+  if (newCount > 0) lines.push("", categoryLine(report.newByCategory));
+  if (report.concept) lines.push("", `📘 오늘의 개념: **${report.concept}**`);
+  if (report.hidden) lines.push("", `🙈 섹션에 안 맞아서 숨긴 기사 ${report.hidden}건`);
+  if (report.moved.length) lines.push("", `↪️ 섹션을 옮긴 기사: ${report.moved.join(", ")}`);
+  if (report.llmFailedBatches) lines.push("", `⚠️ 요약 실패한 배치 ${report.llmFailedBatches}개 (다음 수집 때 다시 시도)`);
+  if (report.failedFeeds.length) {
+    lines.push("", "### ⚠️ 실패한 피드", "", "| 섹션 | 소스 | 이유 |", "|---|---|---|");
+    for (const f of report.failedFeeds) lines.push(`| ${f.category} | ${f.source} | ${f.error.replace(/\|/g, "/")} |`);
+  }
+  await appendFile(file, lines.join("\n") + "\n");
 }
 
 /* ================= main ================= */
@@ -537,15 +624,24 @@ async function main() {
   const items = [...merged.values()]
     .filter((n) => Date.now() - new Date(n.publishedAt).getTime() <= (n.keepDays ?? KEEP_DAYS) * DAY)
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
-  newCount = items.filter((n) => !prev.has(n.key)).length;
+  const fresh = items.filter((n) => !prev.has(n.key));
+  newCount = fresh.length;
+  report.fetched = fetched.length;
 
   console.log(
     `📥 수집 ${fetched.length}건 → 유지 ${items.length}건 (요약 필요 ${items.filter((n) => !n.summary).length}건)`,
   );
   await fixTruncatedTitles(items);
   await enrich(items);
+  // 숨긴 기사는 빼고, 옮겨진 섹션 기준으로 새 기사 수 다시 계산
+  const freshVisible = fresh.filter((n) => !n.hidden);
+  newCount = freshVisible.length;
+  report.newByCategory = {};
+  for (const n of freshVisible) report.newByCategory[n.category] = (report.newByCategory[n.category] ?? 0) + 1;
   await save(items);
-  await makeConcept(items);
+  await makeConcept(items.filter((n) => !n.hidden));
+  await save(items); // 오늘의 개념까지 meta.json에 반영
+  await writeActionsSummary(items.length);
   console.log(`✅ ${items.length}건 저장 → ${OUTPUT} (새 기사 ${newCount}건)`);
 }
 

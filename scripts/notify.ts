@@ -8,7 +8,7 @@
  *  NEW_COUNT                           : 새 기사 수 (없으면 meta.json에서 읽음)
  *  SITE_URL                            : 알림 눌렀을 때 열 주소
  */
-import { readFile } from "node:fs/promises";
+import { appendFile, readFile } from "node:fs/promises";
 import { createClient } from "@supabase/supabase-js";
 import webpush, { type PushSubscription } from "web-push";
 
@@ -30,6 +30,12 @@ async function newCount(): Promise<number> {
   return 0;
 }
 
+// GitHub Actions 실행 요약 카드에 한 줄 추가
+async function summary(line: string) {
+  console.log(line);
+  if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, `${line}\n`);
+}
+
 async function main() {
   if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY || !SUPABASE_URL || !SUPABASE_SECRET_KEY) {
     console.log("ℹ️  푸시 키나 Supabase 설정이 없어서 알림을 건너뜀");
@@ -44,11 +50,11 @@ async function main() {
   const db = createClient(SUPABASE_URL, SUPABASE_SECRET_KEY, { auth: { persistSession: false } });
   const { data, error } = await db.from("push_subscriptions").select("endpoint, subscription");
   if (error) {
-    console.error(`⚠️  구독 목록을 못 읽었어요: ${error.message}`);
+    await summary(`⚠️ 구독 목록을 못 읽었어요: ${error.message}`);
     return;
   }
   if (!data?.length) {
-    console.log("ℹ️  등록된 기기 없음 (앱에서 알림 켜기를 눌러 주세요)");
+    await summary("ℹ️ 등록된 기기 없음 (앱에서 알림 켜기를 눌러 주세요)");
     return;
   }
 
@@ -76,7 +82,7 @@ async function main() {
       }
     }
   }
-  console.log(`🔔 알림 보냄 ${sent}/${data.length}대 (새 기사 ${count}건)`);
+  await summary(`🔔 알림 보냄 ${sent}/${data.length}대 (새 기사 ${count}건)`);
 }
 
 main();
