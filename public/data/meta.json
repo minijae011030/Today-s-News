@@ -1,0 +1,46 @@
+{
+  "updatedAt": "2026-10-26T14:16:02.893Z",
+  "count": 48,
+  "newCount": 47,
+  "summarized": 47,
+  "fetched": 245,
+  "newByCategory": {
+    "엔터": 9,
+    "경제": 14,
+    "IT": 7,
+    "사회": 8,
+    "우주": 4,
+    "예술": 3,
+    "책": 2
+  },
+  "summarizedNow": 48,
+  "bodyFound": 46,
+  "failedFeeds": [
+    {
+      "category": "IT",
+      "source": "https://techblog.woowahan.com/feed/",
+      "error": "Status code 403"
+    }
+  ],
+  "llmFailedBatches": 0,
+  "concept": "이상금융거래 탐지시스템(FDS)",
+  "hidden": 1,
+  "moved": [
+    "국제→경제",
+    "예술→엔터",
+    "사회→엔터",
+    "국제→경제",
+    "예술→엔터",
+    "예술→엔터",
+    "엔터→사회",
+    "국제→경제",
+    "우주→경제",
+    "국제→경제",
+    "국제→경제",
+    "책→사회",
+    "국제→경제",
+    "책→IT",
+    "책→경제",
+    "우주→사회"
+  ]
+}
