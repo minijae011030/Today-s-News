@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .env
+
+# 로컬에서 돌린 수집 결과 (공식 데이터는 Actions 봇이 public/data에 커밋)
+public/data-local/

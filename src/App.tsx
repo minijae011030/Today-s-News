@@ -56,6 +56,17 @@ const href = {
   article: (id: string) => `#/article/${encodeURIComponent(id)}`,
 };
 
+/* ---------- 데이터 ---------- */
+// 로컬 개발 중에는 내가 직접 수집한 data-local을 먼저 보고, 없으면 배포용 data로
+function fetchData(name: string): Promise<Response> {
+  const base = import.meta.env.BASE_URL;
+  const shared = () => fetch(`${base}data/${name}`);
+  if (!import.meta.env.DEV) return shared();
+  return fetch(`${base}data-local/${name}`)
+    .then((r) => (r.ok && r.headers.get("content-type")?.includes("json") ? r : shared()))
+    .catch(shared);
+}
+
 /* ---------- 포맷 ---------- */
 function timeAgo(iso: string): string {
   const min = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
@@ -73,7 +84,7 @@ export default function App() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}data/news.json`)
+    fetchData("news.json")
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
       .then(setItems)
       .catch(() => setError(true));
@@ -585,7 +596,7 @@ function Footer({ items }: { items: NewsItem[] | null }) {
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}data/meta.json`)
+    fetchData("meta.json")
       .then((r) => (r.ok ? r.json() : null))
       .then((m) => m?.updatedAt && setUpdatedAt(m.updatedAt))
       .catch(() => {});

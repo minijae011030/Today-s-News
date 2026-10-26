@@ -39,7 +39,12 @@ export type NewsItem = {
   titleKo?: string; // 영어 기사면 한국어 제목
 };
 
-const OUTPUT = "public/data/news.json";
+// 공식 데이터(public/data)는 GitHub Actions 봇만 커밋하고,
+// 로컬에서 돌린 결과는 git에 안 올라가는 public/data-local에 따로 저장 (main과 충돌 방지)
+const IS_CI = !!process.env.CI;
+const DATA_DIR = IS_CI ? "public/data" : "public/data-local";
+const OUTPUT = `${DATA_DIR}/news.json`;
+const SHARED = "public/data/news.json"; // 로컬 첫 실행 때 봇이 만든 요약을 재사용
 const KEEP_DAYS = 3;
 const MAX_PER_FEED = 15;
 const BODY_CHARS = 2000; // LLM에 넘길 본문 길이
@@ -328,11 +333,11 @@ async function callGemini(apiKey: string, prompt: string): Promise<string> {
 /* ================= 요약 ================= */
 
 async function save(items: NewsItem[]): Promise<void> {
-  await mkdir("public/data", { recursive: true });
+  await mkdir(DATA_DIR, { recursive: true });
   await writeFile(OUTPUT, JSON.stringify(items, null, 2));
   // 푸터의 "마지막 수집" 표시용
   await writeFile(
-    "public/data/meta.json",
+    `${DATA_DIR}/meta.json`,
     JSON.stringify({ updatedAt: new Date().toISOString(), count: items.length }, null, 2),
   );
 }
@@ -426,7 +431,8 @@ async function enrich(items: NewsItem[]): Promise<void> {
 
 async function loadPrevious(): Promise<Map<string, NewsItem>> {
   try {
-    const prev: NewsItem[] = JSON.parse(await readFile(OUTPUT, "utf8"));
+    const raw = await readFile(OUTPUT, "utf8").catch(() => readFile(SHARED, "utf8"));
+    const prev: NewsItem[] = JSON.parse(raw);
     // 예전 데이터는 id가 제목 기반이었으니 key로 옮기고 새 ID 부여
     return new Map(
       prev.map((n) => {
