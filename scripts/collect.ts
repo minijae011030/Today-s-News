@@ -604,11 +604,19 @@ async function fetchApod(): Promise<Apod | null> {
     const src = imgEl?.getAttribute("src");
     if (!src) throw new Error("오늘은 사진이 아니라 영상");
     const entry = imgEl?.closest("a")?.getAttribute("href") ?? page;
-    const title = document.querySelector("h2")?.textContent?.trim();
+    // 제목: 페이지엔 "Suggested Searches" 같은 메뉴 h2도 있어서,
+    // 사진 링크 주소(…/2026-october-26-m42-the-great-nebula-in-orion/)에 들어 있는 h2를 고름
+    const slug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const h2s = [...document.querySelectorAll("h2")].map((h) => (h.textContent ?? "").trim()).filter(Boolean);
+    const title =
+      h2s.find((t) => slug(t).length > 3 && entry.includes(slug(t))) ??
+      h2s.find((t) => !/suggested searches|featured|keep exploring|related/i.test(t));
     const bodyText = document.body?.textContent ?? "";
+    // 설명: 페이지 소개문("Discover the cosmos!…")도 있어서, 가장 긴 문단을 고름
     const explanation = [...document.querySelectorAll("p")]
       .map((el) => (el.textContent ?? "").replace(/\s+/g, " ").trim())
-      .find((t) => t.length > 150 && !/Authors|Service of/i.test(t));
+      .filter((t) => !/Authors|Service of|Discover the cosmos/i.test(t))
+      .sort((a, b) => b.length - a.length)[0];
     if (!title || !explanation) throw new Error("제목/설명을 못 찾음");
     const credit = bodyText.match(/Credit[^:\n]*:\s*([^\n]+)/)?.[1]?.replace(/\s+/g, " ").trim();
     const m = bodyText.match(
