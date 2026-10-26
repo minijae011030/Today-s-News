@@ -4,6 +4,8 @@ import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  // GitHub Pages는 https://<아이디>.github.io/<레포>/ 경로라서 배포 때만 base를 바꿔줌
+  base: process.env.BASE_PATH ?? '/',
   plugins: [
     react(),
     tailwindcss(),
@@ -18,7 +20,8 @@ export default defineConfig({
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
-        start_url: '/',
+        start_url: './',
+        scope: './',
         icons: [
           // TODO: 192/512 PNG 아이콘 만들어서 public/에 넣기
           { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
