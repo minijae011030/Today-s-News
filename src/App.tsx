@@ -22,13 +22,15 @@ const SECTIONS = ["경제", "우주", "IT", "예술", "엔터", "책"] as const;
 /* ---------- 해시 라우팅: #/ , #/section/경제 , #/article/<id> ---------- */
 type Route =
   | { name: "front" }
-  | { name: "section"; section: string }
+  | { name: "section"; section: string; page: number }
   | { name: "article"; id: string };
 
 function parseHash(): Route {
-  const [, kind, raw] = window.location.hash.split("/");
+  const [path, query = ""] = window.location.hash.split("?");
+  const [, kind, raw] = path.split("/");
   const value = raw ? decodeURIComponent(raw) : "";
-  if (kind === "section" && value) return { name: "section", section: value };
+  const page = Math.max(1, Number(new URLSearchParams(query).get("page")) || 1);
+  if (kind === "section" && value) return { name: "section", section: value, page };
   if (kind === "article" && value) return { name: "article", id: value };
   return { name: "front" };
 }
@@ -48,18 +50,12 @@ function useRoute(): Route {
 
 const href = {
   front: "#/",
-  section: (s: string) => `#/section/${encodeURIComponent(s)}`,
+  section: (s: string, page = 1) =>
+    `#/section/${encodeURIComponent(s)}${page > 1 ? `?page=${page}` : ""}`,
   article: (id: string) => `#/article/${encodeURIComponent(id)}`,
 };
 
 /* ---------- 포맷 ---------- */
-const longDate = new Intl.DateTimeFormat("en-US", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-  weekday: "long",
-});
-
 function timeAgo(iso: string): string {
   const min = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
   if (min < 1) return "방금";
@@ -112,6 +108,7 @@ export default function App() {
       {items && route.name === "section" && (
         <SectionPage
           section={route.section}
+          page={route.page}
           items={items.filter((n) => n.category === route.section)}
         />
       )}
@@ -253,13 +250,21 @@ function FrontPage({ items }: { items: NewsItem[] }) {
 }
 
 /* ---------- 섹션 ---------- */
+const PAGE_SIZE = 10;
+
 function SectionPage({
   section,
+  page,
   items,
 }: {
   section: string;
+  page: number;
   items: NewsItem[];
 }) {
+  const totalPages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  const current = Math.min(page, totalPages);
+  const visible = items.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
+
   return (
     <main className="mx-auto max-w-190">
       <h2 className="mt-8 font-serif text-4xl font-bold">{section}</h2>
@@ -268,7 +273,7 @@ function SectionPage({
       {items.length === 0 && <Notice>이 섹션에는 아직 기사가 없어요.</Notice>}
 
       <ul className="mt-6 border-t border-ink">
-        {items.map((n) => (
+        {visible.map((n) => (
           <li key={n.id} className="border-b border-rule py-6">
             <a
               href={href.article(n.id)}
@@ -294,7 +299,86 @@ function SectionPage({
           </li>
         ))}
       </ul>
+
+      <Pagination
+        current={current}
+        total={totalPages}
+        hrefFor={(p) => href.section(section, p)}
+      />
     </main>
+  );
+}
+
+/* ---------- 페이지네이션 (신문 하단 쪽번호 느낌) ---------- */
+// 1 … 4 5 6 … 12 처럼 현재 페이지 주변만 보여줌
+function pageList(current: number, total: number): (number | "gap")[] {
+  const pages = new Set([1, total, current - 1, current, current + 1]);
+  const sorted = [...pages].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
+  const out: (number | "gap")[] = [];
+  sorted.forEach((p, i) => {
+    if (i > 0 && p - sorted[i - 1] > 1) out.push("gap");
+    out.push(p);
+  });
+  return out;
+}
+
+function Pagination({
+  current,
+  total,
+  hrefFor,
+}: {
+  current: number;
+  total: number;
+  hrefFor: (page: number) => string;
+}) {
+  if (total <= 1) return null;
+  const edge = "px-2 py-1 text-sm";
+  return (
+    <nav aria-label="페이지" className="mt-10 flex items-center justify-between gap-4 font-sans">
+      {current > 1 ? (
+        <a href={hrefFor(current - 1)} className={`${edge} hover:underline`}>
+          이전
+        </a>
+      ) : (
+        <span className={`${edge} text-rule`} aria-hidden>
+          이전
+        </span>
+      )}
+
+      <ol className="flex items-center gap-1">
+        {pageList(current, total).map((p, i) =>
+          p === "gap" ? (
+            <li key={`gap-${i}`} className="px-1 text-muted" aria-hidden>
+              …
+            </li>
+          ) : (
+            <li key={p}>
+              <a
+                href={hrefFor(p)}
+                aria-current={p === current ? "page" : undefined}
+                className={`inline-block min-w-9 py-1.5 text-center font-serif tabular-nums ${
+                  p === current
+                    ? "border-b-2 border-ink font-bold text-ink"
+                    : "text-ink-soft hover:text-ink"
+                }`}
+              >
+                {p}
+              </a>
+            </li>
+          ),
+        )}
+      </ol>
+
+      {current < total ? (
+        <a href={hrefFor(current + 1)} className={`${edge} hover:underline`}>
+          다음
+        </a>
+      ) : (
+        <span className={`${edge} text-rule`} aria-hidden>
+          다음
+        </span>
+      )}
+    </nav>
   );
 }
 
