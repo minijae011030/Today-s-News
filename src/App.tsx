@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { PullToRefresh } from "./PullToRefresh";
+import { NotifyButton } from "./NotifyButton";
 
 type NewsItem = {
   id: string;
@@ -18,7 +19,16 @@ type NewsItem = {
 
 const titleOf = (n: NewsItem) => n.titleKo ?? n.title;
 
-const SECTIONS = ["경제", "우주", "IT", "예술", "엔터", "책"] as const;
+const SECTIONS = ["경제", "국제", "사회", "IT", "우주", "예술", "엔터", "책"] as const;
+
+type Concept = {
+  date: string;
+  term: string;
+  definition: string;
+  issues: string[];
+  essayAngle: string;
+  relatedIds: string[];
+};
 
 /* ---------- 해시 라우팅: #/ , #/section/경제 , #/article/<id> ---------- */
 type Route =
@@ -98,6 +108,15 @@ export default function App() {
       .catch(() => setError(true));
   }, [load]);
 
+  // 오늘의 개념 (하루 한 번 갱신, 새로고침하면 다시 확인)
+  const [concept, setConcept] = useState<Concept | null>(null);
+  useEffect(() => {
+    fetchData("concept.json")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setConcept(d?.history?.[0] ?? null))
+      .catch(() => {});
+  }, [version]);
+
   // 당겨서 새로고침: 새로 들어온 기사 수를 돌려줌
   const refresh = useCallback(async (): Promise<number | null> => {
     try {
@@ -138,7 +157,7 @@ export default function App() {
       )}
 
       {items && items.length > 0 && route.name === "front" && (
-        <FrontPage items={items} />
+        <FrontPage items={items} concept={concept} />
       )}
       {items && route.name === "section" && (
         <SectionPage
@@ -170,8 +189,8 @@ function Masthead({ active, isFront }: { active?: string; isFront: boolean }) {
         </h1>
       </a>
 
-      <nav className="border-y border-ink">
-        <ul className="flex justify-center gap-5 overflow-x-auto py-2.5 text-sm sm:gap-8">
+      <nav className="overflow-x-auto border-y border-ink">
+        <ul className="mx-auto flex w-max gap-5 px-1 py-2.5 text-sm sm:gap-8">
           <NavLink href={href.front} current={isFront}>
             1면
           </NavLink>
@@ -210,7 +229,7 @@ function NavLink({
 }
 
 /* ---------- 1면 ---------- */
-function FrontPage({ items }: { items: NewsItem[] }) {
+function FrontPage({ items, concept }: { items: NewsItem[]; concept: Concept | null }) {
   const lead = items.find((n) => n.summary) ?? items[0];
   const side = items.filter((n) => n.id !== lead.id).slice(0, 5);
 
@@ -252,7 +271,9 @@ function FrontPage({ items }: { items: NewsItem[] }) {
         </ol>
       </section>
 
-      <div className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
+      {concept && <ConceptBox concept={concept} items={items} />}
+
+      <div className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
         {SECTIONS.map((s) => {
           const list = items.filter((n) => n.category === s).slice(0, 5);
           if (list.length === 0) return null;
@@ -639,7 +660,7 @@ function Footer({ items, version }: { items: NewsItem[] | null; version: number 
             Today&rsquo;s News
           </a>
           <p className="mt-3 max-w-[42ch] font-serif leading-[1.75]">
-            경제, 우주, IT, 예술, 엔터, 책 소식을 매시간 모아 원문을 읽고 요약해
+            경제, 국제, 사회, IT, 우주, 예술, 엔터, 책 소식을 매시간 모아 원문을 읽고 요약해
             두는 개인 신문입니다.
           </p>
         </div>
@@ -693,6 +714,7 @@ function Footer({ items, version }: { items: NewsItem[] | null; version: number 
               <dd className="text-ink">최근 3일</dd>
             </div>
           </dl>
+          <NotifyButton />
         </div>
       </div>
 
@@ -721,5 +743,60 @@ function Footer({ items, version }: { items: NewsItem[] | null; version: number 
         </div>
       </div>
     </footer>
+  );
+}
+
+/* ---------- 오늘의 개념 ---------- */
+// 신문의 "오늘의 용어" 박스: 굵은 괘선 + 큰 제목, 색 없이 타이포로만
+function ConceptBox({ concept, items }: { concept: Concept; items: NewsItem[] }) {
+  const related = concept.relatedIds
+    .map((id) => items.find((n) => n.id === id))
+    .filter((n): n is NewsItem => !!n);
+
+  return (
+    <section aria-labelledby="concept-term" className="mt-8 border-y-4 border-double border-ink py-6">
+      <div className="grid gap-8 md:grid-cols-[1fr_2fr] md:gap-10">
+        <div>
+          <p className="font-sans text-sm font-semibold">오늘의 개념</p>
+          <h2 id="concept-term" className="mt-2 font-serif text-[clamp(1.6rem,3vw,2.2rem)] leading-tight font-bold">
+            {concept.term}
+          </h2>
+          <p className="mt-4 font-serif leading-[1.8] text-ink-soft">{concept.definition}</p>
+        </div>
+
+        <div className="md:border-l md:border-rule md:pl-10">
+          {concept.issues.length > 0 && (
+            <>
+              <h3 className="font-sans text-sm font-semibold">쟁점</h3>
+              <ul className="mt-2 space-y-2">
+                {concept.issues.map((issue) => (
+                  <li key={issue} className="flex gap-3 font-serif leading-[1.75]">
+                    <span aria-hidden className="mt-[0.7em] h-px w-3 shrink-0 bg-ink" />
+                    <span>{issue}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {concept.essayAngle && <EssayPoint text={concept.essayAngle} className="mt-8" />}
+
+          {related.length > 0 && (
+            <>
+              <h3 className="mt-6 font-sans text-sm font-semibold">관련 기사</h3>
+              <ul className="mt-1">
+                {related.map((n) => (
+                  <li key={n.id} className="border-b border-rule last:border-b-0">
+                    <a href={href.article(n.id)} className="block py-2.5 font-serif leading-snug hover:text-ink-soft">
+                      {titleOf(n)}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }

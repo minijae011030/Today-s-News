@@ -30,6 +30,7 @@ export default defineConfig({
         ],
       },
       workbox: {
+        importScripts: ["push-sw.js"], // 푸시 알림 처리
         runtimeCaching: [
           {
             // 뉴스 데이터: 네트워크 우선, 오프라인이면 캐시
