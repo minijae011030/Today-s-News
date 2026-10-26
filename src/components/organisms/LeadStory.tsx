@@ -2,6 +2,7 @@ import { titleOf } from "../../lib/format";
 import { href } from "../../lib/route";
 import type { NewsItem } from "../../types/news";
 import { HeadlineLink } from "../atoms/HeadlineLink";
+import { StoryImage } from "../atoms/StoryImage";
 import { EssayPoint } from "../molecules/EssayPoint";
 import { Kicker } from "../molecules/Kicker";
 
@@ -16,6 +17,9 @@ export function LeadStory({
   return (
     <section className="grid gap-8 border-b border-rule py-6 md:grid-cols-3 md:gap-0">
       <article className="md:col-span-2 md:border-r md:border-rule md:pr-8">
+        <a href={href.article(lead.id)} tabIndex={-1} aria-hidden>
+          <StoryImage src={lead.image} credit={lead.source} className="mb-4" priority />
+        </a>
         <Kicker category={lead.category} publishedAt={lead.publishedAt} />
         <a href={href.article(lead.id)} className="group block">
           <h2 className="mt-2 font-serif text-[clamp(1.6rem,3.2vw,2.4rem)] leading-tight font-bold group-hover:text-ink-soft">

@@ -12,6 +12,7 @@ export type NewsItem = {
   spaceFact?: string;
   titleKo?: string;
   hidden?: boolean;
+  image?: string;
 };
 
 export type Concept = {

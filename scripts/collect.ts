@@ -42,6 +42,7 @@ export type NewsItem = {
   hidden?: boolean; // 어느 섹션에도 안 맞음 → 화면에서 숨김 (다시 수집·요약하지 않으려고 데이터엔 남겨둠)
   spaceFact?: string; // 우주 전용: 흥미로운 우주 지식
   titleKo?: string; // 영어 기사면 한국어 제목
+  image?: string; // 대표 사진 (원문의 og:image 또는 RSS 첨부 이미지)
 };
 
 // 공식 데이터(public/data)는 GitHub Actions 봇만 커밋하고,
@@ -137,7 +138,24 @@ function pressName(url: string): string {
 
 /* ================= 수집: RSS ================= */
 
-const parser = new Parser();
+type MediaField = { $?: { url?: string; medium?: string; type?: string } };
+const parser = new Parser<Record<string, unknown>, { mediaContent?: MediaField; mediaThumbnail?: MediaField }>({
+  customFields: { item: [["media:content", "mediaContent"], ["media:thumbnail", "mediaThumbnail"]] },
+});
+
+// 로고·기본 이미지처럼 기사 사진이 아닌 것 걸러내기
+const NOT_PHOTO = /logo|default|noimage|no_image|blank|placeholder|favicon|icon|sprite|\.svg(\?|$)/i;
+function pickImage(raw: string | undefined, base: string): string | undefined {
+  if (!raw) return undefined;
+  try {
+    const url = new URL(raw.trim(), base);
+    if (url.protocol !== "https:" && url.protocol !== "http:") return undefined;
+    url.protocol = "https:"; // 사이트가 https라 http 이미지는 브라우저가 막음
+    return NOT_PHOTO.test(url.pathname) ? undefined : url.href;
+  } catch {
+    return undefined;
+  }
+}
 
 // User-Agent 필요한 사이트(406) 대응 + 이스케이프 안 된 & 보정
 async function fetchXml(url: string): Promise<string> {
@@ -176,6 +194,14 @@ async function fetchRss(src: FeedSource): Promise<NewsItem[]> {
       source: String((it as { source?: string }).source ?? feed.title ?? pressName(url)),
       publishedAt: new Date(it.isoDate ?? it.pubDate ?? Date.now()).toISOString(),
       snippet: stripHtml(it.contentSnippet ?? it.content ?? ""),
+      image: pickImage(
+        (it.enclosure?.type?.startsWith("image") ? it.enclosure.url : undefined) ??
+          it.mediaContent?.$?.url ??
+          it.mediaThumbnail?.$?.url ??
+          // 본문 HTML 안의 첫 이미지 (NASA 같은 피드)
+          (it.content ?? "").match(/<img[^>]+src=["']([^"']+)/i)?.[1],
+        it.link ?? url,
+      ),
     };
   });
 }
@@ -274,7 +300,7 @@ function restoreTitle(n: NewsItem, fullTitle?: string, siteName?: string): void 
 
 async function fetchBody(
   url: string,
-): Promise<{ text: string; siteName?: string; title?: string } | null> {
+): Promise<{ text: string; siteName?: string; title?: string; image?: string } | null> {
   if (!url || url.includes("news.google.com")) return null; // 구글 리다이렉트 링크는 건너뜀
   try {
     const html = await fetchHtml(url);
@@ -283,10 +309,15 @@ async function fetchBody(
       document.querySelector('meta[property="og:site_name"]')?.getAttribute("content")?.trim() || undefined;
     const ogTitle =
       document.querySelector('meta[property="og:title"]')?.getAttribute("content")?.trim() || undefined;
+    const meta = (sel: string) => document.querySelector(sel)?.getAttribute("content")?.trim() || undefined;
+    const image = pickImage(
+      meta('meta[property="og:image"]') ?? meta('meta[name="twitter:image"]') ?? meta('meta[property="og:image:url"]'),
+      url,
+    );
     const article = new Readability(document as unknown as Document).parse();
     const text = (article?.textContent ?? "").replace(/\s+/g, " ").trim();
     const title = ogTitle ?? article?.title ?? undefined;
-    return text.length >= 200 ? { text, siteName, title } : { text: "", siteName, title };
+    return { text: text.length >= 200 ? text : "", siteName, title, image };
   } catch {
     return null;
   }
@@ -406,6 +437,7 @@ async function fixTruncatedTitles(items: NewsItem[]): Promise<void> {
     const bodies = await Promise.all(chunk.map((n) => fetchBody(n.link)));
     chunk.forEach((n, idx) => {
       restoreTitle(n, bodies[idx]?.title, bodies[idx]?.siteName);
+      if (!n.image && bodies[idx]?.image) n.image = bodies[idx]!.image;
       n.titleTried = true;
     });
   }
@@ -442,13 +474,14 @@ async function enrich(items: NewsItem[]): Promise<void> {
 
     const bodies = await Promise.all(
       batch.map((n) =>
-        isRecheck.has(n) ? Promise.resolve({ text: n.summary ?? "", siteName: undefined, title: undefined }) : fetchBody(n.link),
+        isRecheck.has(n) ? Promise.resolve({ text: n.summary ?? "", siteName: undefined, title: undefined, image: undefined }) : fetchBody(n.link),
       ),
     );
     batch.forEach((n, idx) => {
       const site = bodies[idx]?.siteName;
       if (site && site.length <= 20) n.source = site;
       restoreTitle(n, bodies[idx]?.title, site);
+      if (!n.image && bodies[idx]?.image) n.image = bodies[idx]!.image;
     });
     const gotBody = bodies.filter((b) => b?.text).length;
 

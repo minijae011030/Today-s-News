@@ -1,6 +1,7 @@
 import { timeAgo, titleOf } from "../../lib/format";
 import { href } from "../../lib/route";
 import type { NewsItem } from "../../types/news";
+import { StoryImage } from "../atoms/StoryImage";
 
 /** 섹션 페이지의 기사 한 줄: 시간 | 제목 + 요약 + 출처 */
 export function StoryListItem({ item }: { item: NewsItem }) {
@@ -8,7 +9,7 @@ export function StoryListItem({ item }: { item: NewsItem }) {
     <li className="border-b border-rule py-6">
       <a
         href={href.article(item.id)}
-        className="group grid gap-1 sm:grid-cols-[7rem_1fr] sm:gap-6"
+        className={`group grid gap-1 sm:gap-6 ${item.image ? "sm:grid-cols-[7rem_1fr_9rem]" : "sm:grid-cols-[7rem_1fr]"}`}
       >
         <span className="text-xs text-muted sm:pt-1.5">
           {timeAgo(item.publishedAt)}
@@ -24,6 +25,7 @@ export function StoryListItem({ item }: { item: NewsItem }) {
           )}
           <span className="mt-2 block text-xs text-muted">{item.source}</span>
         </span>
+        <StoryImage src={item.image} ratio="aspect-[4/3]" className="hidden sm:block" />
       </a>
     </li>
   );

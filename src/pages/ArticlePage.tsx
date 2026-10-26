@@ -1,5 +1,6 @@
 import { Label } from "../components/atoms/Label";
 import { Notice } from "../components/atoms/Notice";
+import { StoryImage } from "../components/atoms/StoryImage";
 import { Tag } from "../components/atoms/Tag";
 import { EssayPoint } from "../components/molecules/EssayPoint";
 import { HeadlineList } from "../components/molecules/HeadlineList";
@@ -44,6 +45,8 @@ export function ArticlePage({
       <h2 className="mt-3 font-serif text-[clamp(1.8rem,4.5vw,2.6rem)] leading-tight font-bold">
         {titleOf(item)}
       </h2>
+
+      <StoryImage src={item.image} credit={item.source} className="mt-6" priority />
 
       {item.summary ? (
         <p className="mt-5 font-serif text-xl leading-[1.7] text-ink-soft">
