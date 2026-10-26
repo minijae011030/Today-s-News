@@ -222,16 +222,33 @@ async function fetchHtml(url: string): Promise<string> {
   }
 }
 
-async function fetchBody(url: string): Promise<{ text: string; siteName?: string } | null> {
+// 잘린 제목("...")이면 원문 페이지의 og:title로 복원. 앞부분이 같은 경우만 교체해서 엉뚱한 제목은 막음
+const TRUNCATED = /(\.\.\.|…)\s*$/;
+function restoreTitle(n: NewsItem, fullTitle?: string, siteName?: string): void {
+  if (!fullTitle || !TRUNCATED.test(n.title)) return;
+  let t = fullTitle.trim();
+  for (const name of [siteName, n.source].filter(Boolean) as string[]) {
+    t = t.replace(new RegExp(`\\s*[|\\-–:]\\s*${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`), "");
+  }
+  const prefix = n.title.replace(TRUNCATED, "").trim().slice(0, 12);
+  if (t.length > n.title.length - 3 && t.startsWith(prefix)) n.title = t;
+}
+
+async function fetchBody(
+  url: string,
+): Promise<{ text: string; siteName?: string; title?: string } | null> {
   if (!url || url.includes("news.google.com")) return null; // 구글 리다이렉트 링크는 건너뜀
   try {
     const html = await fetchHtml(url);
     const { document } = parseHTML(html);
     const siteName =
       document.querySelector('meta[property="og:site_name"]')?.getAttribute("content")?.trim() || undefined;
+    const ogTitle =
+      document.querySelector('meta[property="og:title"]')?.getAttribute("content")?.trim() || undefined;
     const article = new Readability(document as unknown as Document).parse();
     const text = (article?.textContent ?? "").replace(/\s+/g, " ").trim();
-    return text.length >= 200 ? { text, siteName } : null; // 너무 짧으면 본문 추출 실패로 간주
+    const title = ogTitle ?? article?.title ?? undefined;
+    return text.length >= 200 ? { text, siteName, title } : { text: "", siteName, title };
   } catch {
     return null;
   }
@@ -326,6 +343,20 @@ const PROMPT = `다음 뉴스 목록 각각에 대해 JSON 배열로만 답해.
 }
 summary와 essayPoint는 제공된 title, snippet, body에 있는 내용만 근거로 쓰고 지어내지 마. spaceFact는 널리 확립된 과학 지식만 써.`;
 
+// 이미 요약된 기사 중 제목이 잘린 것만 원문 제목으로 복원 (LLM 호출 없음)
+async function fixTruncatedTitles(items: NewsItem[]): Promise<void> {
+  const targets = items.filter((n) => n.summary && TRUNCATED.test(n.title));
+  for (let i = 0; i < targets.length; i += 8) {
+    const chunk = targets.slice(i, i + 8);
+    const bodies = await Promise.all(chunk.map((n) => fetchBody(n.link)));
+    chunk.forEach((n, idx) => restoreTitle(n, bodies[idx]?.title, bodies[idx]?.siteName));
+  }
+  if (targets.length) {
+    const left = targets.filter((n) => TRUNCATED.test(n.title)).length;
+    console.log(`✂️  잘린 제목 복원 ${targets.length - left}/${targets.length}`);
+  }
+}
+
 async function enrich(items: NewsItem[]): Promise<void> {
   const todo = items.filter((n) => !n.summary || (n.category === "우주" && !n.spaceFact));
   const apiKey = process.env.GEMINI_API_KEY;
@@ -345,15 +376,16 @@ async function enrich(items: NewsItem[]): Promise<void> {
     batch.forEach((n, idx) => {
       const site = bodies[idx]?.siteName;
       if (site && site.length <= 20) n.source = site;
+      restoreTitle(n, bodies[idx]?.title, site);
     });
-    const gotBody = bodies.filter(Boolean).length;
+    const gotBody = bodies.filter((b) => b?.text).length;
 
     const input = batch.map((n, idx) => ({
       idx,
       category: n.category,
       title: n.title,
       snippet: n.snippet,
-      body: bodies[idx]?.text.slice(0, BODY_CHARS) ?? null,
+      body: bodies[idx]?.text ? bodies[idx]!.text.slice(0, BODY_CHARS) : null,
     }));
 
     try {
@@ -423,6 +455,7 @@ async function main() {
   console.log(
     `📥 수집 ${fetched.length}건 → 유지 ${items.length}건 (요약 필요 ${items.filter((n) => !n.summary).length}건)`,
   );
+  await fixTruncatedTitles(items);
   await enrich(items);
   await save(items);
   console.log(`✅ ${items.length}건 저장 → ${OUTPUT}`);
