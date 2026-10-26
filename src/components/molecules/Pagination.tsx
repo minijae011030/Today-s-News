@@ -14,16 +14,16 @@ export function Pagination({
   const edge = "px-2 py-1 text-sm";
   return (
     <nav
-      aria-label="페이지"
+      aria-label="Pagination"
       className="mt-10 flex items-center justify-between gap-4 font-sans"
     >
       {current > 1 ? (
         <a href={hrefFor(current - 1)} className={`${edge} hover:underline`}>
-          이전
+          Previous
         </a>
       ) : (
         <span className={`${edge} text-rule`} aria-hidden>
-          이전
+          Previous
         </span>
       )}
 
@@ -53,11 +53,11 @@ export function Pagination({
 
       {current < total ? (
         <a href={hrefFor(current + 1)} className={`${edge} hover:underline`}>
-          다음
+          Next
         </a>
       ) : (
         <span className={`${edge} text-rule`} aria-hidden>
-          다음
+          Next
         </span>
       )}
     </nav>

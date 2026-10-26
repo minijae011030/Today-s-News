@@ -25,30 +25,21 @@ export default function App() {
       version={version}
       onRefresh={refresh}
     >
-      {error && (
-        <Notice>
-          뉴스 데이터를 불러오지 못했어요. 터미널에서{" "}
-          <code>npm run collect</code>를 실행해 주세요.
-        </Notice>
-      )}
-      {items && items.length === 0 && (
-        <Notice>
-          아직 수집된 기사가 없어요. <code>npm run collect</code>로 첫 수집을
-          시작하세요.
-        </Notice>
-      )}
+      {/* 안내는 한 번에 하나만: 전체가 비었으면 여기서만 알려주고 페이지는 안 그림 */}
+      {error && <Notice>We couldn&rsquo;t load today&rsquo;s stories. Pull down to try again.</Notice>}
+      {!error && items && items.length === 0 && <Notice>No stories yet.</Notice>}
 
       {items && items.length > 0 && route.name === "front" && (
         <FrontPage items={items} concept={concept} />
       )}
-      {items && route.name === "section" && (
+      {items && items.length > 0 && route.name === "section" && (
         <SectionPage
           section={route.section}
           page={route.page}
           items={items.filter((n) => n.category === route.section)}
         />
       )}
-      {items && route.name === "article" && (
+      {items && items.length > 0 && route.name === "article" && (
         <ArticlePage
           item={items.find((n) => n.id === route.id)}
           items={items}

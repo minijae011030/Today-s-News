@@ -28,13 +28,13 @@ export function Footer({
             Today&rsquo;s News
           </a>
           <p className="mt-3 max-w-[42ch] font-serif leading-[1.75]">
-            경제, 국제, 사회, IT, 우주, 예술, 엔터, 책 소식을 매시간 모아 원문을
-            읽고 요약해 두는 개인 신문입니다.
+            경제에서 우주, 예술에서 책까지. 매일 아침부터 저녁까지 세상의 소식을
+            읽고, 한 사람을 위해 다시 엮는 신문.
           </p>
         </div>
 
-        <nav aria-label="섹션">
-          <h2 className="font-semibold text-ink">섹션</h2>
+        <nav aria-label="Sections">
+          <h2 className="font-semibold text-ink">Sections</h2>
           <ul className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2">
             <li>
               <a href={href.front} className="hover:text-ink hover:underline">
@@ -55,20 +55,20 @@ export function Footer({
         </nav>
 
         <div>
-          <h2 className="font-semibold text-ink">이번 호</h2>
+          <h2 className="font-semibold text-ink">This Edition</h2>
           <dl className="mt-3 space-y-2">
             {updatedAt && (
-              <StatRow label="마지막 수집">
+              <StatRow label="Last updated">
                 {stamp.format(new Date(updatedAt))}
               </StatRow>
             )}
             {items && (
               <>
-                <StatRow label="보관 중인 기사">{items.length}건</StatRow>
-                <StatRow label="요약 완료">{summarized}건</StatRow>
+                <StatRow label="Stories">{items.length}</StatRow>
+                <StatRow label="Summarized">{summarized}</StatRow>
               </>
             )}
-            <StatRow label="보관 기간">최근 3일</StatRow>
+            <StatRow label="Archive">3 days</StatRow>
           </dl>
           <NotifyButton />
         </div>
@@ -76,8 +76,9 @@ export function Footer({
 
       <div className="mt-10 border-t border-rule pt-5 text-xs leading-[1.8] text-muted">
         <p>
-          기사 출처는 네이버 뉴스 검색, NASA, 각 언론사 RSS입니다. 기사의
-          저작권은 각 언론사에 있습니다.
+          Stories are sourced from Naver News, NASA and individual publishers. Summaries and talking
+          points are written by AI from the original reporting and may contain errors, so check the
+          original for anything important. All articles remain the property of their publishers.
         </p>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           <span>{fullDate.format(new Date())}</span>

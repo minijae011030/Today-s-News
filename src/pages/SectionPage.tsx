@@ -21,9 +21,9 @@ export function SectionPage({
   return (
     <main className="mx-auto max-w-190">
       <h2 className="mt-8 font-serif text-4xl font-bold">{section}</h2>
-      <p className="mt-1 text-sm text-muted">최근 3일, {items.length}건</p>
+      <p className="mt-1 text-sm text-muted">{items.length} {items.length === 1 ? "story" : "stories"} from the past three days</p>
 
-      {items.length === 0 && <Notice>이 섹션에는 아직 기사가 없어요.</Notice>}
+      {items.length === 0 && <Notice>No stories in this section yet.</Notice>}
 
       <ul className="mt-6 border-t border-ink">
         {visible.map((n) => (

@@ -19,9 +19,9 @@ export function ArticlePage({
   if (!item) {
     return (
       <Notice>
-        이 기사는 보관 기간(3일)이 지나 목록에서 빠졌어요.{" "}
+        This story is no longer available.{" "}
         <a className="underline" href={href.front}>
-          1면으로 가기
+          Back to the front page
         </a>
       </Notice>
     );
@@ -54,7 +54,7 @@ export function ArticlePage({
         </p>
       ) : (
         <p className="mt-5 text-sm text-muted">
-          아직 요약되지 않은 기사예요. 다음 수집 때 요약이 붙어요.
+          Summary in progress.
         </p>
       )}
 
@@ -67,14 +67,14 @@ export function ArticlePage({
 
       {item.essayPoint && (
         <section className="mt-8">
-          <Label>생각해볼 점</Label>
+          <Label>논점</Label>
           <EssayPoint text={item.essayPoint} className="mt-6 text-lg" />
         </section>
       )}
 
       {item.spaceFact && (
         <section className="mt-8 border-y border-ink py-5">
-          <Label>알고 보면 재밌는 우주 이야기</Label>
+          <Label>우주 노트</Label>
           <p className="mt-2 font-serif text-lg leading-[1.85]">
             {item.spaceFact}
           </p>
@@ -87,7 +87,7 @@ export function ArticlePage({
 
       {showSnippet && (
         <section className="mt-8">
-          <Label>원문 발췌</Label>
+          <Label>원문에서</Label>
           <p className="mt-2 border-l-2 border-rule pl-4 font-serif leading-[1.8] text-ink-soft">
             {item.snippet}
           </p>
@@ -108,13 +108,13 @@ export function ArticlePage({
         rel="noreferrer"
         className="mt-10 inline-block bg-ink px-5 py-3 text-sm font-semibold text-paper hover:bg-ink-soft"
       >
-        원문 기사 읽기
+        Read the original article
       </a>
 
       {related.length > 0 && (
         <aside className="mt-16 border-t-2 border-ink pt-3">
           <h3 className="font-serif text-lg font-bold">
-            {item.category}의 다른 기사
+            More in {item.category}
           </h3>
           <HeadlineList items={related} />
         </aside>

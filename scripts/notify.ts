@@ -50,7 +50,7 @@ async function main() {
   const db = createClient(SUPABASE_URL, SUPABASE_SECRET_KEY, { auth: { persistSession: false } });
   const { data, error } = await db.from("push_subscriptions").select("endpoint, subscription");
   if (error) {
-    await summary(`⚠️ 구독 목록을 못 읽었어요: ${error.message}`);
+    await summary(`⚠️ 구독 목록을 읽지 못했습니다: ${error.message}`);
     return;
   }
   if (!data?.length) {
@@ -61,7 +61,7 @@ async function main() {
   webpush.setVapidDetails("https://github.com/minijae011030/TodaysNews", VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
   const payload = JSON.stringify({
     title: "Today's News",
-    body: "새 뉴스가 추가되었어요",
+    body: "새 뉴스가 추가되었습니다",
     url: SITE_URL,
     count,
   });

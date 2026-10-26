@@ -9,7 +9,7 @@ self.addEventListener("push", (event) => {
   const scope = self.registration.scope;
   event.waitUntil(
     self.registration.showNotification(data.title || "Today's News", {
-      body: data.body || "새 뉴스가 추가되었어요",
+      body: data.body || "새 뉴스가 추가되었습니다",
       icon: new URL("pwa-192x192.png", scope).href,
       badge: new URL("favicon-64x64.png", scope).href,
       tag: "new-news", // 알림이 쌓이지 않고 최신 것 하나로 교체

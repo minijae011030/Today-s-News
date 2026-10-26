@@ -54,7 +54,7 @@ export function StoryImage({
       )}
       {credit && (
         <figcaption className="mt-1.5 text-right text-[0.7rem] text-muted">
-          사진: {credit}
+          Photo: {credit}
         </figcaption>
       )}
     </figure>
