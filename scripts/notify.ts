@@ -16,7 +16,7 @@ try {
 } catch {}
 
 const { VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, PUSH_SUBSCRIPTION } = process.env;
-const SITE_URL = process.env.SITE_URL ?? "https://minijae011030.github.io/Today-s-News/";
+const SITE_URL = process.env.SITE_URL ?? "https://minijae011030.github.io/TodaysNews/";
 
 async function newCount(): Promise<number> {
   if (process.env.NEW_COUNT) return Number(process.env.NEW_COUNT) || 0;
@@ -40,7 +40,7 @@ async function main() {
     return;
   }
 
-  webpush.setVapidDetails("https://github.com/minijae011030/Today-s-News", VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+  webpush.setVapidDetails("https://github.com/minijae011030/TodaysNews", VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 
   const payload = JSON.stringify({
     title: "Today's News",

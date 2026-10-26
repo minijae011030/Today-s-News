@@ -3,7 +3,7 @@
 경제·국제·사회·IT·우주·예술·엔터·책 소식을 매시간 모아서, 원문을 읽고 LLM으로 요약해 보여주는 개인용 신문 PWA.
 서버와 DB 없이 GitHub Actions + 정적 JSON + GitHub Pages로 돌아가.
 
-👉 https://minijae011030.github.io/Today-s-News/
+👉 https://minijae011030.github.io/TodaysNews/
 
 ## 구조
 
