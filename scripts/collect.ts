@@ -802,9 +802,17 @@ async function main() {
 
   // 이전 데이터 + 새 데이터 병합 (이전 LLM 결과는 재사용해서 비용 절약)
   const merged = new Map([...prev].map(([key, n]) => [key, cleanGoogle(n)]));
-  // 한 번 수집할 때 섹션별로 최신 MAX_NEW_PER_SECTION건만 새로 받음 (나머지는 다음 수집 때 다시 후보가 됨)
+  // 섹션마다 "이미 실린 기사 중 가장 최근 시각"보다 새로운 기사만 후보로 받음.
+  // (이게 없으면 상한에 걸려 못 받은 예전 기사들이 다음 수집마다 줄줄이 다시 들어옴)
+  const latestBySection: Record<string, string> = {};
+  for (const n of merged.values()) {
+    if (!latestBySection[n.category] || n.publishedAt > latestBySection[n.category])
+      latestBySection[n.category] = n.publishedAt;
+  }
+  // 그중 섹션별로 최신 MAX_NEW_PER_SECTION건만 새로 받음
   const candidates = fetched
     .filter((n) => n.key && n.link && !merged.has(n.key))
+    .filter((n) => !latestBySection[n.category] || n.publishedAt > latestBySection[n.category])
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
   const taken: Record<string, number> = {};
   for (const n of candidates) {
