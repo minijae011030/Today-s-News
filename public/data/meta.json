@@ -1,16 +1,21 @@
 {
-  "updatedAt": "2026-10-26T15:11:52.231Z",
-  "count": 137,
-  "newCount": 8,
-  "summarized": 136,
-  "fetched": 245,
+  "updatedAt": "2026-10-26T22:01:31.753Z",
+  "count": 185,
+  "newCount": 47,
+  "summarized": 183,
+  "fetched": 243,
   "newByCategory": {
-    "경제": 5,
-    "사회": 1,
-    "예술": 2
+    "경제": 15,
+    "국제": 2,
+    "사회": 11,
+    "예술": 6,
+    "엔터": 5,
+    "IT": 4,
+    "책": 1,
+    "우주": 3
   },
-  "summarizedNow": 8,
-  "bodyFound": 8,
+  "summarizedNow": 48,
+  "bodyFound": 46,
   "failedFeeds": [
     {
       "category": "IT",
@@ -20,11 +25,26 @@
   ],
   "llmFailedBatches": 0,
   "concept": null,
-  "spacePhoto": "추천 검색어",
-  "hidden": 0,
+  "spacePhoto": "오리온자리의 거대한 성운, M42",
+  "hidden": 1,
   "moved": [
-    "사회→경제",
     "국제→경제",
-    "국제→경제"
+    "국제→경제",
+    "국제→경제",
+    "엔터→사회",
+    "엔터→사회",
+    "국제→경제",
+    "국제→경제",
+    "책→사회",
+    "우주→경제",
+    "IT→사회",
+    "사회→경제",
+    "IT→사회",
+    "우주→경제",
+    "우주→국제",
+    "예술→엔터",
+    "책→경제",
+    "책→사회",
+    "책→예술"
   ]
 }
