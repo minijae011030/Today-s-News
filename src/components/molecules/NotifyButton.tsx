@@ -43,7 +43,15 @@ export function NotifyButton() {
     })().catch(() => setState("unsupported"));
   }, []);
 
-  if (!PUBLIC_KEY || state === "checking") return null;
+  // 공개키가 빌드에 안 들어갔으면 버튼을 숨김 (개발 중에만 이유를 보여줌)
+  if (!PUBLIC_KEY) {
+    return import.meta.env.DEV ? (
+      <p className="mt-6 text-xs text-muted">
+        알림 버튼 숨김: .env에 VITE_VAPID_PUBLIC_KEY가 없어요.
+      </p>
+    ) : null;
+  }
+  if (state === "checking") return null;
 
   const enable = async () => {
     setBusy(true);
