@@ -46,7 +46,7 @@ export function ArticlePage({
         {titleOf(item)}
       </h2>
 
-      <StoryImage src={item.image} credit={item.source} className="mt-6" priority />
+      <StoryImage src={item.image} credit={item.source} ratio="natural" className="mt-6" priority />
 
       {item.summary ? (
         <p className="mt-5 font-serif text-xl leading-[1.7] text-ink-soft">
