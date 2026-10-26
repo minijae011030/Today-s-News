@@ -30,3 +30,34 @@ html {
   outline: 2px solid var(--color-ink);
   outline-offset: 3px;
 }
+
+/* 브라우저 자체 당겨서 새로고침/바운스 끄기 (우리 걸로 대신함) */
+html,
+body {
+  overscroll-behavior-y: none;
+}
+
+/* 당겨서 새로고침: 괘선 위로 흰 잉크 롤러가 지나가는 효과 */
+.ptr-ink {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  width: 36px;
+  height: 9px;
+  background: linear-gradient(90deg, transparent, var(--color-paper), transparent);
+  animation: ptr-roll 900ms ease-in-out infinite;
+}
+@keyframes ptr-roll {
+  from {
+    transform: translateX(-36px);
+  }
+  to {
+    transform: translateX(140px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ptr-ink {
+    animation: none;
+    display: none;
+  }
+}

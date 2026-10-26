@@ -1,4 +1,5 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { PullToRefresh } from "./PullToRefresh";
 
 type NewsItem = {
   id: string;
@@ -60,9 +61,10 @@ const href = {
 // 로컬 개발 중에는 내가 직접 수집한 data-local을 먼저 보고, 없으면 배포용 data로
 function fetchData(name: string): Promise<Response> {
   const base = import.meta.env.BASE_URL;
-  const shared = () => fetch(`${base}data/${name}`);
+  const init: RequestInit = { cache: "no-store" }; // 새로고침 때 항상 최신으로
+  const shared = () => fetch(`${base}data/${name}`, init);
   if (!import.meta.env.DEV) return shared();
-  return fetch(`${base}data-local/${name}`)
+  return fetch(`${base}data-local/${name}`, init)
     .then((r) => (r.ok && r.headers.get("content-type")?.includes("json") ? r : shared()))
     .catch(shared);
 }
@@ -82,13 +84,33 @@ export default function App() {
   const route = useRoute();
   const [items, setItems] = useState<NewsItem[] | null>(null);
   const [error, setError] = useState(false);
+  const [version, setVersion] = useState(0); // 새로고침할 때마다 +1 (푸터도 다시 불러오게)
+
+  const load = useCallback(async (): Promise<NewsItem[]> => {
+    const r = await fetchData("news.json");
+    if (!r.ok) throw new Error(String(r.status));
+    return r.json();
+  }, []);
 
   useEffect(() => {
-    fetchData("news.json")
-      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    load()
       .then(setItems)
       .catch(() => setError(true));
-  }, []);
+  }, [load]);
+
+  // 당겨서 새로고침: 새로 들어온 기사 수를 돌려줌
+  const refresh = useCallback(async (): Promise<number | null> => {
+    try {
+      const next = await load();
+      const before = new Set(items?.map((n) => n.id));
+      setItems(next);
+      setError(false);
+      setVersion((v) => v + 1);
+      return next.filter((n) => !before.has(n.id)).length;
+    } catch {
+      return null;
+    }
+  }, [load, items]);
 
   const activeSection =
     route.name === "section"
@@ -98,6 +120,7 @@ export default function App() {
         : undefined;
 
   return (
+    <PullToRefresh onRefresh={refresh}>
     <div className="mx-auto max-w-300 px-4 pb-24 sm:px-6">
       <Masthead active={activeSection} isFront={route.name === "front"} />
 
@@ -131,8 +154,9 @@ export default function App() {
         />
       )}
 
-      <Footer items={items} />
+      <Footer items={items} version={version} />
     </div>
+    </PullToRefresh>
   );
 }
 
@@ -592,7 +616,7 @@ const stamp = new Intl.DateTimeFormat("ko-KR", {
   minute: "2-digit",
 });
 
-function Footer({ items }: { items: NewsItem[] | null }) {
+function Footer({ items, version }: { items: NewsItem[] | null; version: number }) {
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
 
   useEffect(() => {
@@ -600,7 +624,7 @@ function Footer({ items }: { items: NewsItem[] | null }) {
       .then((r) => (r.ok ? r.json() : null))
       .then((m) => m?.updatedAt && setUpdatedAt(m.updatedAt))
       .catch(() => {});
-  }, []);
+  }, [version]);
 
   const summarized = items?.filter((n) => n.summary).length ?? 0;
 
