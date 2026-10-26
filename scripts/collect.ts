@@ -582,10 +582,12 @@ async function fetchApod(): Promise<Apod | null> {
     if (!res.ok) throw new Error(`NASA ${res.status}`);
     const list: Apod[] = await res.json();
     // 최근 7일 중 가장 최신 "사진" (가끔 영상인 날이 있어서)
+    // NASA API가 요즘 사진 대신 NASA 로고 주소를 주는 경우가 있어서, 진짜 APOD 사진만 남김
     const pick = list
-      .filter((a) => a.media_type === "image" || a.thumbnail_url)
+      .filter((a) => isApodImage(a.media_type === "image" ? a.url : a.thumbnail_url))
       .sort((a, b) => b.date.localeCompare(a.date))[0];
     if (pick) return pick;
+    console.warn("   NASA API가 APOD 사진을 안 줌 (로고 등) → APOD 웹페이지에서 직접 읽기");
   } catch (e) {
     console.warn(`   NASA API 실패(${(e as Error).message}) → APOD 웹페이지에서 직접 읽기`);
   }
