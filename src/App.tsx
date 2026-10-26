@@ -11,9 +11,13 @@ type NewsItem = {
   summary?: string
   tags?: string[]
   essayPoint?: string
+  spaceFact?: string
+  titleKo?: string
 }
 
-const SECTIONS = ['경제', '우주', 'IT', '예술'] as const
+const titleOf = (n: NewsItem) => n.titleKo ?? n.title
+
+const SECTIONS = ['경제', '우주', 'IT', '예술', '엔터'] as const
 
 /* ---------- 해시 라우팅: #/ , #/section/경제 , #/article/<id> ---------- */
 type Route =
@@ -182,7 +186,7 @@ function FrontPage({ items }: { items: NewsItem[] }) {
           <Kicker category={lead.category} publishedAt={lead.publishedAt} />
           <a href={href.article(lead.id)} className="group block">
             <h2 className="mt-2 font-serif text-[clamp(1.6rem,3.2vw,2.4rem)] leading-[1.25] font-bold group-hover:text-ink-soft">
-              {lead.title}
+              {titleOf(lead)}
             </h2>
             {lead.summary && (
               <p className="mt-4 max-w-[60ch] font-serif text-lg leading-[1.8] text-ink-soft">{lead.summary}</p>
@@ -196,14 +200,14 @@ function FrontPage({ items }: { items: NewsItem[] }) {
             <li key={n.id} className={i > 0 ? 'mt-4 border-t border-rule pt-4' : ''}>
               <Kicker category={n.category} publishedAt={n.publishedAt} />
               <a href={href.article(n.id)} className="mt-1 block font-serif text-[1.05rem] leading-snug font-semibold hover:text-ink-soft">
-                {n.title}
+                {titleOf(n)}
               </a>
             </li>
           ))}
         </ol>
       </section>
 
-      <div className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-5">
         {SECTIONS.map((s) => {
           const list = items.filter((n) => n.category === s).slice(0, 5)
           if (list.length === 0) return null
@@ -216,7 +220,7 @@ function FrontPage({ items }: { items: NewsItem[] }) {
                 {list.map((n, i) => (
                   <li key={n.id} className={i > 0 ? 'border-t border-rule' : ''}>
                     <a href={href.article(n.id)} className="block py-3 font-serif text-[0.97rem] leading-snug hover:text-ink-soft">
-                      {n.title}
+                      {titleOf(n)}
                     </a>
                   </li>
                 ))}
@@ -245,7 +249,7 @@ function SectionPage({ section, items }: { section: string; items: NewsItem[] })
               <span className="text-xs text-muted sm:pt-1.5">{timeAgo(n.publishedAt)}</span>
               <span>
                 <span className="block font-serif text-xl leading-snug font-bold group-hover:text-ink-soft">
-                  {n.title}
+                  {titleOf(n)}
                 </span>
                 {n.summary && (
                   <span className="mt-2 block font-serif leading-[1.75] text-ink-soft">{n.summary}</span>
@@ -279,7 +283,7 @@ function ArticlePage({ item, items }: { item?: NewsItem; items: NewsItem[] }) {
         {item.category}
       </a>
 
-      <h2 className="mt-3 font-serif text-[clamp(1.8rem,4.5vw,2.6rem)] leading-[1.25] font-bold">{item.title}</h2>
+      <h2 className="mt-3 font-serif text-[clamp(1.8rem,4.5vw,2.6rem)] leading-[1.25] font-bold">{titleOf(item)}</h2>
 
       {item.summary ? (
         <p className="mt-5 font-serif text-xl leading-[1.7] text-ink-soft">{item.summary}</p>
@@ -299,6 +303,17 @@ function ArticlePage({ item, items }: { item?: NewsItem; items: NewsItem[] }) {
           <h3 className="font-sans text-sm font-semibold">논술 포인트</h3>
           <EssayPoint text={item.essayPoint} className="mt-2 text-lg" />
         </section>
+      )}
+
+      {item.spaceFact && (
+        <section className="mt-8 border-y border-ink py-5">
+          <h3 className="font-sans text-sm font-semibold">알고 보면 재밌는 우주 이야기</h3>
+          <p className="mt-2 font-serif text-lg leading-[1.85]">{item.spaceFact}</p>
+        </section>
+      )}
+
+      {item.titleKo && (
+        <p className="mt-6 text-sm text-muted">원제: {item.title}</p>
       )}
 
       {showSnippet && (
@@ -334,7 +349,7 @@ function ArticlePage({ item, items }: { item?: NewsItem; items: NewsItem[] }) {
             {related.map((n, i) => (
               <li key={n.id} className={i > 0 ? 'border-t border-rule' : ''}>
                 <a href={href.article(n.id)} className="block py-3 font-serif leading-snug hover:text-ink-soft">
-                  {n.title}
+                  {titleOf(n)}
                 </a>
               </li>
             ))}
