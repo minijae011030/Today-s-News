@@ -37,6 +37,7 @@ export type NewsItem = {
   tags?: string[];
   essayPoint?: string; // 경제·국제·사회: 논술 포인트
   keepDays?: number; // 기술 블로그처럼 뜸하게 올라오는 소스는 더 오래 보관
+  titleTried?: boolean; // 잘린 제목 복원을 이미 시도했는지 (실패해도 매번 다시 안 하려고)
   checked?: boolean; // LLM이 섹션에 맞는지 확인했는지
   hidden?: boolean; // 어느 섹션에도 안 맞음 → 화면에서 숨김 (다시 수집·요약하지 않으려고 데이터엔 남겨둠)
   spaceFact?: string; // 우주 전용: 흥미로운 우주 지식
@@ -64,8 +65,8 @@ const DATA_DIR = IS_CI ? "public/data" : "public/data-local";
 const OUTPUT = `${DATA_DIR}/news.json`;
 const SHARED = "public/data/news.json"; // 로컬 첫 실행 때 봇이 만든 요약을 재사용
 const KEEP_DAYS = 3;
-const MAX_PER_FEED = 15;
-const BODY_CHARS = 2000; // LLM에 넘길 본문 길이
+const MAX_PER_FEED = 7; // 키워드/피드당 최신 몇 건만 (양이 많을수록 LLM 비용·시간이 늘어남)
+const BODY_CHARS = 1200; // LLM에 넘길 본문 길이 (리드 몇 문단이면 요약엔 충분)
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -233,7 +234,7 @@ async function fetchHtml(url: string): Promise<string> {
   const res = await fetch(url, {
     headers: { "User-Agent": UA, Accept: "text/html,*/*", "Accept-Language": "ko-KR,ko;q=0.9" },
     redirect: "follow",
-    signal: AbortSignal.timeout(12_000),
+    signal: AbortSignal.timeout(7_000),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const buf = new Uint8Array(await res.arrayBuffer());
@@ -389,11 +390,14 @@ summary와 essayPoint는 제공된 title, snippet, body에 있는 내용만 근�
 
 // 이미 요약된 기사 중 제목이 잘린 것만 원문 제목으로 복원 (LLM 호출 없음)
 async function fixTruncatedTitles(items: NewsItem[]): Promise<void> {
-  const targets = items.filter((n) => n.summary && TRUNCATED.test(n.title));
+  const targets = items.filter((n) => n.summary && !n.titleTried && TRUNCATED.test(n.title));
   for (let i = 0; i < targets.length; i += 8) {
     const chunk = targets.slice(i, i + 8);
     const bodies = await Promise.all(chunk.map((n) => fetchBody(n.link)));
-    chunk.forEach((n, idx) => restoreTitle(n, bodies[idx]?.title, bodies[idx]?.siteName));
+    chunk.forEach((n, idx) => {
+      restoreTitle(n, bodies[idx]?.title, bodies[idx]?.siteName);
+      n.titleTried = true;
+    });
   }
   if (targets.length) {
     const left = targets.filter((n) => TRUNCATED.test(n.title)).length;
@@ -409,6 +413,7 @@ async function enrich(items: NewsItem[]): Promise<void> {
   // 섹션 확인을 아직 안 한 예전 기사는 한 번에 40건씩만 다시 확인 (매시간 조금씩 정리)
   const recheck = items.filter((n) => !n.hidden && n.summary && !n.checked && !needsSummary.includes(n)).slice(0, 40);
   const todo = [...needsSummary, ...recheck];
+  const isRecheck = new Set(recheck); // 재검사는 이미 요약이 있으니 원문을 다시 안 받음
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     console.log("ℹ️  GEMINI_API_KEY 없음 → LLM 요약 건너뜀");
@@ -422,7 +427,11 @@ async function enrich(items: NewsItem[]): Promise<void> {
     const batch = todo.slice(i, i + BATCH);
     console.log(`⏳ ${i + 1}~${i + batch.length}/${todo.length} 본문 수집 + 요약 중`);
 
-    const bodies = await Promise.all(batch.map((n) => fetchBody(n.link)));
+    const bodies = await Promise.all(
+      batch.map((n) =>
+        isRecheck.has(n) ? Promise.resolve({ text: n.summary ?? "", siteName: undefined, title: undefined }) : fetchBody(n.link),
+      ),
+    );
     batch.forEach((n, idx) => {
       const site = bodies[idx]?.siteName;
       if (site && site.length <= 20) n.source = site;
@@ -475,7 +484,7 @@ async function enrich(items: NewsItem[]): Promise<void> {
       report.bodyFound += gotBody;
       console.log(`🤖 요약 ${i + batch.length}/${todo.length} (본문 확보 ${gotBody}/${batch.length})`);
       await save(items); // 중간에 끊겨도 여기까지는 저장
-      await sleep(4000); // 무료 티어 분당 제한 대비
+      await sleep(1000); // 429(한도)가 나면 callGemini가 알아서 쉬었다 재시도함
     } catch (e) {
       report.llmFailedBatches++;
       console.warn(`⚠️  LLM 배치 실패: ${(e as Error).message}`);
