@@ -90,12 +90,8 @@ export default function App() {
         : undefined;
 
   return (
-    <div className="mx-auto max-w-[1200px] px-4 pb-24 sm:px-6">
-      <Masthead
-        items={items}
-        active={activeSection}
-        isFront={route.name === "front"}
-      />
+    <div className="mx-auto max-w-300 px-4 pb-24 sm:px-6">
+      <Masthead active={activeSection} isFront={route.name === "front"} />
 
       {error && (
         <Notice>
@@ -130,16 +126,7 @@ export default function App() {
 }
 
 /* ---------- 마스트헤드 ---------- */
-function Masthead({
-  items,
-  active,
-  isFront,
-}: {
-  items: NewsItem[] | null;
-  active?: string;
-  isFront: boolean;
-}) {
-  const summarized = items?.filter((n) => n.summary).length ?? 0;
+function Masthead({ active, isFront }: { active?: string; isFront: boolean }) {
   return (
     <header className="pt-4">
       <div className="flex items-end justify-between gap-4 text-xs text-ink-soft">
@@ -164,7 +151,7 @@ function Masthead({
           ))}
         </ul>
       </nav>
-      <div className="mt-[3px] border-t border-ink" />
+      <div className="mt-0.75 border-t border-ink" />
     </header>
   );
 }
@@ -202,7 +189,7 @@ function FrontPage({ items }: { items: NewsItem[] }) {
         <article className="md:col-span-2 md:border-r md:border-rule md:pr-8">
           <Kicker category={lead.category} publishedAt={lead.publishedAt} />
           <a href={href.article(lead.id)} className="group block">
-            <h2 className="mt-2 font-serif text-[clamp(1.6rem,3.2vw,2.4rem)] leading-[1.25] font-bold group-hover:text-ink-soft">
+            <h2 className="mt-2 font-serif text-[clamp(1.6rem,3.2vw,2.4rem)] leading-tight font-bold group-hover:text-ink-soft">
               {titleOf(lead)}
             </h2>
             {lead.summary && (
@@ -278,7 +265,7 @@ function SectionPage({
   items: NewsItem[];
 }) {
   return (
-    <main className="mx-auto max-w-[760px]">
+    <main className="mx-auto max-w-190">
       <h2 className="mt-8 font-serif text-4xl font-bold">{section}</h2>
       <p className="mt-1 text-sm text-muted">최근 3일, {items.length}건</p>
 
