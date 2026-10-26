@@ -12,7 +12,8 @@ export function useNews() {
   const load = useCallback(async (): Promise<NewsItem[]> => {
     const r = await fetchData("news.json");
     if (!r.ok) throw new Error(String(r.status));
-    return r.json();
+    const all: NewsItem[] = await r.json();
+    return all.filter((n) => !n.hidden); // 섹션에 안 맞는 기사는 숨김
   }, []);
 
   useEffect(() => {

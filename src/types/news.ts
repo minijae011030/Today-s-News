@@ -11,6 +11,7 @@ export type NewsItem = {
   essayPoint?: string;
   spaceFact?: string;
   titleKo?: string;
+  hidden?: boolean;
 };
 
 export type Concept = {

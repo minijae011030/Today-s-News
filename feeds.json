@@ -25,8 +25,8 @@
   { "category": "IT", "type": "naver", "query": "개발자 채용" },
 
   { "category": "우주", "type": "naver", "query": "천문학 연구" },
-  { "category": "우주", "type": "naver", "query": "블랙홀" },
-  { "category": "우주", "type": "naver", "query": "외계행성" },
+  { "category": "우주", "type": "naver", "query": "블랙홀 관측" },
+  { "category": "우주", "type": "naver", "query": "외계행성 발견" },
   { "category": "우주", "type": "rss", "url": "https://science.nasa.gov/feed/" },
   { "category": "우주", "type": "rss", "url": "https://www.nasa.gov/feeds/iotd-feed/" },
 
