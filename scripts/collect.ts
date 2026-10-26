@@ -570,6 +570,58 @@ type Apod = {
   copyright?: string;
 };
 
+// 1) NASA API (빠를 땐 빠른데 자주 느림) → 2) APOD 웹페이지에서 직접 읽기
+async function fetchApod(): Promise<Apod | null> {
+  const key = process.env.NASA_API_KEY || "DEMO_KEY";
+  try {
+    const start = new Date(Date.now() - 7 * 86400_000).toISOString().slice(0, 10);
+    const res = await fetch(
+      `https://api.nasa.gov/planetary/apod?api_key=${key}&start_date=${start}&thumbs=true`,
+      { signal: AbortSignal.timeout(45_000) },
+    );
+    if (!res.ok) throw new Error(`NASA ${res.status}`);
+    const list: Apod[] = await res.json();
+    // 최근 7일 중 가장 최신 "사진" (가끔 영상인 날이 있어서)
+    const pick = list
+      .filter((a) => a.media_type === "image" || a.thumbnail_url)
+      .sort((a, b) => b.date.localeCompare(a.date))[0];
+    if (pick) return pick;
+  } catch (e) {
+    console.warn(`   NASA API 실패(${(e as Error).message}) → APOD 웹페이지에서 직접 읽기`);
+  }
+
+  try {
+    const base = "https://apod.nasa.gov/apod/";
+    const { document } = parseHTML(await fetchHtml(`${base}astropix.html`));
+    const img = document.querySelector("img")?.getAttribute("src");
+    if (!img) throw new Error("오늘은 사진이 아니라 영상");
+    const hd = document.querySelector('a[href^="image/"]')?.getAttribute("href");
+    const title = document.querySelector("center b")?.textContent?.trim() ?? "Astronomy Picture of the Day";
+    const explanation = [...document.querySelectorAll("p")]
+      .map((p) => p.textContent ?? "")
+      .find((t) => t.includes("Explanation:"))
+      ?.replace(/[\s\S]*Explanation:/, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    const credit = document.body?.textContent?.match(/(?:Image Credit|Credit)[^:]*:\s*([^\n]+)/)?.[1]?.trim();
+    // 페이지에 날짜가 "2026 October 26" 형식으로 있음
+    const dateText = document.body?.textContent?.match(/(\d{4}) (January|February|March|April|May|June|July|August|September|October|November|December) (\d{1,2})/);
+    const date = dateText ? new Date(`${dateText[2]} ${dateText[3]}, ${dateText[1]} UTC`).toISOString().slice(0, 10) : kstToday();
+    return {
+      date,
+      title,
+      explanation: explanation ?? title,
+      media_type: "image",
+      url: new URL(img, base).href,
+      hdurl: hd ? new URL(hd, base).href : undefined,
+      copyright: credit,
+    };
+  } catch (e) {
+    console.warn(`⚠️  오늘의 우주 사진 실패: ${(e as Error).message}`);
+    return null;
+  }
+}
+
 async function makeSpacePhoto(): Promise<void> {
   const geminiKey = process.env.GEMINI_API_KEY;
   if (!geminiKey) return;
@@ -582,25 +634,9 @@ async function makeSpacePhoto(): Promise<void> {
     } catch {}
   }
 
-  // 최근 7일 중 가장 최신 "사진" (가끔 영상인 날이 있어서)
-  const start = new Date(Date.now() - 7 * 86400_000).toISOString().slice(0, 10);
-  const key = process.env.NASA_API_KEY || "DEMO_KEY";
-  let list: Apod[];
-  try {
-    const res = await fetch(
-      `https://api.nasa.gov/planetary/apod?api_key=${key}&start_date=${start}&thumbs=true`,
-      { signal: AbortSignal.timeout(20_000) },
-    );
-    if (!res.ok) throw new Error(`NASA ${res.status}`);
-    list = await res.json();
-  } catch (e) {
-    console.warn(`⚠️  오늘의 우주 사진 실패: ${(e as Error).message}`);
-    return;
-  }
-  const apod = list
-    .filter((a) => a.media_type === "image" || a.thumbnail_url)
-    .sort((a, b) => b.date.localeCompare(a.date))[0];
-  if (!apod || current?.date === apod.date) return; // 새 사진 없음
+  const apod = await fetchApod();
+  if (!apod) return;
+  if (current?.date === apod.date) return; // 새 사진 없음
 
   const prompt = `NASA의 오늘의 천문 사진 설명이야. JSON 객체 하나로만 답해.
 {
