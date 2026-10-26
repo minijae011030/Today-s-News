@@ -548,7 +548,10 @@ async function enrich(items: NewsItem[]): Promise<void> {
 // NASA "Astronomy Picture of the Day": 매일 한 장의 진짜 우주 사진 + 천문학자 설명
 // 새 사진이 올라왔을 때만 Gemini로 한국어 제목·설명을 만들어 space.json에 저장
 
+const SPACE_VERSION = 2; // 파싱 방식이 바뀌면 올려서 기존 space.json을 다시 만들게 함
+
 type SpacePhoto = {
+  v?: number;
   date: string; // APOD 날짜 (YYYY-MM-DD, 미국 기준)
   title: string;
   titleKo: string;
@@ -666,7 +669,7 @@ async function makeSpacePhoto(): Promise<void> {
     return;
   }
   // 같은 날짜라도 예전에 잘못 저장된 사진이면 다시 만듦
-  if (current?.date === apod.date && isApodImage(current.image)) return; // 새 사진 없음
+  if (current?.date === apod.date && isApodImage(current.image) && current.v === SPACE_VERSION) return; // 새 사진 없음
 
   const prompt = `NASA의 오늘의 천문 사진 설명이야. JSON 객체 하나로만 답해.
 {
@@ -681,6 +684,7 @@ async function makeSpacePhoto(): Promise<void> {
     const text = await callGemini(geminiKey, prompt);
     const o = JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1));
     const photo: SpacePhoto = {
+      v: SPACE_VERSION,
       date: apod.date,
       title: apod.title,
       titleKo: String(o.titleKo ?? apod.title),

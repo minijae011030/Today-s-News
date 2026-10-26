@@ -14,6 +14,7 @@ export function StoryImage({
   className = "",
   priority = false,
   maxHeight = "max-h-[70vh]",
+  position = "object-top",
 }: {
   src?: string;
   credit?: string;
@@ -21,6 +22,7 @@ export function StoryImage({
   className?: string;
   priority?: boolean;
   maxHeight?: string;
+  position?: string;
 }) {
   const [failed, setFailed] = useState(false);
   if (!src || failed) return null;
@@ -48,7 +50,7 @@ export function StoryImage({
             decoding="async"
             referrerPolicy="no-referrer"
             onError={() => setFailed(true)}
-            className="size-full object-cover object-top"
+            className={`size-full object-cover ${position}`}
           />
         </div>
       )}
