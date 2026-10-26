@@ -8,7 +8,7 @@
   { "category": "우주", "type": "google", "query": "우주항공청" },
   { "category": "우주", "type": "google", "query": "누리호" },
   { "category": "우주", "type": "rss", "url": "https://www.nasa.gov/news-release/feed/" },
-  { "category": "우주", "type": "rss", "url": "https://apod.nasa.gov/apod.rss" },
+  { "category": "우주", "type": "rss", "url": "https://www.nasa.gov/feeds/iotd-feed/" },
 
   { "category": "IT", "type": "google", "query": "프론트엔드" },
   { "category": "IT", "type": "google", "query": "개발자 채용" },

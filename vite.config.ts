@@ -1,19 +1,21 @@
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   plugins: [
     react(),
+    tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: '오늘의 세상',
-        short_name: '세상',
+        name: "Today's News",
+        short_name: 'Today',
         description: '경제·우주·IT·예술 뉴스 큐레이터',
         lang: 'ko',
-        theme_color: '#111111',
+        theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
         start_url: '/',

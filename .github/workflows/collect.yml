@@ -21,7 +21,7 @@ jobs:
       - run: npm ci
       - run: npm run collect
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       - name: Commit data
         run: |
           git config user.name "news-bot"

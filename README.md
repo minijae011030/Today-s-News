@@ -17,7 +17,7 @@ vite.config.ts              PWA 설정 (manifest, 오프라인 캐시)
 
 ```bash
 npm install
-cp .env.example .env        # ANTHROPIC_API_KEY 넣기 (없으면 요약 없이 수집만)
+cp .env.example .env        # GEMINI_API_KEY 넣기 (없으면 요약 없이 수집만)
 export $(cat .env | xargs)
 npm run collect             # public/data/news.json 생성
 npm run dev
@@ -26,7 +26,7 @@ npm run dev
 ## 배포
 
 1. GitHub에 레포 만들고 push
-2. Settings → Secrets and variables → Actions → `ANTHROPIC_API_KEY` 추가
+2. Settings → Secrets and variables → Actions → `GEMINI_API_KEY` 추가
 3. Actions 탭에서 "Collect news" 수동 실행해서 확인
 4. Vercel에 레포 연결 (Framework: Vite). news.json 커밋될 때마다 자동 재배포
 
