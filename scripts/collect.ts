@@ -65,9 +65,19 @@ const DATA_DIR = IS_CI ? "public/data" : "public/data-local";
 const OUTPUT = `${DATA_DIR}/news.json`;
 const SHARED = "public/data/news.json"; // 로컬 첫 실행 때 봇이 만든 요약을 재사용
 const KEEP_DAYS = 3;
+const MAX_NEW_PER_SECTION = 6; // 한 번 수집에 섹션당 새 기사 최대 수 (8섹션 × 6 = 최대 48건)
 const MAX_PER_FEED = 7; // 키워드/피드당 최신 몇 건만 (양이 많을수록 LLM 비용·시간이 늘어남)
 const BODY_CHARS = 1200; // LLM에 넘길 본문 길이 (리드 몇 문단이면 요약엔 충분)
 const UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130 Safari/537.36";
+
+// 작업을 최대 limit개씩 동시에 실행
+async function runPool<T>(tasks: T[], limit: number, run: (t: T) => Promise<void>): Promise<void> {
+  let next = 0;
+  const worker = async () => {
+    while (next < tasks.length) await run(tasks[next++]);
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, worker));
+}
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -423,9 +433,12 @@ async function enrich(items: NewsItem[]): Promise<void> {
 
   const BATCH = 8; // 본문이 붙어서 조금 더 작게
 
-  for (let i = 0; i < todo.length; i += BATCH) {
-    const batch = todo.slice(i, i + BATCH);
-    console.log(`⏳ ${i + 1}~${i + batch.length}/${todo.length} 본문 수집 + 요약 중`);
+  const batches: NewsItem[][] = [];
+  for (let i = 0; i < todo.length; i += BATCH) batches.push(todo.slice(i, i + BATCH));
+  let done = 0;
+  let saving = Promise.resolve();
+
+  const runBatch = async (batch: NewsItem[]) => {
 
     const bodies = await Promise.all(
       batch.map((n) =>
@@ -482,14 +495,19 @@ async function enrich(items: NewsItem[]): Promise<void> {
       }
       report.summarizedNow += out.filter((o) => batch[o.idx] && o.summary).length;
       report.bodyFound += gotBody;
-      console.log(`🤖 요약 ${i + batch.length}/${todo.length} (본문 확보 ${gotBody}/${batch.length})`);
-      await save(items); // 중간에 끊겨도 여기까지는 저장
+      done += batch.length;
+      console.log(`🤖 요약 ${done}/${todo.length} (본문 확보 ${gotBody}/${batch.length})`);
+      saving = saving.then(() => save(items)); // 중간에 끊겨도 여기까지는 저장 (동시에 안 쓰게 순서대로)
+      await saving;
       await sleep(1000); // 429(한도)가 나면 callGemini가 알아서 쉬었다 재시도함
     } catch (e) {
       report.llmFailedBatches++;
       console.warn(`⚠️  LLM 배치 실패: ${(e as Error).message}`);
     }
-  }
+  };
+
+  console.log(`⏳ 요약할 기사 ${todo.length}건 (${batches.length}묶음, 2묶음씩 동시에)`);
+  await runPool(batches, 2, runBatch);
 }
 
 /* ================= 오늘의 개념 (하루 한 번) ================= */
@@ -624,9 +642,16 @@ async function main() {
 
   // 이전 데이터 + 새 데이터 병합 (이전 LLM 결과는 재사용해서 비용 절약)
   const merged = new Map([...prev].map(([key, n]) => [key, cleanGoogle(n)]));
-  for (const n of fetched) {
-    if (!n.key || !n.link) continue;
-    if (!merged.has(n.key)) merged.set(n.key, cleanGoogle(n));
+  // 한 번 수집할 때 섹션별로 최신 MAX_NEW_PER_SECTION건만 새로 받음 (나머지는 다음 수집 때 다시 후보가 됨)
+  const candidates = fetched
+    .filter((n) => n.key && n.link && !merged.has(n.key))
+    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  const taken: Record<string, number> = {};
+  for (const n of candidates) {
+    if (merged.has(n.key)) continue; // 같은 기사가 여러 키워드에 걸린 경우
+    if ((taken[n.category] ?? 0) >= MAX_NEW_PER_SECTION) continue;
+    taken[n.category] = (taken[n.category] ?? 0) + 1;
+    merged.set(n.key, cleanGoogle(n));
   }
 
   const DAY = 24 * 60 * 60 * 1000;

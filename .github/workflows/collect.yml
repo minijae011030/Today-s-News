@@ -2,8 +2,6 @@ name: Collect news
 run-name: 뉴스 수집 (${{ github.event_name == 'schedule' && '자동' || '수동' }})
 
 on:
-  schedule:
-    - cron: "37 * * * *" # 매시 37분 (UTC). 정시 근처는 붐벼서 자주 밀려
   workflow_dispatch:
 
 permissions:
