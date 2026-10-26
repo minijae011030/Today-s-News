@@ -30,7 +30,8 @@ function parseHash(): Route {
   const [, kind, raw] = path.split("/");
   const value = raw ? decodeURIComponent(raw) : "";
   const page = Math.max(1, Number(new URLSearchParams(query).get("page")) || 1);
-  if (kind === "section" && value) return { name: "section", section: value, page };
+  if (kind === "section" && value)
+    return { name: "section", section: value, page };
   if (kind === "article" && value) return { name: "article", id: value };
   return { name: "front" };
 }
@@ -118,6 +119,8 @@ export default function App() {
           items={items}
         />
       )}
+
+      <Footer items={items} />
     </div>
   );
 }
@@ -313,7 +316,9 @@ function SectionPage({
 // 1 … 4 5 6 … 12 처럼 현재 페이지 주변만 보여줌
 function pageList(current: number, total: number): (number | "gap")[] {
   const pages = new Set([1, total, current - 1, current, current + 1]);
-  const sorted = [...pages].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
+  const sorted = [...pages]
+    .filter((p) => p >= 1 && p <= total)
+    .sort((a, b) => a - b);
   const out: (number | "gap")[] = [];
   sorted.forEach((p, i) => {
     if (i > 0 && p - sorted[i - 1] > 1) out.push("gap");
@@ -334,7 +339,10 @@ function Pagination({
   if (total <= 1) return null;
   const edge = "px-2 py-1 text-sm";
   return (
-    <nav aria-label="페이지" className="mt-10 flex items-center justify-between gap-4 font-sans">
+    <nav
+      aria-label="페이지"
+      className="mt-10 flex items-center justify-between gap-4 font-sans"
+    >
       {current > 1 ? (
         <a href={hrefFor(current - 1)} className={`${edge} hover:underline`}>
           이전
@@ -555,5 +563,128 @@ function Notice({ children }: { children: ReactNode }) {
     <p className="mx-auto mt-16 max-w-[60ch] text-center text-ink-soft">
       {children}
     </p>
+  );
+}
+
+/* ---------- 푸터 ---------- */
+const REPO_URL = "https://github.com/minijae011030/TodaysNews";
+
+const fullDate = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+const stamp = new Intl.DateTimeFormat("ko-KR", {
+  month: "long",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+function Footer({ items }: { items: NewsItem[] | null }) {
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.BASE_URL}data/meta.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((m) => m?.updatedAt && setUpdatedAt(m.updatedAt))
+      .catch(() => {});
+  }, []);
+
+  const summarized = items?.filter((n) => n.summary).length ?? 0;
+
+  return (
+    <footer className="mt-24 border-t-4 border-double border-ink pt-8 text-sm text-ink-soft">
+      <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+        <div>
+          <a
+            href={href.front}
+            className="font-masthead text-3xl font-black text-ink"
+          >
+            Today&rsquo;s News
+          </a>
+          <p className="mt-3 max-w-[42ch] font-serif leading-[1.75]">
+            경제, 우주, IT, 예술, 엔터, 책 소식을 매시간 모아 원문을 읽고 요약해
+            두는 개인 신문입니다.
+          </p>
+        </div>
+
+        <nav aria-label="섹션">
+          <h2 className="font-semibold text-ink">섹션</h2>
+          <ul className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2">
+            <li>
+              <a href={href.front} className="hover:text-ink hover:underline">
+                1면
+              </a>
+            </li>
+            {SECTIONS.map((s) => (
+              <li key={s}>
+                <a
+                  href={href.section(s)}
+                  className="hover:text-ink hover:underline"
+                >
+                  {s}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div>
+          <h2 className="font-semibold text-ink">이번 호</h2>
+          <dl className="mt-3 space-y-2">
+            {updatedAt && (
+              <div className="flex justify-between gap-4">
+                <dt>마지막 수집</dt>
+                <dd className="tabular-nums text-ink">
+                  {stamp.format(new Date(updatedAt))}
+                </dd>
+              </div>
+            )}
+            {items && (
+              <>
+                <div className="flex justify-between gap-4">
+                  <dt>보관 중인 기사</dt>
+                  <dd className="tabular-nums text-ink">{items.length}건</dd>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <dt>요약 완료</dt>
+                  <dd className="tabular-nums text-ink">{summarized}건</dd>
+                </div>
+              </>
+            )}
+            <div className="flex justify-between gap-4">
+              <dt>보관 기간</dt>
+              <dd className="text-ink">최근 3일</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <div className="mt-10 border-t border-rule pt-5 text-xs leading-[1.8] text-muted">
+        <p>
+          기사 출처는 네이버 뉴스 검색, NASA, 각 언론사 RSS입니다. 기사의
+          저작권은 각 언론사에 있습니다.
+        </p>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <span>{fullDate.format(new Date())}</span>
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 text-ink-soft hover:text-ink hover:underline"
+          >
+            <svg
+              aria-hidden
+              viewBox="0 0 16 16"
+              className="size-4 fill-current"
+            >
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+            </svg>
+            minijae011030/TodaysNews
+          </a>
+        </div>
+      </div>
+    </footer>
   );
 }

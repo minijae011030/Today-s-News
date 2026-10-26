@@ -330,6 +330,11 @@ async function callGemini(apiKey: string, prompt: string): Promise<string> {
 async function save(items: NewsItem[]): Promise<void> {
   await mkdir("public/data", { recursive: true });
   await writeFile(OUTPUT, JSON.stringify(items, null, 2));
+  // 푸터의 "마지막 수집" 표시용
+  await writeFile(
+    "public/data/meta.json",
+    JSON.stringify({ updatedAt: new Date().toISOString(), count: items.length }, null, 2),
+  );
 }
 
 const PROMPT = `다음 뉴스 목록 각각에 대해 JSON 배열로만 답해.
