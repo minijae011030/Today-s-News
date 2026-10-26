@@ -17,7 +17,7 @@ type NewsItem = {
 
 const titleOf = (n: NewsItem) => n.titleKo ?? n.title;
 
-const SECTIONS = ["경제", "우주", "IT", "예술", "엔터"] as const;
+const SECTIONS = ["경제", "우주", "IT", "예술", "엔터", "책"] as const;
 
 /* ---------- 해시 라우팅: #/ , #/section/경제 , #/article/<id> ---------- */
 type Route =
@@ -129,10 +129,6 @@ export default function App() {
 function Masthead({ active, isFront }: { active?: string; isFront: boolean }) {
   return (
     <header className="pt-4">
-      <div className="flex items-end justify-between gap-4 text-xs text-ink-soft">
-        <span>{longDate.format(new Date())}</span>
-      </div>
-
       <a href={href.front} className="block py-3 text-center sm:py-5">
         <h1 className="font-masthead text-[clamp(2.6rem,9vw,5rem)] leading-none font-black tracking-tight">
           Today&rsquo;s News
@@ -199,7 +195,7 @@ function FrontPage({ items }: { items: NewsItem[] }) {
             )}
           </a>
           {lead.essayPoint && (
-            <EssayPoint text={lead.essayPoint} className="mt-5" />
+            <EssayPoint text={lead.essayPoint} className="mt-8" />
           )}
         </article>
 
@@ -221,7 +217,7 @@ function FrontPage({ items }: { items: NewsItem[] }) {
         </ol>
       </section>
 
-      <div className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
         {SECTIONS.map((s) => {
           const list = items.filter((n) => n.category === s).slice(0, 5);
           if (list.length === 0) return null;
@@ -356,8 +352,8 @@ function ArticlePage({ item, items }: { item?: NewsItem; items: NewsItem[] }) {
 
       {item.essayPoint && (
         <section className="mt-8">
-          <h3 className="font-sans text-sm font-semibold">논술 포인트</h3>
-          <EssayPoint text={item.essayPoint} className="mt-2 text-lg" />
+          <h3 className="font-sans text-sm font-semibold">생각해볼 점</h3>
+          <EssayPoint text={item.essayPoint} className="mt-6 text-lg" />
         </section>
       )}
 
@@ -446,6 +442,8 @@ function Kicker({
   );
 }
 
+// 논술 포인트: 색 대신 타이포로 강조 (흑백 화면에서도 그대로 보이게)
+// 왼쪽 굵은 세로 괘선 + 걸린 큰따옴표
 function EssayPoint({
   text,
   className = "",
@@ -454,9 +452,17 @@ function EssayPoint({
   className?: string;
 }) {
   return (
-    <p className={`font-serif leading-[1.9] ${className}`}>
-      <span className="highlight">{text}</span>
-    </p>
+    <figure className={`relative border-l-[3px] border-ink pl-5 ${className}`}>
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -top-5 left-3 font-masthead text-6xl leading-none text-ink select-none"
+      >
+        &ldquo;
+      </span>
+      <blockquote className="pt-5 font-serif leading-[1.85] font-medium text-ink">
+        {text}
+      </blockquote>
+    </figure>
   );
 }
 
