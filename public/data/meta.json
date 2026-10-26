@@ -1,17 +1,16 @@
 {
-  "updatedAt": "2026-10-26T15:07:34.984Z",
-  "count": 129,
-  "newCount": 25,
-  "summarized": 128,
+  "updatedAt": "2026-10-26T15:11:52.231Z",
+  "count": 137,
+  "newCount": 8,
+  "summarized": 136,
   "fetched": 245,
   "newByCategory": {
-    "경제": 12,
-    "사회": 5,
-    "엔터": 3,
-    "예술": 5
+    "경제": 5,
+    "사회": 1,
+    "예술": 2
   },
-  "summarizedNow": 25,
-  "bodyFound": 24,
+  "summarizedNow": 8,
+  "bodyFound": 8,
   "failedFeeds": [
     {
       "category": "IT",
@@ -20,16 +19,11 @@
     }
   ],
   "llmFailedBatches": 0,
-  "concept": "반사회적 대부계약 무효확인서",
-  "spacePhoto": null,
+  "concept": null,
+  "spacePhoto": "추천 검색어",
   "hidden": 0,
   "moved": [
-    "국제→경제",
-    "국제→경제",
-    "국제→경제",
     "사회→경제",
-    "책→예술",
-    "국제→경제",
     "국제→경제",
     "국제→경제"
   ]
