@@ -1,21 +1,21 @@
 {
-  "updatedAt": "2026-10-27T01:01:36.513Z",
-  "count": 315,
-  "newCount": 45,
-  "summarized": 313,
-  "fetched": 241,
+  "updatedAt": "2026-10-27T02:01:36.183Z",
+  "count": 363,
+  "newCount": 47,
+  "summarized": 360,
+  "fetched": 245,
   "newByCategory": {
-    "경제": 12,
-    "예술": 6,
-    "엔터": 6,
-    "국제": 2,
-    "사회": 6,
-    "책": 4,
-    "IT": 7,
-    "우주": 2
+    "사회": 7,
+    "예술": 5,
+    "엔터": 5,
+    "경제": 14,
+    "국제": 3,
+    "IT": 6,
+    "책": 3,
+    "우주": 4
   },
-  "summarizedNow": 45,
-  "bodyFound": 39,
+  "summarizedNow": 48,
+  "bodyFound": 44,
   "failedFeeds": [
     {
       "category": "IT",
@@ -26,15 +26,22 @@
   "llmFailedBatches": 0,
   "concept": null,
   "spacePhoto": null,
-  "hidden": 0,
+  "hidden": 1,
   "moved": [
+    "우주→경제",
+    "예술→사회",
     "국제→경제",
-    "국제→경제",
+    "사회→국제",
     "사회→경제",
+    "사회→경제",
+    "국제→경제",
+    "국제→IT",
+    "엔터→사회",
+    "국제→경제",
     "책→사회",
-    "국제→경제",
-    "국제→경제",
-    "책→IT",
-    "우주→경제"
+    "우주→IT",
+    "책→경제",
+    "IT→경제",
+    "IT→사회"
   ]
 }
