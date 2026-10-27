@@ -1,28 +1,25 @@
 {
-  "updatedAt": "2026-10-27T10:01:28.704Z",
-  "count": 689,
-  "newCount": 39,
-  "summarized": 684,
-  "fetched": 238,
+  "updatedAt": "2026-10-27T11:01:32.090Z",
+  "count": 731,
+  "newCount": 42,
+  "summarized": 726,
+  "fetched": 245,
   "newByCategory": {
-    "엔터": 5,
-    "경제": 16,
-    "사회": 11,
-    "IT": 2,
-    "예술": 5
+    "경제": 19,
+    "예술": 5,
+    "사회": 8,
+    "책": 3,
+    "IT": 3,
+    "엔터": 3,
+    "우주": 1
   },
-  "summarizedNow": 39,
-  "bodyFound": 38,
+  "summarizedNow": 42,
+  "bodyFound": 40,
   "failedFeeds": [
     {
       "category": "IT",
       "source": "https://techblog.woowahan.com/feed/",
       "error": "Status code 403"
-    },
-    {
-      "category": "예술",
-      "source": "https://mediahub.seoul.go.kr/news/rss/06",
-      "error": "fetch failed"
     }
   ],
   "llmFailedBatches": 0,
@@ -30,24 +27,21 @@
   "spacePhoto": null,
   "hidden": 0,
   "moved": [
-    "엔터→IT",
+    "국제→경제",
     "국제→경제",
     "국제→경제",
     "국제→경제",
     "사회→경제",
-    "국제→경제",
-    "국제→경제",
-    "국제→경제",
-    "예술→경제",
-    "책→사회",
-    "IT→사회",
-    "예술→사회",
+    "엔터→경제",
     "엔터→사회",
+    "예술→사회",
+    "국제→경제",
+    "국제→경제",
     "책→경제",
-    "책→예술",
     "책→경제",
+    "엔터→경제",
+    "우주→경제",
     "책→사회",
-    "책→엔터",
-    "우주→사회"
+    "우주→경제"
   ]
 }
