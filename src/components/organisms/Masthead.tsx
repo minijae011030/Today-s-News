@@ -53,9 +53,20 @@ export function Masthead({
       </div>
 
       <nav className="relative border-y border-ink">
-        <div ref={scroller} onScroll={updateFade} className="no-scrollbar overflow-x-auto">
-        <ul className="mx-auto flex w-max gap-5 px-1 py-2.5 text-sm sm:gap-8">
-          <NavLink href={href.front} current={isFront}>
+        <div ref={scroller} onScroll={updateFade} className="no-scrollbar overflow-x-auto overscroll-x-none">
+        <ul className="mx-auto flex w-max gap-5 pr-1 py-2.5 text-sm sm:gap-8">
+          {/* 1면은 메뉴를 옆으로 넘겨도 왼쪽에 고정. 왼쪽 여백을 ul이 아니라 li 안에 둬서, 붙는 순간 위치가 안 바뀜 */}
+          <NavLink
+            href={href.front}
+            current={isFront}
+            className="sticky left-0 z-10 bg-paper px-1"
+            after={
+              <span
+                aria-hidden
+                className={`pointer-events-none absolute inset-y-0 left-full w-6 bg-linear-to-r from-paper transition-opacity ${fade.left ? "opacity-100" : "opacity-0"}`}
+              />
+            }
+          >
             1면
           </NavLink>
           {SECTIONS.map((s) => (
@@ -70,10 +81,6 @@ export function Masthead({
           </NavLink>
         </ul>
         </div>
-        <span
-          aria-hidden
-          className={`pointer-events-none absolute inset-y-0 left-0 w-8 bg-linear-to-r from-paper transition-opacity ${fade.left ? "opacity-100" : "opacity-0"}`}
-        />
         <span
           aria-hidden
           className={`pointer-events-none absolute inset-y-0 right-0 w-8 bg-linear-to-l from-paper transition-opacity ${fade.right ? "opacity-100" : "opacity-0"}`}
