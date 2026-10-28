@@ -3,7 +3,8 @@ export type Route =
   | { name: "front" }
   | { name: "section"; section: string; page: number; filter?: string }
   | { name: "article"; id: string }
-  | { name: "search"; q: string; page: number };
+  | { name: "search"; q: string; page: number }
+  | { name: "glossary"; term?: string };
 
 export function parseHash(): Route {
   const [path, query = ""] = window.location.hash.split("?");
@@ -16,6 +17,7 @@ export function parseHash(): Route {
     return { name: "section", section: value, page, filter };
   if (kind === "article" && value) return { name: "article", id: value };
   if (kind === "search") return { name: "search", q: params.get("q") ?? "", page };
+  if (kind === "glossary") return { name: "glossary", term: params.get("t") || undefined };
   return { name: "front" };
 }
 
@@ -29,6 +31,7 @@ export const href = {
     return `#/section/${encodeURIComponent(s)}${qs ? `?${qs}` : ""}`;
   },
   article: (id: string) => `#/article/${encodeURIComponent(id)}`,
+  glossary: (term?: string) => `#/glossary${term ? `?t=${encodeURIComponent(term)}` : ""}`,
   search: (q = "", page = 1) => {
     const p = new URLSearchParams();
     if (q) p.set("q", q);

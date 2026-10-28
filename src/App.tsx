@@ -1,15 +1,18 @@
 import { Notice } from "./components/atoms/Notice";
 import { PageLayout } from "./components/templates/PageLayout";
+import { useGlossary } from "./hooks/useGlossary";
 import { useNews } from "./hooks/useNews";
 import { useRoute } from "./hooks/useRoute";
 import { ArticlePage } from "./pages/ArticlePage";
 import { FrontPage } from "./pages/FrontPage";
+import { GlossaryPage } from "./pages/GlossaryPage";
 import { SearchPage } from "./pages/SearchPage";
 import { SectionPage } from "./pages/SectionPage";
 
 export default function App() {
   const route = useRoute();
   const { items, error, version, concept, space, refresh } = useNews();
+  const { lookup } = useGlossary(version);
 
   const activeSection =
     route.name === "section"
@@ -22,6 +25,7 @@ export default function App() {
     <PageLayout
       activeSection={activeSection}
       isFront={route.name === "front"}
+      isGlossary={route.name === "glossary"}
       items={items}
       version={version}
       onRefresh={refresh}
@@ -48,7 +52,11 @@ export default function App() {
         <ArticlePage
           item={items.find((n) => n.id === route.id)}
           items={items}
+          lookup={lookup}
         />
+      )}
+      {items && items.length > 0 && route.name === "glossary" && (
+        <GlossaryPage lookup={lookup} items={items} focus={route.term} />
       )}
     </PageLayout>
   );

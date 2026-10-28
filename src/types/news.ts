@@ -15,7 +15,15 @@ export type NewsItem = {
   label?: string; // "보도자료" 등
   attachment?: string; // 보도자료 PDF
   keyPoints?: string[]; // 보도자료 주요 내용
+  terms?: string[]; // 용어 풀이 링크를 걸 용어
   image?: string;
+};
+
+export type GlossaryEntry = {
+  term: string;
+  aliases?: string[];
+  definition: string;
+  addedAt: string;
 };
 
 export type Concept = {

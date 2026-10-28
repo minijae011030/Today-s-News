@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Label } from "../components/atoms/Label";
 import { LabelBadge } from "../components/atoms/LabelBadge";
 import { Notice } from "../components/atoms/Notice";
@@ -6,6 +7,10 @@ import { Tag } from "../components/atoms/Tag";
 import { ArticleNav } from "../components/molecules/ArticleNav";
 import { EssayPoint } from "../components/molecules/EssayPoint";
 import { HeadlineList } from "../components/molecules/HeadlineList";
+import { makeTermLinker } from "../components/molecules/TermText";
+import { TermPopup } from "../components/organisms/TermPopup";
+import { termKey, type TermInfo } from "../lib/glossary";
+import { searchItems } from "../lib/search";
 import { formatPublished, titleOf } from "../lib/format";
 import { href } from "../lib/route";
 import type { NewsItem } from "../types/news";
@@ -14,10 +19,15 @@ import type { NewsItem } from "../types/news";
 export function ArticlePage({
   item,
   items,
+  lookup,
 }: {
   item?: NewsItem;
   items: NewsItem[];
+  lookup: Map<string, TermInfo>;
 }) {
+  const [open, setOpen] = useState<{ info: TermInfo; anchor: HTMLElement } | null>(null);
+  useEffect(() => setOpen(null), [item?.id]); // 다른 기사로 가면 팝업 닫기
+
   if (!item) {
     return (
       <Notice>
@@ -35,6 +45,14 @@ export function ArticlePage({
   const prev = sameSection[index + 1];
   const next = index > 0 ? sameSection[index - 1] : undefined;
   const related = sameSection.filter((n) => n.id !== item.id && n !== prev && n !== next).slice(0, 4);
+  // 용어 풀이: 이 기사에서 뽑힌 용어 중 사전에 있는 것만, 처음 나온 곳에 링크
+  const linkTerms = makeTermLinker(
+    (item.terms ?? []).flatMap((t) => {
+      const info = lookup.get(termKey(t));
+      return info ? [{ text: t, info }] : [];
+    }),
+    (info, anchor) => setOpen((cur) => (cur?.anchor === anchor ? null : { info, anchor })),
+  );
   const showSnippet =
     item.snippet && !item.snippet.startsWith(item.title.slice(0, 15));
 
@@ -58,7 +76,7 @@ export function ArticlePage({
 
       {item.summary ? (
         <p className="mt-5 font-serif text-xl leading-[1.7] text-ink-soft">
-          {item.summary}
+          {linkTerms(item.summary)}
         </p>
       ) : (
         <p className="mt-5 text-sm text-muted">
@@ -80,7 +98,7 @@ export function ArticlePage({
             {item.keyPoints.map((p) => (
               <li key={p} className="flex gap-3 font-serif leading-[1.75]">
                 <span aria-hidden className="mt-[0.75em] h-px w-3 shrink-0 bg-ink" />
-                <span>{p}</span>
+                <span>{linkTerms(p)}</span>
               </li>
             ))}
           </ul>
@@ -90,7 +108,7 @@ export function ArticlePage({
       {item.essayPoint && (
         <section className="mt-8">
           <Label>논점</Label>
-          <EssayPoint text={item.essayPoint} className="mt-6 text-lg" />
+          <EssayPoint text={linkTerms(item.essayPoint)} className="mt-6 text-lg" />
         </section>
       )}
 
@@ -154,6 +172,15 @@ export function ArticlePage({
       )}
 
       <ArticleNav prev={prev} next={next} />
+
+      {open && (
+        <TermPopup
+          info={open.info}
+          anchor={open.anchor}
+          relatedCount={searchItems(items, open.info.term).length}
+          onClose={() => setOpen(null)}
+        />
+      )}
     </main>
   );
 }

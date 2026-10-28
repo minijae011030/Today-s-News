@@ -33,11 +33,14 @@ export type NewsItem = {
   essayPoint?: string; // 경제·정치·보도자료: 논술 포인트
   spaceFact?: string; // 과학: 알고 보면 재밌는 과학 지식 (예전 이름 그대로 씀)
   keyPoints?: string[]; // 보도자료 주요 내용
+  terms?: string[]; // 용어 풀이할 전문 용어 (보도자료·경제·정치)
 };
 
 export const PRESS_LABEL = "보도자료"; // 금감원·금융위 보도자료: 섹션 이름이자 라벨
 export const NEWS_SECTIONS = ["경제", "정치", "IT", "과학", "문화"]; // LLM이 기사를 나눌 섹션
 export const SECTIONS = [PRESS_LABEL, ...NEWS_SECTIONS]; // 화면·요약 카드 순서
+export const TERM_SECTIONS = [PRESS_LABEL, "경제", "정치"]; // 용어 풀이를 하는 섹션
+export const MAX_NEW_TERMS = 20; // 한 번 수집에 새로 정의할 용어 최대 수 (토큰 절약)
 
 // 섹션 개편 정리: 예전 섹션 이름 → 새 섹션, 없앤 섹션
 // (main 데이터가 한 번 정리되고 3일 지나면 지워도 됨)
@@ -71,4 +74,5 @@ export const report = {
   failedFeeds: [] as { category: string; source: string; error: string }[],
   concept: null as string | null,
   spacePhoto: null as string | null,
+  newTerms: [] as string[], // 이번에 사전에 추가된 용어
 };

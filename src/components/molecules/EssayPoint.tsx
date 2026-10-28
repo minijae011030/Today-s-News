@@ -1,10 +1,12 @@
+import type { ReactNode } from "react";
+
 // 논술 포인트: 색 대신 타이포로 강조 (흑백 화면에서도 그대로 보이게)
 // 왼쪽 굵은 세로 괘선 + 걸린 큰따옴표
 export function EssayPoint({
   text,
   className = "",
 }: {
-  text: string;
+  text: ReactNode;
   className?: string;
 }) {
   return (
