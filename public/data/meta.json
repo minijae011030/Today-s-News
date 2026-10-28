@@ -1,42 +1,38 @@
 {
-  "updatedAt": "2026-10-28T04:01:34.444Z",
-  "count": 1031,
-  "newCount": 37,
-  "summarized": 1025,
-  "fetched": 245,
+  "updatedAt": "2026-10-28T04:38:23.243Z",
+  "count": 846,
+  "newCount": 29,
+  "summarized": 836,
+  "fetched": 224,
   "newByCategory": {
-    "사회": 10,
     "경제": 13,
-    "엔터": 6,
-    "예술": 5,
-    "IT": 2,
-    "책": 1
+    "문화": 4,
+    "IT": 4,
+    "과학": 5,
+    "정치": 3
   },
-  "summarizedNow": 38,
+  "summarizedNow": 33,
   "bodyFound": 32,
   "failedFeeds": [
     {
-      "category": "IT",
-      "source": "https://techblog.woowahan.com/feed/",
-      "error": "Status code 403"
+      "category": "경제",
+      "source": "http://www.fsc.go.kr/about/fsc_bbs_rss/?fid=0112",
+      "error": "Status code 503"
+    },
+    {
+      "category": "경제",
+      "source": "http://www.fsc.go.kr/about/fsc_bbs_rss/?fid=0111",
+      "error": "Status code 503"
     }
   ],
   "llmFailedBatches": 0,
   "concept": null,
+  "pdfRead": 4,
   "spacePhoto": null,
-  "hidden": 1,
+  "hidden": 4,
   "moved": [
-    "예술→경제",
-    "국제→경제",
-    "국제→경제",
-    "책→사회",
-    "국제→경제",
-    "국제→경제",
-    "책→사회",
-    "국제→경제",
-    "국제→경제",
-    "책→사회",
-    "책→엔터",
-    "책→사회"
+    "정치→문화",
+    "정치→경제",
+    "과학→IT"
   ]
 }
