@@ -78,6 +78,7 @@ export function baseItem(src: FeedSource, title: string) {
 }
 
 // 네이버 API는 언론사 이름을 안 줘서 도메인으로 추정 (본문 수집 때 og:site_name으로 덮어씀)
+// 여기 있는 곳이 "주요 언론사" (majorOnly 피드는 이 목록만 받음)
 const PRESS: Record<string, string> = {
   "hankyung.com": "한국경제", "mk.co.kr": "매일경제", "yna.co.kr": "연합뉴스",
   "chosun.com": "조선일보", "biz.chosun.com": "조선비즈", "joongang.co.kr": "중앙일보",
@@ -87,6 +88,18 @@ const PRESS: Record<string, string> = {
   "news1.kr": "뉴스1", "ytn.co.kr": "YTN", "kbs.co.kr": "KBS", "imbc.com": "MBC",
   "sbs.co.kr": "SBS", "bloter.net": "블로터", "dongascience.com": "동아사이언스",
   "fnnews.com": "파이낸셜뉴스", "asiae.co.kr": "아시아경제", "heraldcorp.com": "헤럴드경제",
+  "seoul.co.kr": "서울신문", "kmib.co.kr": "국민일보", "segye.com": "세계일보", "hankookilbo.com": "한국일보",
+  "munhwa.com": "문화일보", "jtbc.co.kr": "JTBC", "mbn.co.kr": "MBN", "ichannela.com": "채널A",
+  "tvchosun.com": "TV조선", "newspim.com": "뉴스핌", "einfomax.co.kr": "연합인포맥스", "ajunews.com": "아주경제",
+  "nocutnews.co.kr": "노컷뉴스", "ohmynews.com": "오마이뉴스", "pressian.com": "프레시안",
+};
+export const isMajorPress = (url: string) => {
+  try {
+    const host = new URL(url).hostname.replace(/^(www|m|news)\./, "");
+    return Object.keys(PRESS).some((d) => host === d || host.endsWith("." + d));
+  } catch {
+    return false;
+  }
 };
 export function pressName(url: string): string {
   try {

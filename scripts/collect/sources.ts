@@ -2,7 +2,7 @@
 import Parser from "rss-parser";
 import { parseHTML } from "linkedom";
 import { MAX_PER_FEED, UA, report, type FeedSource, type NewsItem } from "./config.ts";
-import { baseItem, fetchHtml, kstToday, pickImage, pressName, stripHtml } from "./util.ts";
+import { baseItem, fetchHtml, isMajorPress, kstToday, pickImage, pressName, stripHtml } from "./util.ts";
 
 /* ---------- RSS ---------- */
 
@@ -52,7 +52,9 @@ async function fetchNaver(src: Extract<FeedSource, { type: "naver" }>): Promise<
   const secret = process.env.NAVER_CLIENT_SECRET;
   if (!id || !secret) throw new Error("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET 없음");
 
-  const url = `https://naverapihub.apigw.ntruss.com/search/v1/news?query=${encodeURIComponent(src.query)}&display=${MAX_PER_FEED}&sort=date`;
+  // 주요 언론사만 받을 땐 넉넉히 받아서 거른 뒤 MAX_PER_FEED건
+  const display = src.majorOnly ? 30 : MAX_PER_FEED;
+  const url = `https://naverapihub.apigw.ntruss.com/search/v1/news?query=${encodeURIComponent(src.query)}&display=${display}&sort=date`;
   const res = await fetch(url, {
     headers: { "X-NCP-APIGW-API-KEY-ID": id, "X-NCP-APIGW-API-KEY": secret },
     signal: AbortSignal.timeout(15_000),
@@ -60,7 +62,8 @@ async function fetchNaver(src: Extract<FeedSource, { type: "naver" }>): Promise<
   if (!res.ok) throw new Error(`네이버 ${res.status}: ${(await res.text()).slice(0, 150)}`);
   const data: { items?: NaverNews[] } = await res.json();
 
-  return (data.items ?? []).map((it) => {
+  const list = (data.items ?? []).filter((it) => !src.majorOnly || isMajorPress(it.originallink || it.link));
+  return list.slice(0, MAX_PER_FEED).map((it) => {
     const link = it.originallink || it.link;
     return {
       ...baseItem(src, stripHtml(it.title, 500)),

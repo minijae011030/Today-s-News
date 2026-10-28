@@ -7,7 +7,7 @@ try {
 
 export type FeedSource = { category: string; keepDays?: number; label?: string } & (
   | { type: "rss"; url: string }
-  | { type: "naver"; query: string }
+  | { type: "naver"; query: string; majorOnly?: boolean } // majorOnly: 주요 언론사 기사만
   | { type: "board"; url: string; source: string } // RSS 없는 게시판 (금감원·금융위 보도자료)
 );
 

@@ -38,10 +38,11 @@ async function loadPrevious(): Promise<Map<string, NewsItem>> {
   );
 }
 
-// 묶음(섹션, 보도자료는 기관별)마다 "이미 실린 가장 최근 기사"보다 새 기사만, 최신순으로 최대 MAX_NEW_PER_BUCKET건.
+// 묶음(섹션별. 보도자료·기술 블로그처럼 뜸하게 올라오는 소스는 소스별)마다 "이미 실린 가장 최근 기사"보다 새 기사만, 최신순으로 최대 MAX_NEW_PER_BUCKET건.
 // (이게 없으면 상한에 걸려 못 받은 예전 기사들이 다음 수집마다 줄줄이 다시 들어옴)
 function pickNew(fetched: NewsItem[], known: Map<string, NewsItem>): NewsItem[] {
-  const bucket = (n: NewsItem) => (n.label ? `${n.category}:${n.label}:${n.source}` : n.category);
+  // 뜸한 소스(보도자료·keepDays 블로그)를 섹션과 같이 세면, 오늘 기사 때문에 며칠 전 블로그 글이 "옛날 글"로 걸러짐
+  const bucket = (n: NewsItem) => (n.label || n.keepDays ? `${n.category}:${n.source}` : n.category);
   const latest: Record<string, string> = {};
   for (const n of known.values()) {
     const b = bucket(n);
