@@ -1,0 +1,38 @@
+// 저장 (news.json + meta.json) · GitHub Actions 요약 카드
+import { appendFile, mkdir, writeFile } from "node:fs/promises";
+import { DATA_DIR, SECTIONS, report, type NewsItem } from "./config.ts";
+
+export async function save(items: NewsItem[]): Promise<void> {
+  await mkdir(DATA_DIR, { recursive: true });
+  await writeFile(`${DATA_DIR}/news.json`, JSON.stringify(items, null, 2));
+  // 푸터의 "마지막 수집", 알림·커밋 메시지용
+  const meta = { updatedAt: new Date().toISOString(), count: items.length, summarized: items.filter((n) => n.summary).length, ...report };
+  await writeFile(`${DATA_DIR}/meta.json`, JSON.stringify(meta, null, 2));
+}
+
+export async function writeActionsSummary(total: number): Promise<void> {
+  const file = process.env.GITHUB_STEP_SUMMARY;
+  if (!file) return;
+  const r = report;
+  const byCat = SECTIONS.filter((c) => r.newByCategory[c]).map((c) => `${c} ${r.newByCategory[c]}`).join(" · ");
+  const lines = [
+    "## 📰 뉴스 수집 결과",
+    "",
+    r.newCount > 0
+      ? `**새 기사 ${r.newCount}건** · 이번에 요약 ${r.summarizedNow}건 (본문 확보 ${r.bodyFound}건) · 보관 중 ${total}건`
+      : `**새 기사 없음** · 보관 중 ${total}건`,
+  ];
+  const add = (cond: unknown, text: string) => cond && lines.push("", text);
+  add(r.newCount > 0, byCat);
+  add(r.concept, `📘 오늘의 개념: **${r.concept}**`);
+  add(r.pdfRead, `📄 보도자료 PDF ${r.pdfRead}건 읽음`);
+  add(r.spacePhoto, `🌌 오늘의 우주 사진: **${r.spacePhoto}**`);
+  add(r.hidden, `🙈 섹션에 안 맞아서 숨긴 기사 ${r.hidden}건`);
+  add(r.moved.length, `↪️ 섹션을 옮긴 기사: ${r.moved.join(", ")}`);
+  add(r.llmFailedBatches, `⚠️ 요약 실패한 배치 ${r.llmFailedBatches}개 (다음 수집 때 다시 시도)`);
+  if (r.failedFeeds.length) {
+    lines.push("", "### ⚠️ 실패한 피드", "", "| 섹션 | 소스 | 이유 |", "|---|---|---|");
+    for (const f of r.failedFeeds) lines.push(`| ${f.category} | ${f.source} | ${f.error.replace(/\|/g, "/")} |`);
+  }
+  await appendFile(file, lines.join("\n") + "\n");
+}
