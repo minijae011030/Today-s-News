@@ -36,17 +36,15 @@ export function ArticlePage({
 
   return (
     <main className="mx-auto max-w-170 pt-8">
-      <a
-        href={href.section(item.category)}
-        className="text-sm font-semibold hover:underline"
-      >
-        {item.category}
-      </a>
-      {item.label && (
-        <span className="ml-3 align-middle">
-          <LabelBadge label={item.label} />
-        </span>
-      )}
+      <div className="flex items-center gap-3">
+        <a
+          href={href.section(item.category)}
+          className="text-sm font-semibold hover:underline"
+        >
+          {item.category}
+        </a>
+        <LabelBadge label={item.label} />
+      </div>
 
       <h2 className="mt-3 font-serif text-[clamp(1.8rem,4.5vw,2.6rem)] leading-tight font-bold">
         {titleOf(item)}

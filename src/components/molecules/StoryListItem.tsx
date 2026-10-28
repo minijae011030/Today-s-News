@@ -12,10 +12,10 @@ export function StoryListItem({ item }: { item: NewsItem }) {
         href={href.article(item.id)}
         className={`group grid gap-1 sm:gap-6 ${item.image ? "sm:grid-cols-[7rem_1fr_9rem]" : "sm:grid-cols-[7rem_1fr]"}`}
       >
-        <span className="text-xs text-muted sm:pt-1.5">
+        <span className="flex items-center gap-2 text-xs text-muted sm:block sm:pt-1.5">
           {timeAgo(item.publishedAt)}
           {item.label && (
-            <span className="ml-2 sm:mt-2 sm:ml-0 sm:block">
+            <span className="flex sm:mt-2">
               <LabelBadge label={item.label} />
             </span>
           )}
