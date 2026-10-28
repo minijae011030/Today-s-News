@@ -1,44 +1,504 @@
 {
-  "updatedAt": "2026-10-28T06:01:27.145Z",
-  "count": 908,
-  "summarized": 892,
-  "fetched": 223,
-  "newCount": 29,
+  "updatedAt": "2026-10-28T07:01:23.777Z",
+  "count": 945,
+  "summarized": 929,
+  "fetched": 420,
+  "newCount": 48,
   "newByCategory": {
-    "보도자료": 2,
+    "보도자료": 4,
+    "문화": 2,
     "경제": 14,
-    "정치": 2,
-    "문화": 6,
+    "정치": 6,
     "과학": 3,
-    "IT": 2
+    "IT": 19
   },
-  "summarizedNow": 29,
-  "bodyFound": 28,
-  "pdfRead": 2,
+  "summarizedNow": 37,
+  "bodyFound": 27,
+  "pdfRead": 4,
   "hidden": 0,
   "moved": [
-    "과학→경제",
-    "정치→경제",
-    "과학→경제",
-    "과학→경제",
-    "정치→경제",
-    "정치→경제",
-    "정치→경제",
+    "IT→과학",
+    "IT→경제",
+    "IT→경제",
+    "IT→경제",
     "IT→경제"
   ],
   "llmFailedBatches": 0,
-  "failedFeeds": [
-    {
-      "category": "보도자료",
-      "source": "https://www.fsc.go.kr/no010101",
-      "error": "fetch failed"
-    }
-  ],
+  "failedFeeds": [],
   "concept": null,
   "spacePhoto": null,
   "newTerms": [
-    "포용금융",
-    "채무조정",
-    "전환금융"
+    "전자금융거래법",
+    "금융소비자보호",
+    "FOMC",
+    "긴축",
+    "녹색금융",
+    "통화정책",
+    "사이드카",
+    "레버리지",
+    "이해상충",
+    "바이오시밀러",
+    "연결 기준",
+    "기준금리",
+    "수의계약",
+    "하도급법",
+    "영업이익"
+  ],
+  "keywords": [
+    {
+      "category": "경제",
+      "query": "금융감독원",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 2,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "기준금리",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 1,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "가계부채",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "자본시장 제도",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "공매도",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "불공정거래",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 1,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "미국 연준",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 1,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "환율",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 4,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "국회 정무위원회",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "세법 개정안",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "가상자산 규제",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "은행 대출 규제",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "코스피 외국인",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 1,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "소비자물가",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "스테이블코인",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "주가 폭락",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "비트코인",
+      "hot": false,
+      "fetchedNow": 6,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "은행 횡령",
+      "hot": false,
+      "fetchedNow": 5,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "보이스피싱",
+      "hot": false,
+      "fetchedNow": 4,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "금융사고 제재",
+      "hot": false,
+      "fetchedNow": 6,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "보험사 건전성",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "상장폐지",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "사모펀드 MBK",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "국민연금 기금",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "코리아 디스카운트",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "정치",
+      "query": "여야 충돌",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "정치",
+      "query": "국회 본회의 강행",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 1,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "정치",
+      "query": "대통령실 야당",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "정치",
+      "query": "국정감사 공방",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "정치",
+      "query": "특검 공방",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "정치",
+      "query": "원내대표 회동",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "정치",
+      "query": "이재명 대통령",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 4,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "정치",
+      "query": "오세훈",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 1,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "정치",
+      "query": "국민의힘 민주당",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "IT",
+      "query": "개발자 채용",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "IT",
+      "query": "해킹 개인정보 유출",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "IT",
+      "query": "AI 반도체",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 6,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "IT",
+      "query": "핀테크",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "IT",
+      "query": "구글 애플 인앱결제",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "과학",
+      "query": "천문학 연구",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "과학",
+      "query": "블랙홀 관측",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "과학",
+      "query": "과학 연구 성과",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 2,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "과학",
+      "query": "노벨상",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "문화",
+      "query": "미술관 전시",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "문화",
+      "query": "클래식 공연",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "문화",
+      "query": "연극",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "문화",
+      "query": "신간",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 1,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "문화",
+      "query": "베스트셀러",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "문화",
+      "query": "영화 개봉",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 1,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "문화",
+      "query": "드라마",
+      "hot": false,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    }
+  ],
+  "newHot": [
+    "경제:증권사 해킹 사고",
+    "경제:코스피 6000선 회복",
+    "IT:현대모비스 해커톤"
   ]
 }
