@@ -24,7 +24,6 @@ export default function App() {
   return (
     <PageLayout
       activeSection={activeSection}
-      isFront={route.name === "front"}
       isGlossary={route.name === "glossary"}
       isSearch={route.name === "search"}
       items={items}

@@ -38,13 +38,30 @@ export function SearchPage({ q, page, items }: { q: string; page: number; items:
   }, [searched, currentPage]);
 
   const results = useMemo(() => searchItems(items, searched), [items, searched]);
+
+  // 빈 화면 채우기: 최근 기사에 많이 나온 태그를 추천 검색어로
+  const trending = useMemo(() => {
+    const count = new Map<string, number>();
+    for (const n of items.slice(0, 200)) for (const t of n.tags ?? []) count.set(t, (count.get(t) ?? 0) + 1);
+    return [...count.entries()]
+      .filter(([, c]) => c >= 2)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 12)
+      .map(([t]) => t);
+  }, [items]);
+  const pick = (t: string) => {
+    setQuery(t);
+    setSearched(t);
+    setCurrentPage(1);
+  };
   const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
   const current = Math.min(currentPage, totalPages);
   const visible = results.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
   const trimmed = searched.trim();
 
   return (
-    <main className="mx-auto max-w-190">
+    // 결과가 적어도 화면을 채워서 푸터가 바로 올라오지 않게
+    <main className="mx-auto min-h-[calc(100svh-14rem)] max-w-190">
       <form
         role="search"
         onSubmit={(e) => {
@@ -89,6 +106,28 @@ export function SearchPage({ q, page, items }: { q: string; page: number; items:
         </p>
       ) : (
         <p className="mt-3 text-sm text-muted">Search titles, summaries, tags and press releases.</p>
+      )}
+
+      {/* 검색 전이거나 결과가 없을 때: 요즘 많이 나오는 주제 */}
+      {(!trimmed || results.length === 0) && trending.length > 0 && (
+        <section className="mt-12">
+          <h3 className="border-b-2 border-ink pb-1 font-serif text-xl font-bold">
+            {trimmed ? "Try instead" : "Trending now"}
+          </h3>
+          <ul className="mt-5 flex flex-wrap gap-2">
+            {trending.map((t) => (
+              <li key={t}>
+                <button
+                  type="button"
+                  onClick={() => pick(t)}
+                  className="border border-ink/20 px-3.5 py-1.5 font-serif text-[0.95rem] hover:border-ink hover:bg-ink hover:text-paper"
+                >
+                  {t}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       {visible.length > 0 && (

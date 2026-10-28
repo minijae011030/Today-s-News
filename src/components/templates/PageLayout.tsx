@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import type { NewsItem } from "../../types/news";
-import { href } from "../../lib/route";
 import { AppPrompt } from "../organisms/AppPrompt";
 import { BottomNav } from "../organisms/BottomNav";
 import { CompactHeader } from "../organisms/CompactHeader";
@@ -11,7 +10,6 @@ import { PullToRefresh } from "../organisms/PullToRefresh";
 /** 모든 페이지 공통 틀: 당겨서 새로고침 + 제호 + 본문 + 푸터 + 하단 안내 시트 */
 export function PageLayout({
   activeSection,
-  isFront,
   isGlossary = false,
   isSearch = false,
   items,
@@ -20,7 +18,6 @@ export function PageLayout({
   children,
 }: {
   activeSection?: string;
-  isFront: boolean;
   isGlossary?: boolean;
   isSearch?: boolean;
   items: NewsItem[] | null;
@@ -38,11 +35,9 @@ export function PageLayout({
       </div>
     </PullToRefresh>
     {/* 당겨서 새로고침이 움직이는 영역 밖에 둬야 화면에 고정됨 */}
-    <CompactHeader
-      label={isGlossary ? "용어 사전" : isFront ? undefined : activeSection}
-      labelHref={isGlossary ? href.glossary() : activeSection ? href.section(activeSection) : undefined}
-    />
-    <BottomNav current={isFront ? "front" : isSearch ? "search" : isGlossary ? "glossary" : null} />
+    <CompactHeader />
+    {/* 섹션·기사도 "뉴스 보기"라 1면 탭 */}
+    <BottomNav current={isSearch ? "search" : isGlossary ? "glossary" : "front"} />
     <AppPrompt />
     </>
   );
