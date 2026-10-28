@@ -266,8 +266,11 @@ async function fetchBoard(src: Extract<FeedSource, { type: "board" }>): Promise<
   const out: NewsItem[] = [];
 
   for (const a of [...document.querySelectorAll("a")]) {
-    const raw = `${a.getAttribute("href") ?? ""} ${a.getAttribute("onclick") ?? ""}`;
-    const id = raw.match(/nttId=(\d+)/)?.[1] ?? (raw.includes("view") ? raw.match(/['"(](\d{5,})['")]/)?.[1] : undefined);
+    const href = a.getAttribute("href") ?? "";
+    const raw = `${href} ${a.getAttribute("onclick") ?? ""}`;
+    // 금감원: ...?nttId=123 / 금융위: /no010101/123 처럼 목록 경로 뒤에 번호
+    const pathId = href.split("?")[0].match(new RegExp(`^${list.pathname.replace(/\/$/, "")}/(\\d+)$`))?.[1];
+    const id = pathId ?? raw.match(/nttId=(\d+)/)?.[1] ?? (raw.includes("view") ? raw.match(/['"(](\d{5,})['")]/)?.[1] : undefined);
     if (!id || seen.has(id)) continue;
     const title = (a.textContent ?? "").replace(/\s+/g, " ").replace(/^(새글|NEW)\s*/i, "").trim();
     if (title.length < 5) continue;
@@ -278,10 +281,15 @@ async function fetchBoard(src: Extract<FeedSource, { type: "board" }>): Promise<
     const date = m ? `${m[1]}-${m[2]}-${m[3]}` : today;
     // 게시판은 날짜만 있어서, 오늘 글은 "처음 본 시각"을 씀 (그래야 같은 날 나중 글도 새 글로 잡힘)
     const publishedAt = date === today ? new Date().toISOString() : new Date(`${date}T18:00:00+09:00`).toISOString();
-    const link = new URL(list.pathname.replace(/list\.do$/, "view.do"), list.origin);
-    link.searchParams.set("nttId", id);
-    const menuNo = list.searchParams.get("menuNo");
-    if (menuNo) link.searchParams.set("menuNo", menuNo);
+    let link: URL;
+    if (pathId) {
+      link = new URL(`${list.pathname.replace(/\/$/, "")}/${id}`, list.origin);
+    } else {
+      link = new URL(list.pathname.replace(/list\.do$/, "view.do"), list.origin);
+      link.searchParams.set("nttId", id);
+      const menuNo = list.searchParams.get("menuNo");
+      if (menuNo) link.searchParams.set("menuNo", menuNo);
+    }
 
     out.push({
       ...withIds(normalizeTitle(title)),
@@ -949,7 +957,8 @@ async function main() {
   // 섹션마다 "이미 실린 기사 중 가장 최근 시각"보다 새로운 기사만 후보로 받음.
   // (이게 없으면 상한에 걸려 못 받은 예전 기사들이 다음 수집마다 줄줄이 다시 들어옴)
   // 보도자료는 기사와 따로 셈 (시각·상한 모두)
-  const bucket = (n: NewsItem) => (n.label ? `${n.category}:${n.label}` : n.category);
+  // 보도자료는 기관마다 따로 (금감원 오늘 글 때문에 금융위 어제 글이 "옛날 글"로 걸러지지 않게)
+  const bucket = (n: NewsItem) => (n.label ? `${n.category}:${n.label}:${n.source}` : n.category);
   const latestBySection: Record<string, string> = {};
   for (const n of merged.values()) {
     const b = bucket(n);
