@@ -2,6 +2,8 @@
 export function LabelBadge({ label }: { label?: string }) {
   if (!label) return null;
   return (
-    <span className="border border-ink px-1.5 py-px text-[0.7rem] leading-none font-semibold">{label}</span>
+    <span className="inline-flex h-[1.15rem] items-center border border-ink px-1.5 align-middle text-[0.7rem] leading-none font-semibold text-ink">
+      {label}
+    </span>
   );
 }

@@ -36,6 +36,7 @@ export default function App() {
         <SectionPage
           section={route.section}
           page={route.page}
+          label={route.label}
           items={items.filter((n) => n.category === route.section)}
         />
       )}
