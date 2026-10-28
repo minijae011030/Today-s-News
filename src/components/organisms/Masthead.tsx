@@ -1,6 +1,7 @@
 import { SECTIONS } from "../../lib/constants";
 import { href } from "../../lib/route";
 import { NavLink } from "../atoms/NavLink";
+import { SearchIcon } from "../atoms/SearchIcon";
 
 export function Masthead({
   active,
@@ -11,11 +12,21 @@ export function Masthead({
 }) {
   return (
     <header className="pt-4">
-      <a href={href.front} className="block py-3 text-center sm:py-5">
-        <h1 className="font-masthead text-[clamp(2.6rem,9vw,5rem)] leading-none font-black tracking-tight">
-          Today&rsquo;s News
-        </h1>
-      </a>
+      <div className="relative">
+        {/* 검색: 제호 왼쪽 (신문 사이트처럼) */}
+        <a
+          href={href.search()}
+          aria-label="Search"
+          className="absolute top-1/2 left-0 -translate-y-1/2 p-2 text-ink hover:text-ink-soft"
+        >
+          <SearchIcon />
+        </a>
+        <a href={href.front} className="block py-3 text-center sm:py-5">
+          <h1 className="font-masthead text-[clamp(2.6rem,9vw,5rem)] leading-none font-black tracking-tight">
+            Today&rsquo;s News
+          </h1>
+        </a>
+      </div>
 
       <nav className="overflow-x-auto border-y border-ink">
         <ul className="mx-auto flex w-max gap-5 px-1 py-2.5 text-sm sm:gap-8">
