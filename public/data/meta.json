@@ -1,28 +1,44 @@
 {
-  "updatedAt": "2026-10-28T05:01:14.321Z",
-  "count": 879,
-  "summarized": 863,
-  "fetched": 231,
-  "newCount": 27,
+  "updatedAt": "2026-10-28T06:01:27.145Z",
+  "count": 908,
+  "summarized": 892,
+  "fetched": 223,
+  "newCount": 29,
   "newByCategory": {
-    "IT": 3,
-    "경제": 16,
-    "문화": 3,
-    "과학": 4,
-    "정치": 1
+    "보도자료": 2,
+    "경제": 14,
+    "정치": 2,
+    "문화": 6,
+    "과학": 3,
+    "IT": 2
   },
-  "summarizedNow": 27,
-  "bodyFound": 32,
-  "pdfRead": 4,
-  "hidden": 6,
+  "summarizedNow": 29,
+  "bodyFound": 28,
+  "pdfRead": 2,
+  "hidden": 0,
   "moved": [
+    "과학→경제",
+    "정치→경제",
+    "과학→경제",
+    "과학→경제",
     "정치→경제",
     "정치→경제",
     "정치→경제",
-    "과학→경제"
+    "IT→경제"
   ],
   "llmFailedBatches": 0,
-  "failedFeeds": [],
+  "failedFeeds": [
+    {
+      "category": "보도자료",
+      "source": "https://www.fsc.go.kr/no010101",
+      "error": "fetch failed"
+    }
+  ],
   "concept": null,
-  "spacePhoto": null
+  "spacePhoto": null,
+  "newTerms": [
+    "포용금융",
+    "채무조정",
+    "전환금융"
+  ]
 }
