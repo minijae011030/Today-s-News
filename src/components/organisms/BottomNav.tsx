@@ -10,38 +10,40 @@ const TABS: { key: Tab; href: string; label: string; icon: ReactNode }[] = [
 ];
 
 /**
- * 폰 전용 하단 탭바: 화면 아래 떠 있는 알약 모양
- * - 검정 캡슐 하나가 지금 탭으로 미끄러지듯 이동 (탭바는 페이지가 바뀌어도 그대로 있어서 애니메이션이 이어짐)
- * - 아이콘·이름은 제자리에 두고 색만 바뀜 (움직이는 건 캡슐 하나)
+ * 폰 전용 하단 탭바 (NYT 앱 스타일)
+ * - 흰 바 + 옅은 윗선, 아이콘 아래 작은 이름
+ * - 지금 탭은 검정·굵게, 위에 짧은 검정 막대가 탭 사이를 미끄러지듯 이동
+ *   (탭바는 페이지가 바뀌어도 그대로 있어서 애니메이션이 이어짐)
  */
 export function BottomNav({ current }: { current: Tab }) {
   const index = TABS.findIndex((t) => t.key === current);
   return (
     <nav
       aria-label="Main"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-6 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] sm:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-rule bg-paper pb-[env(safe-area-inset-bottom)] sm:hidden"
     >
-      <ul className="pointer-events-auto relative mx-auto grid max-w-80 grid-cols-3 rounded-full border border-ink/10 bg-paper/80 p-1.5 shadow-[0_10px_30px_-6px_rgb(0_0_0/0.25)] backdrop-blur-xl">
-        {/* 미끄러지는 캡슐 */}
+      <ul className="relative grid grid-cols-3">
+        {/* 미끄러지는 막대: 탭 한 칸 너비의 상자 가운데에 짧은 선 */}
         <span
           aria-hidden
-          className="absolute inset-y-1.5 left-1.5 w-[calc((100%-0.75rem)/3)] rounded-full bg-ink transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none"
+          className="absolute -top-px left-0 flex w-1/3 justify-center transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none"
           style={{ transform: `translateX(${index * 100}%)` }}
-        />
+        >
+          <span className="h-[2.5px] w-8 bg-ink" />
+        </span>
         {TABS.map((t) => {
           const active = t.key === current;
           return (
-            <li key={t.key} className="relative">
+            <li key={t.key}>
               <a
                 href={t.href}
-                aria-label={t.label}
                 aria-current={active ? "page" : undefined}
-                className={`flex h-11 items-center justify-center gap-1.5 rounded-full text-[0.78rem] font-semibold tracking-tight transition-colors duration-300 [&_svg]:size-[1.15rem] [&_svg]:transition-[stroke-width] ${
-                  active ? "text-paper [&_svg]:stroke-[2.2]" : "text-ink-soft [&_svg]:stroke-[1.6]"
+                className={`flex flex-col items-center gap-0.5 pt-2 pb-1.5 text-[0.66rem] tracking-tight transition-colors duration-200 [&_svg]:size-[1.4rem] ${
+                  active ? "font-bold text-ink [&_svg]:stroke-2" : "text-muted [&_svg]:stroke-[1.5]"
                 }`}
               >
                 {t.icon}
-                <span className="whitespace-nowrap">{t.label}</span>
+                <span>{t.label}</span>
               </a>
             </li>
           );
