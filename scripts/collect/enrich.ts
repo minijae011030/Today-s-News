@@ -1,5 +1,5 @@
 // Gemini로 요약 · 섹션 확인 · 논술 포인트
-import { BATCH, BODY_CHARS, NEWS_SECTIONS, PRESS_CHARS, PRESS_LABEL, TERM_SECTIONS, report, type NewsItem } from "./config.ts";
+import { BATCH, BODY_CHARS, NEWS_SECTIONS, PRESS_CHARS, PRESS_LABEL, SUMMARY_VERSION, TERM_SECTIONS, report, type NewsItem } from "./config.ts";
 import { readArticle } from "./article.ts";
 import { callGemini, geminiKey } from "./gemini.ts";
 import { chunk, parseJson, runPool, sleep } from "./util.ts";
@@ -47,6 +47,7 @@ function apply(n: NewsItem, o: LlmResult): void {
     }
   }
   n.summary = o.summary;
+  n.sv = SUMMARY_VERSION;
   n.tags = o.tags ?? [];
   if (o.titleKo) n.titleKo = o.titleKo;
   if (o.essayPoint) n.essayPoint = o.essayPoint;
@@ -67,7 +68,10 @@ export async function enrich(items: NewsItem[], onProgress: () => Promise<void>)
     console.log("ℹ️  GEMINI_API_KEY 없음 → LLM 요약 건너뜀");
     return;
   }
-  const todo = items.filter((n) => !n.hidden && !n.summary);
+  // 요약 안 된 기사 + 예전 방식으로 요약된 보도자료 (보관 기간이 길어서 새 방식으로 한 번 다시)
+  const todo = items.filter(
+    (n) => !n.hidden && (!n.summary || (n.label === PRESS_LABEL && (n.sv ?? 1) < SUMMARY_VERSION)),
+  );
   if (todo.length === 0) return;
 
   const batches = chunk(todo, BATCH);

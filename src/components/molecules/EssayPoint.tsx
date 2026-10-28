@@ -14,8 +14,9 @@ export function EssayPoint({
   render?: (s: string) => ReactNode; // 용어 링크 걸기 등
   className?: string;
 }) {
+  // 줄바꿈 없이 한 줄로 오는 경우도 있어서 "배경:", "근거:" 같은 이름표 앞에서 나눔
   const lines = text
-    .split(/\n+/)
+    .split(/\n+|(?=(?:배경|근거|대응|쟁점)\s*[:：])/)
     .map((l) => l.trim())
     .filter(Boolean);
   const parts = lines.every((l) => PART.test(l)) && lines.length > 1;

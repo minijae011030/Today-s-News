@@ -26,6 +26,7 @@ export type NewsItem = {
   attachment?: string; // 보도자료 PDF 주소
   titleTried?: boolean; // 원문에서 제목·사진을 이미 읽었는지
   titleFix?: number; // 잘린 제목 복원 방식 버전 (방식이 바뀌면 예전 기사도 한 번 다시 시도)
+  sv?: number; // 요약 방식 버전 (프롬프트를 크게 바꾸면 올려서 보도자료를 다시 요약)
   hidden?: boolean; // 어느 섹션에도 안 맞음 → 화면에서 숨김 (다시 수집·요약하지 않으려고 데이터엔 남겨둠)
   // LLM이 채우는 필드
   summary?: string;
@@ -40,7 +41,8 @@ export type NewsItem = {
   duplicate?: boolean; // 다른 기사와 같은 소식이라 숨김
 };
 
-export const PRESS_LABEL = "보도자료"; // 금감원·금융위 보도자료: 섹션 이름이자 라벨
+export const PRESS_LABEL = "보도자료";
+export const SUMMARY_VERSION = 2; // 2: 보도자료 요약 짧게 + 논점 배경/근거·대응/쟁점 + 용어 // 금감원·금융위 보도자료: 섹션 이름이자 라벨
 export const NEWS_SECTIONS = ["경제", "정치", "IT", "과학", "문화"]; // LLM이 기사를 나눌 섹션
 export const SECTIONS = [PRESS_LABEL, ...NEWS_SECTIONS]; // 화면·요약 카드 순서
 export const TERM_SECTIONS = [PRESS_LABEL, "경제", "정치"]; // 용어 풀이를 하는 섹션
