@@ -11,7 +11,7 @@ import { makeTermLinker } from "../components/molecules/TermText";
 import { TermPopup } from "../components/organisms/TermPopup";
 import { termKey, type TermInfo } from "../lib/glossary";
 import { searchItems } from "../lib/search";
-import { formatPublished, titleOf } from "../lib/format";
+import { formatPublished, titleParts } from "../lib/format";
 import { href } from "../lib/route";
 import type { NewsItem } from "../types/news";
 
@@ -53,6 +53,7 @@ export function ArticlePage({
     }),
     (info, anchor) => setOpen((cur) => (cur?.anchor === anchor ? null : { info, anchor })),
   );
+  const parts = titleParts(item);
   const showSnippet =
     item.snippet && !item.snippet.startsWith(item.title.slice(0, 15));
 
@@ -68,11 +69,16 @@ export function ArticlePage({
           {item.category}
         </a>
         <LabelBadge label={item.label} source={item.source} />
+        {parts.series && <span className="text-sm text-muted">{parts.series}</span>}
       </div>
 
       <h2 className="mt-3 font-serif text-[clamp(1.8rem,4.5vw,2.6rem)] leading-tight font-bold">
-        {titleOf(item)}
+        {parts.title}
       </h2>
+      {/* 보도자료 부제 */}
+      {parts.subtitle && (
+        <p className="mt-3 border-l-2 border-ink pl-3 font-serif text-lg leading-snug text-ink-soft">{parts.subtitle}</p>
+      )}
 
       <StoryImage src={item.image} credit={item.source} ratio="natural" className="mt-6" priority />
 

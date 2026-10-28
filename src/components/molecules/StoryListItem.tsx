@@ -1,4 +1,4 @@
-import { timeAgo, titleOf } from "../../lib/format";
+import { timeAgo, titleParts } from "../../lib/format";
 import { href } from "../../lib/route";
 import type { NewsItem } from "../../types/news";
 import { LabelBadge } from "../atoms/LabelBadge";
@@ -6,6 +6,7 @@ import { StoryImage } from "../atoms/StoryImage";
 
 /** 섹션 페이지의 기사 한 줄: 시간 | 제목 + 요약 + 출처 */
 export function StoryListItem({ item }: { item: NewsItem }) {
+  const { title, series } = titleParts(item);
   return (
     <li className="border-b border-rule py-6">
       <a
@@ -21,8 +22,9 @@ export function StoryListItem({ item }: { item: NewsItem }) {
           )}
         </span>
         <span>
+          {series && <span className="mb-1 block text-xs font-semibold text-muted">{series}</span>}
           <span className="block font-serif text-xl leading-snug font-bold group-hover:text-ink-soft">
-            {titleOf(item)}
+            {title}
           </span>
           {item.summary && (
             <span className="mt-2 block font-serif leading-[1.75] text-ink-soft">
