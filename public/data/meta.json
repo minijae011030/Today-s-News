@@ -1,38 +1,28 @@
 {
-  "updatedAt": "2026-10-28T04:38:23.243Z",
-  "count": 846,
-  "newCount": 29,
-  "summarized": 836,
-  "fetched": 224,
+  "updatedAt": "2026-10-28T05:01:14.321Z",
+  "count": 879,
+  "summarized": 863,
+  "fetched": 231,
+  "newCount": 27,
   "newByCategory": {
-    "경제": 13,
-    "문화": 4,
-    "IT": 4,
-    "과학": 5,
-    "정치": 3
+    "IT": 3,
+    "경제": 16,
+    "문화": 3,
+    "과학": 4,
+    "정치": 1
   },
-  "summarizedNow": 33,
+  "summarizedNow": 27,
   "bodyFound": 32,
-  "failedFeeds": [
-    {
-      "category": "경제",
-      "source": "http://www.fsc.go.kr/about/fsc_bbs_rss/?fid=0112",
-      "error": "Status code 503"
-    },
-    {
-      "category": "경제",
-      "source": "http://www.fsc.go.kr/about/fsc_bbs_rss/?fid=0111",
-      "error": "Status code 503"
-    }
+  "pdfRead": 4,
+  "hidden": 6,
+  "moved": [
+    "정치→경제",
+    "정치→경제",
+    "정치→경제",
+    "과학→경제"
   ],
   "llmFailedBatches": 0,
+  "failedFeeds": [],
   "concept": null,
-  "pdfRead": 4,
-  "spacePhoto": null,
-  "hidden": 4,
-  "moved": [
-    "정치→문화",
-    "정치→경제",
-    "과학→IT"
-  ]
+  "spacePhoto": null
 }
