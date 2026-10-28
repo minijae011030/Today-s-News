@@ -4,6 +4,7 @@ import { useNews } from "./hooks/useNews";
 import { useRoute } from "./hooks/useRoute";
 import { ArticlePage } from "./pages/ArticlePage";
 import { FrontPage } from "./pages/FrontPage";
+import { SearchPage } from "./pages/SearchPage";
 import { SectionPage } from "./pages/SectionPage";
 
 export default function App() {
@@ -39,6 +40,9 @@ export default function App() {
           filter={route.filter}
           items={items.filter((n) => n.category === route.section)}
         />
+      )}
+      {items && items.length > 0 && route.name === "search" && (
+        <SearchPage q={route.q} page={route.page} items={items} />
       )}
       {items && items.length > 0 && route.name === "article" && (
         <ArticlePage
