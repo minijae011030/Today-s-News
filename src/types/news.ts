@@ -12,6 +12,9 @@ export type NewsItem = {
   spaceFact?: string;
   titleKo?: string;
   hidden?: boolean;
+  label?: string; // "보도자료" 등
+  attachment?: string; // 보도자료 PDF
+  keyPoints?: string[]; // 보도자료 주요 내용
   image?: string;
 };
 

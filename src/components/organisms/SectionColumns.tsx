@@ -6,7 +6,7 @@ import { HeadlineList } from "../molecules/HeadlineList";
 /** 1면 하단: 섹션별 최신 5개 칼럼 */
 export function SectionColumns({ items }: { items: NewsItem[] }) {
   return (
-    <div className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
       {SECTIONS.map((s) => {
         const list = items.filter((n) => n.category === s).slice(0, 5);
         if (list.length === 0) return null;
