@@ -5,7 +5,7 @@ import { extractText, getDocumentProxy } from "unpdf";
 import { PRESS_LABEL, UA, report, type NewsItem } from "./config.ts";
 import { fetchHtml, pickImage } from "./util.ts";
 
-type Page = { text: string; siteName?: string; title?: string; image?: string; pdf?: string };
+type Page = { text: string; siteName?: string; titles: string[]; image?: string; pdf?: string };
 type Doc = ReturnType<typeof parseHTML>["document"];
 
 // 첨부파일 중 PDF 링크 (보도자료 게시판: 파일명 글자나 주소에 .pdf가 있음. hwp/hwpx는 건너뜀)
@@ -42,15 +42,23 @@ async function fetchPage(url: string): Promise<Page | null> {
     const { document } = parseHTML(await fetchHtml(url));
     const meta = (sel: string) => document.querySelector(sel)?.getAttribute("content")?.trim() || undefined;
     // Readability는 문서를 직접 고쳐서(첨부파일 목록 등을 지움) 필요한 건 먼저 읽어둠
+    // 제목 후보: 사이트마다 og:title, <title>, h1 중 어디가 온전한지 달라서 다 모아둠
+    const titles = [
+      meta('meta[property="og:title"]'),
+      meta('meta[name="twitter:title"]'),
+      document.querySelector("title")?.textContent?.trim(),
+      document.querySelector("h1")?.textContent?.trim(),
+    ].filter((t): t is string => !!t);
     const page = {
       siteName: meta('meta[property="og:site_name"]'),
-      title: meta('meta[property="og:title"]'),
+      titles,
       image: pickImage(meta('meta[property="og:image"]') ?? meta('meta[name="twitter:image"]'), url),
       pdf: findPdf(document, url),
     };
     const article = new Readability(document as unknown as Document).parse();
     const text = (article?.textContent ?? "").replace(/\s+/g, " ").trim();
-    return { ...page, title: page.title ?? article?.title ?? undefined, text: text.length >= 200 ? text : "" };
+    if (article?.title) page.titles.push(article.title);
+    return { ...page, text: text.length >= 200 ? text : "" };
   } catch {
     return null;
   }
@@ -70,16 +78,43 @@ export async function fillMissingPdfs(items: NewsItem[]): Promise<void> {
   if (targets.length) console.log(`📄 보도자료 PDF 링크 복구 ${found}/${targets.length}`);
 }
 
-// 잘린 제목("...")이면 원문 og:title로 복원. 앞부분이 같은 경우만 바꿔서 엉뚱한 제목은 막음
+// 잘린 제목("...")이면 원문 페이지의 제목 후보들로 복원
+// 사이트마다 따옴표 모양("" vs “”), 띄어쓰기, 앞뒤에 붙는 매체 이름([라이브뉴스], - 스마트경제)이 달라서
+// 글자·숫자만 남겨 비교하고, 잘린 제목의 앞부분이 들어 있는 후보만 씀 (엉뚱한 제목 방지)
 const TRUNCATED = /(\.\.\.|…)\s*$/;
-function restoreTitle(n: NewsItem, fullTitle?: string, siteName?: string): void {
-  if (!fullTitle || !TRUNCATED.test(n.title)) return;
-  let t = fullTitle.trim();
-  for (const name of [siteName, n.source].filter(Boolean) as string[]) {
-    t = t.replace(new RegExp(`\\s*[|\\-–:]\\s*${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`), "");
+export const isTruncated = (t: string) => TRUNCATED.test(t);
+const bare = (t: string) => t.replace(/[^\p{L}\p{N}]/gu, "");
+function restoreTitle(n: NewsItem, candidates: string[], siteName?: string): void {
+  if (!TRUNCATED.test(n.title)) return;
+  const cut = n.title.replace(TRUNCATED, "").trim();
+  const prefix = bare(cut).slice(0, 12);
+  for (const raw of candidates) {
+    let t = raw.replace(/\s+/g, " ").trim();
+    // 끝에 붙은 매체 이름: " - 스마트경제", " | 한겨레", ":브레이크뉴스"
+    t = t.replace(/\s*[|\-–:]\s*[^|\-–:]{1,25}$/, (m) => (siteName && m.includes(siteName)) || m.length <= 27 ? "" : m);
+    // 앞에 붙은 매체 표시 ([라온신문], ≪브레이크뉴스≫): 원래 제목이 그걸로 시작하지 않을 때만 뗌
+    if (!/^[[≪<【]/.test(cut)) t = t.replace(/^\s*(\[[^\]]{1,15}\]|≪[^≫]{1,15}≫|【[^】]{1,15}】)\s*/, "");
+    const b = bare(t);
+    if (prefix.length >= 6 && b.startsWith(prefix) && b.length >= bare(cut).length && !TRUNCATED.test(t)) {
+      n.title = t;
+      return;
+    }
   }
-  const prefix = n.title.replace(TRUNCATED, "").trim().slice(0, 12);
-  if (t.length > n.title.length - 3 && t.startsWith(prefix)) n.title = t;
+}
+
+// 예전에 복원 못 한 잘린 제목 다시 시도 (원문 페이지만 읽음, LLM 호출 없음). 한 번에 40건, 기사마다 한 번만
+export async function fixTruncatedTitles(items: NewsItem[]): Promise<void> {
+  const targets = items.filter((n) => !n.hidden && n.titleFix !== 2 && TRUNCATED.test(n.title)).slice(0, 40);
+  if (!targets.length) return;
+  await Promise.all(
+    targets.map(async (n) => {
+      const page = await fetchPage(n.link);
+      if (page) restoreTitle(n, page.titles, page.siteName);
+      n.titleFix = 2;
+    }),
+  );
+  const fixed = targets.filter((n) => !TRUNCATED.test(n.title)).length;
+  console.log(`✂️  잘린 제목 복원 ${fixed}/${targets.length}`);
 }
 
 // 원문을 읽어서 기사 정보(언론사·제목·사진·첨부)를 채우고, LLM에 넘길 본문을 돌려줌
@@ -91,7 +126,8 @@ export async function readArticle(n: NewsItem): Promise<string> {
   const isPress = n.label === PRESS_LABEL;
   // 보도자료는 source로 기관을 구분하니 그대로 둠
   if (!isPress && page.siteName && page.siteName.length <= 20) n.source = page.siteName;
-  restoreTitle(n, page.title, page.siteName);
+  restoreTitle(n, page.titles, page.siteName);
+  n.titleFix = 2;
   if (!n.image && page.image) n.image = page.image;
 
   // 보도자료는 핵심이 첨부 PDF에 있음 → PDF 글자를 본문으로

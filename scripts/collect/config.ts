@@ -25,6 +25,7 @@ export type NewsItem = {
   image?: string; // 대표 사진 (og:image 또는 RSS 첨부 이미지)
   attachment?: string; // 보도자료 PDF 주소
   titleTried?: boolean; // 원문에서 제목·사진을 이미 읽었는지
+  titleFix?: number; // 잘린 제목 복원 방식 버전 (방식이 바뀌면 예전 기사도 한 번 다시 시도)
   hidden?: boolean; // 어느 섹션에도 안 맞음 → 화면에서 숨김 (다시 수집·요약하지 않으려고 데이터엔 남겨둠)
   // LLM이 채우는 필드
   summary?: string;
