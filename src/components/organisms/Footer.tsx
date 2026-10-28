@@ -51,6 +51,11 @@ export function Footer({
                 </a>
               </li>
             ))}
+            <li>
+              <a href={href.glossary()} className="hover:text-ink hover:underline">
+                용어 사전
+              </a>
+            </li>
           </ul>
         </nav>
 
