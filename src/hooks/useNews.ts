@@ -18,7 +18,13 @@ export function useNews() {
     const migrate: Record<string, string> = { 국제: "경제", 우주: "과학", 예술: "문화", 책: "문화", 엔터: "문화" };
     return all
       .filter((n) => !n.hidden && n.category !== "사회") // 섹션에 안 맞는 기사·없앤 섹션은 숨김
-      .map((n) => (migrate[n.category] ? { ...n, category: migrate[n.category] } : n));
+      .map((n) =>
+        n.label === "보도자료" // 보도자료는 경제 탭에 있다가 따로 탭이 생김
+          ? { ...n, category: "보도자료" }
+          : migrate[n.category]
+            ? { ...n, category: migrate[n.category] }
+            : n,
+      );
   }, []);
 
   useEffect(() => {

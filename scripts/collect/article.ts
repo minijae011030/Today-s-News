@@ -41,18 +41,33 @@ async function fetchPage(url: string): Promise<Page | null> {
   try {
     const { document } = parseHTML(await fetchHtml(url));
     const meta = (sel: string) => document.querySelector(sel)?.getAttribute("content")?.trim() || undefined;
-    const article = new Readability(document as unknown as Document).parse();
-    const text = (article?.textContent ?? "").replace(/\s+/g, " ").trim();
-    return {
-      text: text.length >= 200 ? text : "",
+    // Readability는 문서를 직접 고쳐서(첨부파일 목록 등을 지움) 필요한 건 먼저 읽어둠
+    const page = {
       siteName: meta('meta[property="og:site_name"]'),
-      title: meta('meta[property="og:title"]') ?? article?.title ?? undefined,
+      title: meta('meta[property="og:title"]'),
       image: pickImage(meta('meta[property="og:image"]') ?? meta('meta[name="twitter:image"]'), url),
       pdf: findPdf(document, url),
     };
+    const article = new Readability(document as unknown as Document).parse();
+    const text = (article?.textContent ?? "").replace(/\s+/g, " ").trim();
+    return { ...page, title: page.title ?? article?.title ?? undefined, text: text.length >= 200 ? text : "" };
   } catch {
     return null;
   }
+}
+
+// 예전 버그로 PDF 링크를 못 찾은 보도자료: 링크만 다시 찾아 채움 (LLM 호출 없음)
+// 끝까지 PDF가 없으면 ""로 표시해서 다음엔 다시 안 찾음
+export async function fillMissingPdfs(items: NewsItem[]): Promise<void> {
+  const targets = items.filter((n) => n.label === PRESS_LABEL && n.summary && n.attachment === undefined);
+  await Promise.all(
+    targets.map(async (n) => {
+      const page = await fetchPage(n.link);
+      if (page) n.attachment = page.pdf ?? "";
+    }),
+  );
+  const found = targets.filter((n) => n.attachment).length;
+  if (targets.length) console.log(`📄 보도자료 PDF 링크 복구 ${found}/${targets.length}`);
 }
 
 // 잘린 제목("...")이면 원문 og:title로 복원. 앞부분이 같은 경우만 바꿔서 엉뚱한 제목은 막음
@@ -80,8 +95,8 @@ export async function readArticle(n: NewsItem): Promise<string> {
   if (!n.image && page.image) n.image = page.image;
 
   // 보도자료는 핵심이 첨부 PDF에 있음 → PDF 글자를 본문으로
+  if (isPress) n.attachment = page.pdf ?? "";
   if (isPress && page.pdf) {
-    n.attachment = page.pdf;
     const pdfText = await fetchPdfText(page.pdf);
     if (pdfText.length > 200) {
       report.pdfRead++;

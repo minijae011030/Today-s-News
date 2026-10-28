@@ -14,7 +14,8 @@
  *   space.ts    오늘의 우주 사진        output.ts   저장·Actions 요약
  */
 import { readFile } from "node:fs/promises";
-import { DROPPED, KEEP_DAYS, MAX_NEW_PER_BUCKET, MIGRATE, report, type FeedSource, type NewsItem } from "./collect/config.ts";
+import { DROPPED, KEEP_DAYS, MAX_NEW_PER_BUCKET, MIGRATE, PRESS_LABEL, report, type FeedSource, type NewsItem } from "./collect/config.ts";
+import { fillMissingPdfs } from "./collect/article.ts";
 import { makeConcept } from "./collect/concept.ts";
 import { enrich } from "./collect/enrich.ts";
 import { save, writeActionsSummary } from "./collect/output.ts";
@@ -25,12 +26,13 @@ import { readData } from "./collect/util.ts";
 const DAY = 24 * 60 * 60 * 1000;
 
 // 지난 수집 결과 (요약은 재사용해서 비용 절약). 섹션 개편 전 데이터는 새 섹션으로 옮김
+// (보도자료는 경제 탭 안에 있다가 따로 탭이 생김)
 async function loadPrevious(): Promise<Map<string, NewsItem>> {
   const prev = (await readData<NewsItem[]>("news.json")) ?? [];
   return new Map(
     prev
       .filter((n) => !DROPPED.has(n.category))
-      .map((n) => [n.key, { ...n, category: MIGRATE[n.category] ?? n.category }]),
+      .map((n) => [n.key, { ...n, category: n.label === PRESS_LABEL ? PRESS_LABEL : (MIGRATE[n.category] ?? n.category) }]),
   );
 }
 
@@ -70,6 +72,7 @@ async function main() {
   report.fetched = fetched.length;
   console.log(`📥 수집 ${fetched.length}건 → 새 기사 ${fresh.length}건 · 보관 ${items.length}건`);
 
+  await fillMissingPdfs(items);
   await enrich(items, () => save(items));
 
   // 숨긴 기사는 빼고, 옮겨진 섹션 기준으로 새 기사 수 계산 (알림·커밋 메시지용)

@@ -16,7 +16,7 @@ export function StoryListItem({ item }: { item: NewsItem }) {
           {timeAgo(item.publishedAt)}
           {item.label && (
             <span className="flex sm:mt-2">
-              <LabelBadge label={item.label} />
+              <LabelBadge label={item.label} source={item.source} />
             </span>
           )}
         </span>

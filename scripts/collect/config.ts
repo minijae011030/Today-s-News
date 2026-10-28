@@ -30,13 +30,14 @@ export type NewsItem = {
   summary?: string;
   tags?: string[];
   titleKo?: string; // 영어 기사면 한국어 제목
-  essayPoint?: string; // 경제·정치: 논술 포인트
+  essayPoint?: string; // 경제·정치·보도자료: 논술 포인트
   spaceFact?: string; // 과학: 알고 보면 재밌는 과학 지식 (예전 이름 그대로 씀)
   keyPoints?: string[]; // 보도자료 주요 내용
 };
 
-export const SECTIONS = ["경제", "정치", "IT", "과학", "문화"];
-export const PRESS_LABEL = "보도자료";
+export const PRESS_LABEL = "보도자료"; // 금감원·금융위 보도자료: 섹션 이름이자 라벨
+export const NEWS_SECTIONS = ["경제", "정치", "IT", "과학", "문화"]; // LLM이 기사를 나눌 섹션
+export const SECTIONS = [PRESS_LABEL, ...NEWS_SECTIONS]; // 화면·요약 카드 순서
 
 // 섹션 개편 정리: 예전 섹션 이름 → 새 섹션, 없앤 섹션
 // (main 데이터가 한 번 정리되고 3일 지나면 지워도 됨)
@@ -49,7 +50,7 @@ export const SHARED_DIR = "public/data"; // 로컬 첫 실행 때 봇이 만든 
 
 export const KEEP_DAYS = 3;
 export const MAX_PER_FEED = 7; // 키워드/피드당 최신 몇 건만
-export const MAX_NEW_PER_BUCKET = 6; // 한 번 수집에 섹션(보도자료는 기관)당 새 기사 최대 수
+export const MAX_NEW_PER_BUCKET = 6; // 한 번 수집에 섹션(보도자료는 기관)당 새 글 최대 수
 export const BATCH = 8; // Gemini 한 번에 넘길 기사 수
 export const BODY_CHARS = 1200; // LLM에 넘길 본문 길이 (리드 몇 문단이면 요약엔 충분)
 export const PRESS_CHARS = 6000; // 보도자료 PDF는 핵심이 본문이라 더 길게

@@ -1,6 +1,6 @@
 [
-  { "category": "경제", "type": "board", "url": "https://www.fss.or.kr/fss/bbs/B0000188/list.do?menuNo=200218", "source": "금융감독원", "label": "보도자료", "keepDays": 7 },
-  { "category": "경제", "type": "board", "url": "https://www.fsc.go.kr/no010101", "source": "금융위원회", "label": "보도자료", "keepDays": 7 },
+  { "category": "보도자료", "type": "board", "url": "https://www.fss.or.kr/fss/bbs/B0000188/list.do?menuNo=200218", "source": "금융감독원", "label": "보도자료", "keepDays": 14 },
+  { "category": "보도자료", "type": "board", "url": "https://www.fsc.go.kr/no010101", "source": "금융위원회", "label": "보도자료", "keepDays": 14 },
   { "category": "경제", "type": "naver", "query": "금융감독원" },
   { "category": "경제", "type": "naver", "query": "기준금리" },
   { "category": "경제", "type": "naver", "query": "가계부채" },

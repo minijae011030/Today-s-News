@@ -12,7 +12,7 @@ function pickLead(items: NewsItem[]): NewsItem {
 }
 
 // 오른쪽 주요 기사: 한 섹션이 도배하지 않게 섹션별 최신 1건씩, 공부용 섹션 먼저
-const SIDE_ORDER = ["경제", "정치", "IT", "과학", "문화"];
+const SIDE_ORDER = ["보도자료", "경제", "정치", "IT", "과학", "문화"];
 function pickSide(items: NewsItem[], lead: NewsItem | null, count: number): NewsItem[] {
   const out: NewsItem[] = [];
   // 섹션별 1건씩 돌고, 자리가 남으면 섹션별 2번째 기사로 한 바퀴 더
