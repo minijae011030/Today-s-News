@@ -10,9 +10,21 @@ function autoplayEmbed(url: string): string {
     const u = new URL(url);
     const yt = u.pathname.match(/\/embed\/([\w-]+)/)?.[1];
     if (/youtube/.test(u.hostname) && yt) {
-      for (const [k, v] of Object.entries({ autoplay: "1", mute: "1", loop: "1", playlist: yt, playsinline: "1" })) u.searchParams.set(k, v);
+      for (const [k, v] of Object.entries({
+        autoplay: "1",
+        mute: "1",
+        loop: "1",
+        playlist: yt,
+        playsinline: "1",
+      }))
+        u.searchParams.set(k, v);
     } else if (/vimeo/.test(u.hostname)) {
-      for (const [k, v] of Object.entries({ autoplay: "1", muted: "1", loop: "1" })) u.searchParams.set(k, v);
+      for (const [k, v] of Object.entries({
+        autoplay: "1",
+        muted: "1",
+        loop: "1",
+      }))
+        u.searchParams.set(k, v);
     }
     return u.href;
   } catch {
@@ -38,9 +50,11 @@ export function SpaceFeature({ photo }: { photo: SpacePhoto }) {
             playsInline
             controls
             preload="metadata"
-            className="aspect-[3/2] w-full bg-ink object-cover"
+            className="aspect-3/2 w-full bg-ink object-cover"
           />
-          <figcaption className="mt-1 text-right text-[0.7rem] text-muted">{photo.credit}</figcaption>
+          <figcaption className="mt-1 text-right text-[0.7rem] text-muted">
+            {photo.credit}
+          </figcaption>
         </figure>
       ) : photo.embed ? (
         <figure className="mb-4">
@@ -51,10 +65,18 @@ export function SpaceFeature({ photo }: { photo: SpacePhoto }) {
             allowFullScreen
             className="aspect-video w-full bg-ink"
           />
-          <figcaption className="mt-1 text-right text-[0.7rem] text-muted">{photo.credit}</figcaption>
+          <figcaption className="mt-1 text-right text-[0.7rem] text-muted">
+            {photo.credit}
+          </figcaption>
         </figure>
       ) : (
-        <a href={photo.hdImage ?? photo.image} target="_blank" rel="noreferrer" tabIndex={-1} aria-hidden>
+        <a
+          href={photo.hdImage ?? photo.image}
+          target="_blank"
+          rel="noreferrer"
+          tabIndex={-1}
+          aria-hidden
+        >
           <StoryImage
             src={photo.image}
             credit={photo.credit}
@@ -66,14 +88,20 @@ export function SpaceFeature({ photo }: { photo: SpacePhoto }) {
         </a>
       )}
       <p className="flex gap-3 text-xs">
-        <span className="font-semibold">Today&rsquo;s Space {isVideo ? "Video" : "Photo"}</span>
+        <span className="font-semibold">
+          Today&rsquo;s Space {isVideo ? "Video" : "Photo"}
+        </span>
         <span className="text-muted">{photo.date}</span>
       </p>
       {title && (
-        <h2 className="mt-2 font-serif text-[clamp(1.6rem,3.2vw,2.4rem)] leading-tight font-bold">{title}</h2>
+        <h2 className="mt-2 font-serif text-[clamp(1.6rem,3.2vw,2.4rem)] leading-tight font-bold">
+          {title}
+        </h2>
       )}
       {photo.story && (
-        <p className="mt-4 max-w-[60ch] font-serif text-lg leading-[1.8] text-ink-soft">{photo.story}</p>
+        <p className="mt-4 max-w-[60ch] font-serif text-lg leading-[1.8] text-ink-soft">
+          {photo.story}
+        </p>
       )}
       <a
         href={photo.link}
