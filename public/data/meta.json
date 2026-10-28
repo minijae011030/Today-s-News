@@ -1,41 +1,37 @@
 {
-  "updatedAt": "2026-10-28T08:01:10.092Z",
-  "count": 985,
-  "summarized": 955,
-  "fetched": 433,
+  "updatedAt": "2026-10-28T09:01:15.760Z",
+  "count": 1028,
+  "summarized": 981,
+  "fetched": 417,
   "newCount": 29,
   "newByCategory": {
-    "경제": 17,
-    "정치": 5,
-    "문화": 2,
+    "보도자료": 2,
+    "경제": 14,
+    "정치": 6,
     "IT": 4,
-    "과학": 1
+    "문화": 1,
+    "과학": 2
   },
   "summarizedNow": 26,
-  "bodyFound": 22,
-  "pdfRead": 0,
-  "hidden": 0,
+  "bodyFound": 26,
+  "pdfRead": 2,
+  "hidden": 2,
   "moved": [
-    "정치→경제",
     "IT→경제",
     "IT→경제",
     "IT→경제",
-    "과학→경제",
     "IT→경제",
     "IT→경제"
   ],
   "llmFailedBatches": 0,
   "failedFeeds": [],
   "concept": null,
-  "spacePhoto": "가니메데와 이오의 상호 엄폐 현상",
+  "spacePhoto": null,
   "newTerms": [
-    "R&D",
-    "국고채",
-    "공개매수",
-    "M&A",
-    "인앱결제",
-    "과징금",
-    "시정명령"
+    "자본시장법",
+    "감사인",
+    "의무공개매수",
+    "팹리스"
   ],
   "keywords": [
     {
@@ -43,7 +39,7 @@
       "query": "금융감독원",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 4,
+      "kept": 5,
       "hidden": 0,
       "dead": false
     },
@@ -52,7 +48,7 @@
       "query": "기준금리",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 3,
+      "kept": 4,
       "hidden": 0,
       "dead": false
     },
@@ -70,7 +66,7 @@
       "query": "자본시장 제도",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 1,
+      "kept": 2,
       "hidden": 0,
       "dead": false
     },
@@ -88,8 +84,8 @@
       "query": "불공정거래",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 1,
-      "hidden": 2,
+      "kept": 3,
+      "hidden": 4,
       "dead": false
     },
     {
@@ -105,9 +101,9 @@
       "category": "경제",
       "query": "환율",
       "hot": false,
-      "fetchedNow": 7,
-      "kept": 4,
-      "hidden": 1,
+      "fetchedNow": 3,
+      "kept": 5,
+      "hidden": 2,
       "dead": false
     },
     {
@@ -115,7 +111,7 @@
       "query": "국회 정무위원회",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 0,
+      "kept": 1,
       "hidden": 0,
       "dead": false
     },
@@ -132,7 +128,7 @@
       "category": "경제",
       "query": "가상자산 규제",
       "hot": false,
-      "fetchedNow": 7,
+      "fetchedNow": 3,
       "kept": 0,
       "hidden": 0,
       "dead": false
@@ -150,8 +146,8 @@
       "category": "경제",
       "query": "코스피 외국인",
       "hot": false,
-      "fetchedNow": 7,
-      "kept": 1,
+      "fetchedNow": 6,
+      "kept": 3,
       "hidden": 1,
       "dead": false
     },
@@ -168,7 +164,7 @@
       "category": "경제",
       "query": "스테이블코인",
       "hot": false,
-      "fetchedNow": 7,
+      "fetchedNow": 0,
       "kept": 0,
       "hidden": 0,
       "dead": false
@@ -186,7 +182,7 @@
       "category": "경제",
       "query": "비트코인",
       "hot": false,
-      "fetchedNow": 5,
+      "fetchedNow": 0,
       "kept": 0,
       "hidden": 0,
       "dead": false
@@ -206,14 +202,14 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 2,
-      "hidden": 3,
+      "hidden": 8,
       "dead": false
     },
     {
       "category": "경제",
       "query": "금융사고 제재",
       "hot": false,
-      "fetchedNow": 6,
+      "fetchedNow": 5,
       "kept": 0,
       "hidden": 0,
       "dead": false
@@ -322,8 +318,8 @@
       "query": "이재명 대통령",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 7,
-      "hidden": 1,
+      "kept": 12,
+      "hidden": 2,
       "dead": false
     },
     {
@@ -332,7 +328,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 1,
-      "hidden": 0,
+      "hidden": 1,
       "dead": false
     },
     {
@@ -340,7 +336,7 @@
       "query": "국민의힘 민주당",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 2,
+      "kept": 3,
       "hidden": 0,
       "dead": false
     },
@@ -358,16 +354,16 @@
       "query": "해킹 개인정보 유출",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 2,
-      "hidden": 0,
+      "kept": 3,
+      "hidden": 1,
       "dead": false
     },
     {
       "category": "IT",
       "query": "AI 반도체",
       "hot": false,
-      "fetchedNow": 6,
-      "kept": 8,
+      "fetchedNow": 7,
+      "kept": 13,
       "hidden": 0,
       "dead": false
     },
@@ -386,7 +382,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 2,
-      "hidden": 4,
+      "hidden": 8,
       "dead": false
     },
     {
@@ -412,7 +408,7 @@
       "query": "과학 연구 성과",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 4,
+      "kept": 6,
       "hidden": 1,
       "dead": false
     },
@@ -430,7 +426,7 @@
       "query": "미술관 전시",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 0,
+      "kept": 1,
       "hidden": 0,
       "dead": false
     },
@@ -449,7 +445,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 0,
-      "hidden": 0,
+      "hidden": 1,
       "dead": false
     },
     {
@@ -465,7 +461,7 @@
       "category": "문화",
       "query": "베스트셀러",
       "hot": false,
-      "fetchedNow": 7,
+      "fetchedNow": 6,
       "kept": 1,
       "hidden": 0,
       "dead": false
@@ -474,7 +470,7 @@
       "category": "문화",
       "query": "영화 개봉",
       "hot": false,
-      "fetchedNow": 3,
+      "fetchedNow": 7,
       "kept": 0,
       "hidden": 1,
       "dead": false
@@ -492,9 +488,9 @@
       "category": "경제",
       "query": "증권사 해킹 사고",
       "hot": true,
-      "fetchedNow": 5,
+      "fetchedNow": 7,
       "kept": 0,
-      "hidden": 0,
+      "hidden": 1,
       "dead": false
     },
     {
