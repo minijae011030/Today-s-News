@@ -1,8 +1,14 @@
 name: Collect news
 run-name: 뉴스 수집 (${{ github.event_name == 'schedule' && '자동' || '수동' }})
 
+# cron-job.org가 매시간(7~20시 KST) workflow_dispatch로 실행
 on:
   workflow_dispatch:
+    inputs:
+      force_notify:
+        description: "시각과 상관없이 브리핑 알림 보내기 (테스트용)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -17,7 +23,6 @@ jobs:
   collect:
     runs-on: ubuntu-latest
     outputs:
-      new_count: ${{ steps.count.outputs.new_count }}
       changed: ${{ steps.commit.outputs.changed }}
     steps:
       - uses: actions/checkout@v4
@@ -35,18 +40,13 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
-          NASA_API_KEY: ${{ secrets.NASA_API_KEY }}
-
-      - name: Count new stories
-        id: count
-        run: echo "new_count=$(node -p "try{require('./public/data/meta.json').newCount||0}catch{0}")" >> "$GITHUB_OUTPUT"
 
       - name: Commit data
         id: commit
         run: |
-          # 기사, 오늘의 개념, 우주 사진이 바뀌었을 때만 커밋 (수집 시각만 바뀐 건 무시)
-          if git diff --quiet -- public/data/news.json public/data/concept.json public/data/space.json && \
-             [ -z "$(git status --porcelain public/data/concept.json public/data/space.json)" ]; then
+          # public/data 안에서 수집 시각(meta.json) 말고 하나라도 바뀌거나 새로 생겼으면 커밋
+          # (기사, 보도자료 보관소, 오늘의 개념, 우주 사진, 용어 사전, 키워드 기록 등)
+          if [ -z "$(git status --porcelain -- public/data ':(exclude)public/data/meta.json')" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "변경 없음 → 커밋/배포 건너뜀" >> "$GITHUB_STEP_SUMMARY"
             exit 0
@@ -71,20 +71,34 @@ jobs:
       pages: write
       id-token: write
 
+  # 하루 두 번(7시·19시 KST) 브리핑 알림. 다른 시각엔 설치 없이 바로 끝냄
   notify:
     needs: [collect, deploy]
-    if: needs.collect.outputs.new_count != '0' && needs.deploy.result == 'success'
+    if: needs.deploy.result == 'success'
     runs-on: ubuntu-latest
     steps:
+      - name: Briefing time?
+        id: time
+        run: |
+          h=$(TZ=Asia/Seoul date +%H)
+          if [ "$h" = "07" ] || [ "$h" = "19" ] || [ "${{ inputs.force_notify }}" = "true" ]; then
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "지금은 ${h}시 → 브리핑 시각(7시·19시)이 아니라 알림 건너뜀" >> "$GITHUB_STEP_SUMMARY"
+          fi
       - uses: actions/checkout@v4
+        if: steps.time.outputs.go == 'true'
       - uses: actions/setup-node@v4
+        if: steps.time.outputs.go == 'true'
         with:
           node-version: 22
           cache: npm
       - run: npm ci
+        if: steps.time.outputs.go == 'true'
       - run: npm run notify
+        if: steps.time.outputs.go == 'true'
         env:
-          NEW_COUNT: ${{ needs.collect.outputs.new_count }}
+          FORCE_NOTIFY: ${{ inputs.force_notify && '1' || '' }}
           VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
           VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

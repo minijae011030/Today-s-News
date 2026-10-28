@@ -15,8 +15,9 @@
  *   glossary.ts 용어 사전              keywords.ts 키워드 성적표·핫 키워드
  */
 import { readFile } from "node:fs/promises";
-import { DROPPED, KEEP_DAYS, MAX_NEW_BY_SECTION, MAX_NEW_PER_BUCKET, MIGRATE, PRESS_LABEL, report, type FeedSource, type NewsItem } from "./collect/config.ts";
+import { DROPPED, KEEP_DAYS, MAX_NEW_BY_SECTION, MAX_NEW_PER_BUCKET, MIGRATE, PRESS_KEEP_DAYS, PRESS_LABEL, report, type FeedSource, type NewsItem } from "./collect/config.ts";
 import { fillMissingPdfs, fixTitles } from "./collect/article.ts";
+import { backfillPress } from "./collect/backfill.ts";
 import { makeConcept } from "./collect/concept.ts";
 import { enrich } from "./collect/enrich.ts";
 import { StoryIndex, hideDuplicates, isPhotoOnly } from "./collect/dedupe.ts";
@@ -32,14 +33,15 @@ const DAY = 24 * 60 * 60 * 1000;
 // 지난 수집 결과 (요약은 재사용해서 비용 절약). 섹션 개편 전 데이터는 새 섹션으로 옮김
 // (보도자료는 경제 탭 안에 있다가 따로 탭이 생김)
 async function loadPrevious(): Promise<Map<string, NewsItem>> {
-  const prev = (await readData<NewsItem[]>("news.json")) ?? [];
+  // news.json + 보도자료 보관소(press.json). 같은 글이 둘 다 있으면 news.json 쪽(뒤에 오는 것)이 남음
+  const prev = [...((await readData<NewsItem[]>("press.json")) ?? []), ...((await readData<NewsItem[]>("news.json")) ?? [])];
   return new Map(
     prev
       .filter((n) => !DROPPED.has(n.category))
       .map((n) => [
         n.key,
         n.label === PRESS_LABEL
-          ? { ...n, category: PRESS_LABEL, title: cleanBoardTitle(n.title) }
+          ? { ...n, category: PRESS_LABEL, title: cleanBoardTitle(n.title), keepDays: PRESS_KEEP_DAYS } // 보관 기간은 설정값으로 통일
           : { ...n, category: MIGRATE[n.category] ?? n.category },
       ]),
   );
@@ -96,6 +98,9 @@ async function main() {
   const items = [...prev.values(), ...fresh]
     .filter((n) => Date.now() - new Date(n.publishedAt).getTime() <= (n.keepDays ?? KEEP_DAYS) * DAY)
     .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  // 지난 보도자료 채우기 (새 기사로 세지 않음 → 알림·커밋 메시지엔 안 들어감)
+  items.push(...(await backfillPress(fixed, items)));
+  items.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
   report.fetched = fetched.length;
   console.log(`📥 수집 ${fetched.length}건 → 새 기사 ${fresh.length}건 · 보관 ${items.length}건`);
 

@@ -34,7 +34,7 @@ export default defineConfig({
         runtimeCaching: [
           {
             // 뉴스 데이터: 네트워크 우선, 오프라인이면 캐시
-            urlPattern: ({ url }) => url.pathname.endsWith("/data/news.json"),
+            urlPattern: ({ url }) => /\/data\/(news|press)\.json$/.test(url.pathname),
             handler: "NetworkFirst",
             options: { cacheName: "news-data", networkTimeoutSeconds: 3 },
           },

@@ -1,8 +1,22 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetchData } from "../lib/data";
 import type { Concept, NewsItem, SpacePhoto } from "../types/news";
 
-/** 기사 목록 + 오늘의 개념 + 당겨서 새로고침 */
+// 데이터 정리: 숨긴 기사·없앤 섹션 빼고, 섹션 개편 전 데이터도 새 섹션으로 보이게
+const MIGRATE: Record<string, string> = { 국제: "경제", 우주: "과학", 예술: "문화", 책: "문화", 엔터: "문화" };
+function normalize(all: NewsItem[]): NewsItem[] {
+  return all
+    .filter((n) => !n.hidden && n.category !== "사회")
+    .map((n) =>
+      n.label === "보도자료" // 보도자료는 경제 탭에 있다가 따로 탭이 생김
+        ? { ...n, category: "보도자료" }
+        : MIGRATE[n.category]
+          ? { ...n, category: MIGRATE[n.category] }
+          : n,
+    );
+}
+
+/** 기사 목록 + 보도자료 보관소(필요할 때만) + 오늘의 개념 + 당겨서 새로고침 */
 export function useNews() {
   const [items, setItems] = useState<NewsItem[] | null>(null);
   const [error, setError] = useState(false);
@@ -13,19 +27,31 @@ export function useNews() {
   const load = useCallback(async (): Promise<NewsItem[]> => {
     const r = await fetchData("news.json");
     if (!r.ok) throw new Error(String(r.status));
-    const all: NewsItem[] = await r.json();
-    // 섹션 개편 전 데이터도 새 섹션으로 보이게 (다음 수집 때 데이터도 바뀜)
-    const migrate: Record<string, string> = { 국제: "경제", 우주: "과학", 예술: "문화", 책: "문화", 엔터: "문화" };
-    return all
-      .filter((n) => !n.hidden && n.category !== "사회") // 섹션에 안 맞는 기사·없앤 섹션은 숨김
-      .map((n) =>
-        n.label === "보도자료" // 보도자료는 경제 탭에 있다가 따로 탭이 생김
-          ? { ...n, category: "보도자료" }
-          : migrate[n.category]
-            ? { ...n, category: migrate[n.category] }
-            : n,
-      );
+    return normalize(await r.json());
   }, []);
+
+  // 보도자료 보관소 (3달치): 처음엔 안 받고, 보도자료 탭·검색·사전·오래된 공유 링크에서 필요할 때만
+  const [archive, setArchive] = useState<NewsItem[] | null>(null);
+  const archiveLoading = useRef(false);
+  const loadArchive = useCallback(async () => {
+    if (archiveLoading.current) return;
+    archiveLoading.current = true;
+    try {
+      const r = await fetchData("press.json");
+      setArchive(r.ok ? normalize(await r.json()) : []);
+    } catch {
+      setArchive([]);
+    } finally {
+      archiveLoading.current = false;
+    }
+  }, []);
+
+  // 기사 + 보관소를 합친 목록 (같은 글은 news.json 쪽), 최신순
+  const allItems = useMemo(() => {
+    if (!items || !archive) return items;
+    const ids = new Set(items.map((n) => n.id));
+    return [...items, ...archive.filter((n) => !ids.has(n.id))].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  }, [items, archive]);
 
   useEffect(() => {
     load()
@@ -60,13 +86,14 @@ export function useNews() {
       const next = await load();
       const before = new Set(items?.map((n) => n.id));
       setItems(next);
+      if (archive) void loadArchive(); // 보관소를 받아둔 상태면 같이 새로
       setError(false);
       setVersion((v) => v + 1);
       return next.filter((n) => !before.has(n.id)).length;
     } catch {
       return null;
     }
-  }, [load, items]);
+  }, [load, items, archive, loadArchive]);
 
-  return { items, error, version, concept, space, refresh };
+  return { items, allItems, archiveLoaded: archive !== null, loadArchive, error, version, concept, space, refresh };
 }

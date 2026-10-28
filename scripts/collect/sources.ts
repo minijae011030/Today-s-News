@@ -81,10 +81,13 @@ async function fetchNaver(src: Extract<FeedSource, { type: "naver" }>): Promise<
 // 목록에서 상세 링크를 찾아 제목·날짜를 뽑음
 //  - 금감원: …/list.do?menuNo=… → 상세 …/view.do?nttId=123&menuNo=…
 //  - 금융위: /no010101 → 상세 /no010101/123
-async function fetchBoard(src: Extract<FeedSource, { type: "board" }>): Promise<NewsItem[]> {
+type BoardSource = Extract<FeedSource, { type: "board" }>;
+
+// 게시판 목록 한 페이지에서 글 뽑기
+function parseBoard(src: BoardSource, html: string): NewsItem[] {
   const list = new URL(src.url);
   const listPath = list.pathname.replace(/\/$/, "");
-  const { document } = parseHTML(await fetchHtml(src.url, 15_000));
+  const { document } = parseHTML(html);
   const today = kstToday();
   const seen = new Set<string>();
   const out: NewsItem[] = [];
@@ -118,9 +121,39 @@ async function fetchBoard(src: Extract<FeedSource, { type: "board" }>): Promise<
       publishedAt: date === today ? new Date().toISOString() : new Date(`${date}T18:00:00+09:00`).toISOString(),
       snippet: "",
     });
-    if (out.length >= MAX_PER_FEED) break;
   }
+  return out;
+}
+
+const pageUrl = (src: BoardSource, page: number) => {
+  const u = new URL(src.url);
+  if (page > 1 && src.pageParam) u.searchParams.set(src.pageParam, String(page));
+  return u.href;
+};
+
+// 평소 수집: 첫 페이지 최신 글만
+async function fetchBoard(src: BoardSource): Promise<NewsItem[]> {
+  const out = parseBoard(src, await fetchHtml(src.url, 15_000)).slice(0, MAX_PER_FEED);
   if (out.length === 0) throw new Error("목록에서 게시글을 못 찾음 (페이지 구조가 바뀌었을 수 있음)");
+  return out;
+}
+
+/** 지난 글 채우기: since(YYYY-MM-DD)보다 오래된 글이 나올 때까지 목록을 뒤로 넘기며 모음 (최대 40페이지) */
+export async function fetchBoardSince(src: BoardSource, since: string): Promise<NewsItem[]> {
+  if (!src.pageParam) return [];
+  const out: NewsItem[] = [];
+  for (let page = 1; page <= 40; page++) {
+    let items: NewsItem[];
+    try {
+      items = parseBoard(src, await fetchHtml(pageUrl(src, page), 15_000));
+    } catch {
+      break;
+    }
+    if (items.length === 0) break;
+    const sinceTime = Date.parse(`${since}T00:00:00+09:00`);
+    out.push(...items.filter((n) => Date.parse(n.publishedAt) >= sinceTime));
+    if (items.some((n) => Date.parse(n.publishedAt) < sinceTime)) break; // 기간 밖까지 왔으면 끝
+  }
   return out;
 }
 

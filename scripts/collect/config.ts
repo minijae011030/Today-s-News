@@ -8,7 +8,7 @@ try {
 export type FeedSource = { category: string; keepDays?: number; label?: string } & (
   | { type: "rss"; url: string }
   | { type: "naver"; query: string; allPress?: boolean } // 기본은 주요 언론사 기사만, allPress면 모든 매체
-  | { type: "board"; url: string; source: string } // RSS 없는 게시판 (금감원·금융위 보도자료)
+  | { type: "board"; url: string; source: string; pageParam?: string } // RSS 없는 게시판 (금감원·금융위 보도자료). pageParam: 목록 페이지 번호 이름
 );
 
 export type NewsItem = {
@@ -42,6 +42,9 @@ export type NewsItem = {
 };
 
 export const PRESS_LABEL = "보도자료";
+export const PRESS_KEEP_DAYS = 90; // 보도자료 보관 기간 (지난 글 채우기도 이 기간만큼). 논술·면접 준비용으로 한 분기
+export const PRESS_RECENT_DAYS = 14; // news.json에 같이 넣는 최근 보도자료 (나머지는 press.json 보관소 → 앱이 필요할 때만 받음)
+export const PRESS_BACKFILL_PER_RUN = 40; // 지난 보도자료를 한 번 수집에 최대 몇 건씩 채울지 (Gemini 한도 고려)
 export const SUMMARY_VERSION = 2; // 2: 보도자료 요약 짧게 + 논점 배경/근거·대응/쟁점 + 용어 // 금감원·금융위 보도자료: 섹션 이름이자 라벨
 export const NEWS_SECTIONS = ["경제", "정치", "IT", "과학", "문화"]; // LLM이 기사를 나눌 섹션
 export const SECTIONS = [PRESS_LABEL, ...NEWS_SECTIONS]; // 화면·요약 카드 순서

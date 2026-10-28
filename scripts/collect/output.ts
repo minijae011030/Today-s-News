@@ -1,10 +1,15 @@
 // 저장 (news.json + meta.json) · GitHub Actions 요약 카드
 import { appendFile, mkdir, writeFile } from "node:fs/promises";
-import { DATA_DIR, SECTIONS, report, type NewsItem } from "./config.ts";
+import { DATA_DIR, PRESS_LABEL, PRESS_RECENT_DAYS, SECTIONS, report, type NewsItem } from "./config.ts";
 
 export async function save(items: NewsItem[]): Promise<void> {
   await mkdir(DATA_DIR, { recursive: true });
-  await writeFile(`${DATA_DIR}/news.json`, JSON.stringify(items, null, 2));
+  // 앱이 처음 여는 news.json은 가볍게: 보도자료는 최근 2주만. 3달치 전체는 press.json (보도자료 탭·검색에서만 받음)
+  const recent = Date.now() - PRESS_RECENT_DAYS * 86_400_000;
+  const isPress = (n: NewsItem) => n.label === PRESS_LABEL;
+  const main = items.filter((n) => !isPress(n) || Date.parse(n.publishedAt) >= recent);
+  await writeFile(`${DATA_DIR}/news.json`, JSON.stringify(main, null, 2));
+  await writeFile(`${DATA_DIR}/press.json`, JSON.stringify(items.filter(isPress), null, 2));
   // 푸터의 "마지막 수집", 알림·커밋 메시지용
   const meta = { updatedAt: new Date().toISOString(), count: items.length, summarized: items.filter((n) => n.summary).length, ...report };
   await writeFile(`${DATA_DIR}/meta.json`, JSON.stringify(meta, null, 2));

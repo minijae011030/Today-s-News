@@ -41,7 +41,7 @@ export function SectionPage({
       <h2 className="mt-8 font-serif text-4xl font-bold">{section}</h2>
       <p className="mt-1 text-sm text-muted">
         {shown.length} {shown.length === 1 ? (isPress ? "release" : "story") : isPress ? "releases" : "stories"} from the
-        past {isPress ? "two weeks" : "three days"}
+        past {isPress ? "month" : "three days"}
       </p>
 
       {/* 과학 섹션 첫 페이지 맨 위에만 */}

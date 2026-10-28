@@ -13,7 +13,10 @@ if (!existsSync(file)) {
   console.log("ℹ️  dist/data/news.json 없음 → 공유 페이지 건너뜀");
   process.exit(0);
 }
-const items = JSON.parse(readFileSync(file, "utf8")).filter((n) => !n.hidden && n.summary);
+// 기사 + 보도자료 보관소(3달치)
+const read = (f) => (existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : []);
+const byId = new Map([...read(`${DIST}/data/press.json`), ...read(file)].map((n) => [n.id, n]));
+const items = [...byId.values()].filter((n) => !n.hidden && n.summary);
 
 const esc = (s = "") =>
   String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
