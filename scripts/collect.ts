@@ -16,7 +16,7 @@
  */
 import { readFile } from "node:fs/promises";
 import { DROPPED, KEEP_DAYS, MAX_NEW_BY_SECTION, MAX_NEW_PER_BUCKET, MIGRATE, PRESS_LABEL, report, type FeedSource, type NewsItem } from "./collect/config.ts";
-import { fillMissingPdfs, fixTruncatedTitles } from "./collect/article.ts";
+import { fillMissingPdfs, fixTitles } from "./collect/article.ts";
 import { makeConcept } from "./collect/concept.ts";
 import { enrich } from "./collect/enrich.ts";
 import { StoryIndex, hideDuplicates, isPhotoOnly } from "./collect/dedupe.ts";
@@ -100,7 +100,7 @@ async function main() {
   console.log(`📥 수집 ${fetched.length}건 → 새 기사 ${fresh.length}건 · 보관 ${items.length}건`);
 
   await fillMissingPdfs(items);
-  await fixTruncatedTitles(items);
+  await fixTitles(items);
   await enrich(items, () => save(items));
 
   // 숨긴 기사는 빼고, 옮겨진 섹션 기준으로 새 기사 수 계산 (알림·커밋 메시지용)

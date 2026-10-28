@@ -51,7 +51,9 @@ function decodeEntities(s: string): string {
 }
 
 export function stripHtml(s = "", max = 300): string {
-  return decodeEntities(s.replace(/<[^>]*>/g, " "))
+  // 네이버는 검색어를 <b>코스피</b>처럼 감싸서 줌 → 글자 안쪽 태그는 공백 없이 지워야 "코스피 ," 같은 띄어쓰기가 안 생김
+  const noInline = s.replace(/<\/?(b|strong|em|i|u|mark|span|font)\b[^>]*>/gi, "");
+  return decodeEntities(noInline.replace(/<[^>]*>/g, " "))
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, max);

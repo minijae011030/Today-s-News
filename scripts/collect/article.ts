@@ -78,14 +78,16 @@ export async function fillMissingPdfs(items: NewsItem[]): Promise<void> {
   if (targets.length) console.log(`📄 보도자료 PDF 링크 복구 ${found}/${targets.length}`);
 }
 
-// 잘린 제목("...")이면 원문 페이지의 제목 후보들로 복원
+// 원문 페이지의 제목 후보들로 제목 바로잡기
+//  1) 잘린 제목("...")이면 온전한 제목으로 복원
+//  2) 글자는 같은데 띄어쓰기만 다르면(예전 태그 제거 버그: "코스피 ,") 원문 띄어쓰기로
 // 사이트마다 따옴표 모양("" vs “”), 띄어쓰기, 앞뒤에 붙는 매체 이름([라이브뉴스], - 스마트경제)이 달라서
 // 글자·숫자만 남겨 비교하고, 잘린 제목의 앞부분이 들어 있는 후보만 씀 (엉뚱한 제목 방지)
 const TRUNCATED = /(\.\.\.|…)\s*$/;
 export const isTruncated = (t: string) => TRUNCATED.test(t);
 const bare = (t: string) => t.replace(/[^\p{L}\p{N}]/gu, "");
 function restoreTitle(n: NewsItem, candidates: string[], siteName?: string): void {
-  if (!TRUNCATED.test(n.title)) return;
+  const truncated = TRUNCATED.test(n.title);
   const cut = n.title.replace(TRUNCATED, "").trim();
   const prefix = bare(cut).slice(0, 12);
   for (const raw of candidates) {
@@ -95,16 +97,24 @@ function restoreTitle(n: NewsItem, candidates: string[], siteName?: string): voi
     // 앞에 붙은 매체 표시 ([라온신문], ≪브레이크뉴스≫): 원래 제목이 그걸로 시작하지 않을 때만 뗌
     if (!/^[[≪<【]/.test(cut)) t = t.replace(/^\s*(\[[^\]]{1,15}\]|≪[^≫]{1,15}≫|【[^】]{1,15}】)\s*/, "");
     const b = bare(t);
-    if (prefix.length >= 6 && b.startsWith(prefix) && b.length >= bare(cut).length && !TRUNCATED.test(t)) {
+    if (truncated && prefix.length >= 6 && b.startsWith(prefix) && b.length >= bare(cut).length && !TRUNCATED.test(t)) {
       n.title = t;
+      return;
+    }
+    if (!truncated && b === bare(n.title)) {
+      n.title = t; // 글자는 그대로, 띄어쓰기·따옴표만 원문대로
       return;
     }
   }
 }
 
-// 예전에 복원 못 한 잘린 제목 다시 시도 (원문 페이지만 읽음, LLM 호출 없음). 한 번에 40건, 기사마다 한 번만
-export async function fixTruncatedTitles(items: NewsItem[]): Promise<void> {
-  const targets = items.filter((n) => !n.hidden && n.titleFix !== 2 && TRUNCATED.test(n.title)).slice(0, 40);
+// 예전 기사 제목 바로잡기 (원문 페이지만 읽음, LLM 호출 없음): 잘린 제목 먼저, 그다음 네이버에서 온 최신 기사순
+// 한 번에 40건, 기사마다 한 번만
+export async function fixTitles(items: NewsItem[]): Promise<void> {
+  const targets = items
+    .filter((n) => !n.hidden && n.titleFix !== 2 && (TRUNCATED.test(n.title) || !n.label))
+    .sort((a, b) => Number(TRUNCATED.test(b.title)) - Number(TRUNCATED.test(a.title)))
+    .slice(0, 40);
   if (!targets.length) return;
   await Promise.all(
     targets.map(async (n) => {
@@ -113,8 +123,8 @@ export async function fixTruncatedTitles(items: NewsItem[]): Promise<void> {
       n.titleFix = 2;
     }),
   );
-  const fixed = targets.filter((n) => !TRUNCATED.test(n.title)).length;
-  console.log(`✂️  잘린 제목 복원 ${fixed}/${targets.length}`);
+  const left = targets.filter((n) => TRUNCATED.test(n.title)).length;
+  console.log(`✂️  제목 바로잡기 ${targets.length}건 확인 (잘린 채 남은 것 ${left}건)`);
 }
 
 // 원문을 읽어서 기사 정보(언론사·제목·사진·첨부)를 채우고, LLM에 넘길 본문을 돌려줌
@@ -127,7 +137,7 @@ export async function readArticle(n: NewsItem): Promise<string> {
   // 보도자료는 source로 기관을 구분하니 그대로 둠
   if (!isPress && page.siteName && page.siteName.length <= 20) n.source = page.siteName;
   restoreTitle(n, page.titles, page.siteName);
-  n.titleFix = 2;
+  n.titleFix = 2; // 새 기사는 여기서 바로잡혔으니 다시 안 봄
   if (!n.image && page.image) n.image = page.image;
 
   // 보도자료는 핵심이 첨부 PDF에 있음 → PDF 글자를 본문으로
