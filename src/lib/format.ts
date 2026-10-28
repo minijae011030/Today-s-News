@@ -1,4 +1,8 @@
+import { SHOW_NEWS_PHOTOS } from "./constants";
 import type { NewsItem } from "../types/news";
+
+/** 화면에 보여줄 기사 사진 (언론사 사진을 끈 상태면 보도자료 사진만) */
+export const photoOf = (n: NewsItem) => (SHOW_NEWS_PHOTOS || n.label === "보도자료" ? n.image : undefined);
 
 /**
  * 제목 정리: 말머리와 부제를 떼서 본 제목만
@@ -10,10 +14,11 @@ export function titleParts(n: NewsItem): { title: string; series?: string; subti
   let title = (n.titleKo ?? n.title).replace(/\s+/g, " ").trim();
   if (n.label === "보도자료") {
     title = title.replace(/\.?\s*금일 등록된 게시글\s*$/, "").replace(/\s*-\s*$/, "");
+    title = title.replace(/^(.{10,}?)\s+-\s*(.+)$/, (_, a: string, b: string) => `${a.replace(/\.\s*$/, "")} - ${b}`);
     // 단어 사이 하이픈(농진청-인천대)은 그대로 두고, 앞에 띄어쓰기가 있는 " -" 에서만 나눔
     const m = title.match(/^(.{10,}?)\s+-\s*(.+)$/);
     if (m) return { title: m[1].trim(), subtitle: m[2].replace(/\.\s*$/, "").trim() };
-    return { title };
+    return { title: title.replace(/\.\s*$/, "") }; // 제목 끝 마침표는 뺌
   }
   let series: string | undefined;
   const head = title.match(/^[[【]\s*([^\]】]{1,20}?)\s*[\]】]\s*(.+)$/);

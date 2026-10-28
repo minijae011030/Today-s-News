@@ -42,7 +42,7 @@ for (const n of items) {
 <meta property="og:url" content="${url}">
 <meta property="og:title" content="${esc(kicker + title)}">
 <meta property="og:description" content="${esc(cut(n.summary, 150))}">
-<meta property="og:image" content="${esc(n.image ?? DEFAULT_IMAGE)}">
+<meta property="og:image" content="${esc(n.label === "보도자료" && n.image ? n.image : DEFAULT_IMAGE)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta http-equiv="refresh" content="0; url=../../#/article/${n.id}">
 <script>location.replace("../../#/article/${n.id}")</script>

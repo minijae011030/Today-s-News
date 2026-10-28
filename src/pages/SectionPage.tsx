@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Notice } from "../components/atoms/Notice";
 import { FilterTabs } from "../components/molecules/FilterTabs";
 import { Pagination } from "../components/molecules/Pagination";
@@ -6,6 +7,9 @@ import { SpaceFeature } from "../components/organisms/SpaceFeature";
 import { AGENCY_SHORT, PAGE_SIZE, PRESS } from "../lib/constants";
 import { href } from "../lib/route";
 import type { NewsItem, SpacePhoto } from "../types/news";
+
+const kstDay = (iso: string) =>
+  new Date(iso).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long", timeZone: "Asia/Seoul" });
 
 export function SectionPage({
   section,
@@ -65,9 +69,19 @@ export function SectionPage({
       {shown.length === 0 && <Notice>No stories in this section yet.</Notice>}
 
       <ul className={`${showTabs ? "mt-0" : "mt-6"} border-t border-ink`}>
-        {visible.map((n) => (
-          <StoryListItem key={n.id} item={n} />
-        ))}
+        {visible.map((n, i) => {
+          // 보도자료는 2주치라 날짜 머리글로 묶음 (10월 28일 화요일)
+          const day = isPress ? kstDay(n.publishedAt) : null;
+          const newDay = day && (i === 0 || day !== kstDay(visible[i - 1].publishedAt));
+          return (
+            <Fragment key={n.id}>
+              {newDay && (
+                <li className={`border-b border-ink pb-2 text-sm font-bold ${i === 0 ? "pt-4" : "pt-10"}`}>{day}</li>
+              )}
+              <StoryListItem item={n} />
+            </Fragment>
+          );
+        })}
       </ul>
 
       <Pagination current={current} total={totalPages} hrefFor={(p) => href.section(section, p, active)} />

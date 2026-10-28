@@ -12,7 +12,7 @@ import { makeTermLinker } from "../components/molecules/TermText";
 import { TermPopup } from "../components/organisms/TermPopup";
 import { termKey, type TermInfo } from "../lib/glossary";
 import { searchItems } from "../lib/search";
-import { formatPublished, titleParts } from "../lib/format";
+import { formatPublished, photoOf, titleParts } from "../lib/format";
 import { href } from "../lib/route";
 import type { NewsItem } from "../types/news";
 
@@ -81,7 +81,7 @@ export function ArticlePage({
         <p className="mt-3 border-l-2 border-ink pl-3 font-serif text-lg leading-snug text-ink-soft">{parts.subtitle}</p>
       )}
 
-      <StoryImage src={item.image} credit={item.source} ratio="natural" className="mt-6" priority />
+      <StoryImage src={photoOf(item)} credit={item.source} ratio="natural" className="mt-6" priority />
 
       {item.summary ? (
         <p className="mt-5 font-serif text-xl leading-[1.7] text-ink-soft">
@@ -118,7 +118,7 @@ export function ArticlePage({
       {item.essayPoint && (
         <section className="mt-8">
           <Label>논점</Label>
-          <EssayPoint text={linkTerms(item.essayPoint)} className="mt-6 text-lg" />
+          <EssayPoint text={item.essayPoint} render={linkTerms} className="mt-6 text-lg" />
         </section>
       )}
 
@@ -152,8 +152,12 @@ export function ArticlePage({
         </ul>
       )}
 
+      <p className="mt-10 border-t border-rule pt-4 text-sm leading-relaxed text-muted">
+        AI가 원문을 바탕으로 정리한 요약입니다. 틀린 내용이 있을 수 있으니, 중요한 내용은 원문에서 꼭 확인해 주세요.
+      </p>
+
       {/* 버튼: 폰에선 원문 보기가 한 줄 전체, 아래에 PDF·공유가 반반 / PC에선 한 줄로 */}
-      <div className="mt-10 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+      <div className="mt-4 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
         <a
           href={item.link}
           target="_blank"

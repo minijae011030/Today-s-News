@@ -1,4 +1,4 @@
-import { titleOf } from "../../lib/format";
+import { photoOf, titleOf } from "../../lib/format";
 import { href } from "../../lib/route";
 import type { ReactNode } from "react";
 import type { NewsItem } from "../../types/news";
@@ -24,7 +24,7 @@ export function LeadStory({
       ) : (
       <article className="md:col-span-2 md:border-r md:border-rule md:pr-8">
         <a href={href.article(lead.id)} tabIndex={-1} aria-hidden>
-          <StoryImage src={lead.image} credit={lead.source} ratio="natural" maxHeight="max-h-[26rem]" className="mb-4" priority />
+          <StoryImage src={photoOf(lead)} credit={lead.source} ratio="natural" maxHeight="max-h-[26rem]" className="mb-4" priority />
         </a>
         <Kicker category={lead.category} publishedAt={lead.publishedAt} label={lead.label} source={lead.source} />
         <a href={href.article(lead.id)} className="group block">

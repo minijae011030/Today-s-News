@@ -1,3 +1,4 @@
+import { photoOf } from "../lib/format";
 import { ConceptBox } from "../components/organisms/ConceptBox";
 import { LeadStory } from "../components/organisms/LeadStory";
 import { SectionColumns } from "../components/organisms/SectionColumns";
@@ -20,7 +21,7 @@ function byImportance(items: NewsItem[]): NewsItem[] {
 const LEAD_SECTIONS = ["경제", "정치", "IT"];
 function pickLead(items: NewsItem[]): NewsItem {
   const study = byImportance(items.filter((n) => LEAD_SECTIONS.includes(n.category) && n.summary));
-  return study.find((n) => n.image) ?? study[0] ?? items.find((n) => n.summary) ?? items[0];
+  return study.find((n) => photoOf(n)) ?? study[0] ?? items.find((n) => n.summary) ?? items[0];
 }
 
 // 오른쪽 주요 기사: 한 섹션이 도배하지 않게 섹션별 1건씩(많이 보도된 소식 먼저), 공부용 섹션 먼저
