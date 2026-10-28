@@ -152,31 +152,32 @@ export function ArticlePage({
         </ul>
       )}
 
-      <a
-        href={item.link}
-        target="_blank"
-        rel="noreferrer"
-        className="mt-10 inline-block bg-ink px-5 py-3 text-sm font-semibold text-paper hover:bg-ink-soft"
-      >
-        Read the original article
-      </a>
-
-      <ShareButton
-        item={item}
-        title={parts.title}
-        className="mt-10 ml-2 inline-block border border-ink px-5 py-3 text-sm font-semibold hover:bg-ink hover:text-paper"
-      />
-
-      {item.attachment && (
+      {/* 버튼: 폰에선 원문 보기가 한 줄 전체, 아래에 PDF·공유가 반반 / PC에선 한 줄로 */}
+      <div className="mt-10 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
         <a
-          href={item.attachment}
+          href={item.link}
           target="_blank"
           rel="noreferrer"
-          className="mt-10 ml-2 inline-block border border-ink px-5 py-3 text-sm font-semibold hover:bg-ink hover:text-paper"
+          className="col-span-2 bg-ink px-5 py-3 text-center text-sm font-semibold text-paper hover:bg-ink-soft"
         >
-          Press release PDF
+          Read the original article
         </a>
-      )}
+        {item.attachment && (
+          <a
+            href={item.attachment}
+            target="_blank"
+            rel="noreferrer"
+            className="border border-ink px-5 py-3 text-center text-sm font-semibold hover:bg-ink hover:text-paper"
+          >
+            Press release PDF
+          </a>
+        )}
+        <ShareButton
+          item={item}
+          title={parts.title}
+          className={`border border-ink px-5 py-3 text-center text-sm font-semibold hover:bg-ink hover:text-paper ${item.attachment ? "" : "col-span-2"}`}
+        />
+      </div>
 
       </div>
 
