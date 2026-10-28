@@ -20,7 +20,7 @@ export function BottomNav({ current }: { current: Tab }) {
   return (
     <nav
       aria-label="Main"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-rule bg-paper pb-[env(safe-area-inset-bottom)] sm:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-rule bg-paper pb-[max(env(safe-area-inset-bottom),0.5rem)] sm:hidden"
     >
       <ul className="relative grid grid-cols-3">
         {/* 미끄러지는 막대: 탭 한 칸 너비의 상자 가운데에 짧은 선 */}
