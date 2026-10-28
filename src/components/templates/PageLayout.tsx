@@ -9,6 +9,7 @@ import { PullToRefresh } from "../organisms/PullToRefresh";
 export function PageLayout({
   activeSection,
   isFront,
+  isGlossary = false,
   items,
   version,
   onRefresh,
@@ -16,6 +17,7 @@ export function PageLayout({
 }: {
   activeSection?: string;
   isFront: boolean;
+  isGlossary?: boolean;
   items: NewsItem[] | null;
   version: number;
   onRefresh: () => Promise<number | null>;
@@ -25,7 +27,7 @@ export function PageLayout({
     <>
     <PullToRefresh onRefresh={onRefresh}>
       <div className="mx-auto max-w-300 px-4 pb-24 sm:px-6">
-        <Masthead active={activeSection} isFront={isFront} />
+        <Masthead active={activeSection} isFront={isFront} isGlossary={isGlossary} />
         {children}
         <Footer items={items} version={version} />
       </div>

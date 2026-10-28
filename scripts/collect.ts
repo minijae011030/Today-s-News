@@ -2,7 +2,7 @@
  * 뉴스 수집 스크립트
  * feeds.json → (네이버 뉴스 검색 / RSS / 게시판) 수집 → 중복 제거 → 새 기사 고르기
  *   → 원문·PDF 읽기 → Gemini 요약 → public/data/news.json
- *   + 오늘의 개념(concept.json), 오늘의 우주 사진(space.json)
+ *   + 오늘의 개념(concept.json), 오늘의 우주 사진(space.json), 용어 사전(glossary.json)
  *
  * 실행: npm run collect
  * 환경변수(.env): GEMINI_API_KEY, NAVER_CLIENT_ID, NAVER_CLIENT_SECRET
@@ -12,12 +12,14 @@
  *   article.ts  원문·PDF 읽기           gemini.ts   Gemini 호출
  *   enrich.ts   요약·섹션 확인          concept.ts  오늘의 개념
  *   space.ts    오늘의 우주 사진        output.ts   저장·Actions 요약
+ *   glossary.ts 용어 사전
  */
 import { readFile } from "node:fs/promises";
 import { DROPPED, KEEP_DAYS, MAX_NEW_PER_BUCKET, MIGRATE, PRESS_LABEL, report, type FeedSource, type NewsItem } from "./collect/config.ts";
 import { fillMissingPdfs } from "./collect/article.ts";
 import { makeConcept } from "./collect/concept.ts";
 import { enrich } from "./collect/enrich.ts";
+import { updateGlossary } from "./collect/glossary.ts";
 import { save, writeActionsSummary } from "./collect/output.ts";
 import { fetchSource } from "./collect/sources.ts";
 import { makeSpacePhoto } from "./collect/space.ts";
@@ -80,6 +82,7 @@ async function main() {
     report.newCount++;
     report.newByCategory[n.category] = (report.newByCategory[n.category] ?? 0) + 1;
   }
+  await updateGlossary(items.filter((n) => !n.hidden));
   await makeConcept(items);
   await makeSpacePhoto();
   await save(items);

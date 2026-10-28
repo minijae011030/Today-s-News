@@ -6,9 +6,11 @@ import { SearchIcon } from "../atoms/SearchIcon";
 export function Masthead({
   active,
   isFront,
+  isGlossary = false,
 }: {
   active?: string;
   isFront: boolean;
+  isGlossary?: boolean;
 }) {
   return (
     <header className="pt-4">
@@ -38,6 +40,11 @@ export function Masthead({
               {s}
             </NavLink>
           ))}
+          {/* 섹션과 구분되게 얇은 세로선 뒤에 */}
+          <li aria-hidden className="w-px shrink-0 self-stretch bg-rule" />
+          <NavLink href={href.glossary()} current={isGlossary}>
+            용어 사전
+          </NavLink>
         </ul>
       </nav>
       <div className="mt-0.75 border-t border-ink" />

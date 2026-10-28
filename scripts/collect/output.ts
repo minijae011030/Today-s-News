@@ -27,6 +27,7 @@ export async function writeActionsSummary(total: number): Promise<void> {
   add(r.concept, `📘 오늘의 개념: **${r.concept}**`);
   add(r.pdfRead, `📄 보도자료 PDF ${r.pdfRead}건 읽음`);
   add(r.spacePhoto, `🌌 오늘의 우주 사진: **${r.spacePhoto}**`);
+  add(r.newTerms.length, `📖 용어 사전 +${r.newTerms.length}: ${r.newTerms.join(", ")}`);
   add(r.hidden, `🙈 섹션에 안 맞아서 숨긴 기사 ${r.hidden}건`);
   add(r.moved.length, `↪️ 섹션을 옮긴 기사: ${r.moved.join(", ")}`);
   add(r.llmFailedBatches, `⚠️ 요약 실패한 배치 ${r.llmFailedBatches}개 (다음 수집 때 다시 시도)`);
