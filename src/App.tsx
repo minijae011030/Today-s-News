@@ -35,7 +35,7 @@ export default function App() {
       {!error && items && items.length === 0 && <Notice>No stories yet.</Notice>}
 
       {items && items.length > 0 && route.name === "front" && (
-        <FrontPage items={items} concept={concept} space={space} />
+        <FrontPage items={items} concept={concept} />
       )}
       {items && items.length > 0 && route.name === "section" && (
         <SectionPage
@@ -43,6 +43,7 @@ export default function App() {
           page={route.page}
           filter={route.filter}
           items={items.filter((n) => n.category === route.section)}
+          space={route.section === "과학" ? space : null}
         />
       )}
       {items && items.length > 0 && route.name === "search" && (

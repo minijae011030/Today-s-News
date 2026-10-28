@@ -2,20 +2,23 @@ import { Notice } from "../components/atoms/Notice";
 import { FilterTabs } from "../components/molecules/FilterTabs";
 import { Pagination } from "../components/molecules/Pagination";
 import { StoryListItem } from "../components/molecules/StoryListItem";
+import { SpaceFeature } from "../components/organisms/SpaceFeature";
 import { AGENCY_SHORT, PAGE_SIZE, PRESS } from "../lib/constants";
 import { href } from "../lib/route";
-import type { NewsItem } from "../types/news";
+import type { NewsItem, SpacePhoto } from "../types/news";
 
 export function SectionPage({
   section,
   page,
   filter,
   items,
+  space = null,
 }: {
   section: string;
   page: number;
   filter?: string;
   items: NewsItem[];
+  space?: SpacePhoto | null; // 과학 섹션 맨 위: NASA 오늘의 우주 사진·영상
 }) {
   // 보도자료 탭은 기관별, 다른 탭은 라벨 붙은 글이 있을 때만 라벨별로 거르는 탭을 보여줌
   const isPress = section === PRESS;
@@ -36,6 +39,13 @@ export function SectionPage({
         {shown.length} {shown.length === 1 ? (isPress ? "release" : "story") : isPress ? "releases" : "stories"} from the
         past {isPress ? "two weeks" : "three days"}
       </p>
+
+      {/* 과학 섹션 첫 페이지 맨 위에만 */}
+      {space && current === 1 && !active && (
+        <div className="mt-6 border-t-2 border-ink pt-5">
+          <SpaceFeature photo={space} />
+        </div>
+      )}
 
       {showTabs && (
         <FilterTabs
