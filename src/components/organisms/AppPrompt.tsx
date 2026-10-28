@@ -128,7 +128,7 @@ export function AppPrompt() {
               Get notified about new stories?
             </h2>
             <p className="mt-2 font-serif leading-[1.75] text-ink-soft">
-              We&rsquo;ll send a short alert when new stories arrive. You can turn this off anytime at the bottom of the page.
+              We&rsquo;ll send a short briefing twice a day, at 7 a.m. and 7 p.m. You can turn this off anytime at the bottom of the page.
             </p>
             <div className="mt-4 flex items-center justify-end gap-2">
               <button type="button" onClick={later} className={secondary}>

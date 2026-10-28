@@ -40,7 +40,7 @@ export function NotifyButton() {
       )}
       {state === "on" && (
         <p className="mt-2">
-          You&rsquo;re getting notifications.{" "}
+          You&rsquo;ll get a briefing at 7 a.m. and 7 p.m.{" "}
           <button
             type="button"
             onClick={disable}
