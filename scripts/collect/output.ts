@@ -31,6 +31,15 @@ export async function writeActionsSummary(total: number): Promise<void> {
   add(r.hidden, `🙈 섹션에 안 맞아서 숨긴 기사 ${r.hidden}건`);
   add(r.moved.length, `↪️ 섹션을 옮긴 기사: ${r.moved.join(", ")}`);
   add(r.llmFailedBatches, `⚠️ 요약 실패한 배치 ${r.llmFailedBatches}개 (다음 수집 때 다시 시도)`);
+  add(r.newHot.length, `🔥 새 핫 키워드 (2주간 추가 검색): ${r.newHot.join(", ")}`);
+  const dead = r.keywords.filter((k) => k.dead);
+  add(dead.length, `💤 죽은 키워드 (${dead.length}): ${dead.map((k) => `${k.category}:${k.query}`).join(", ")} — feeds.json에서 빼도 됨`);
+  if (r.keywords.length) {
+    lines.push("", "<details><summary>🔑 키워드 성적표</summary>", "", "| 섹션 | 키워드 | 이번 검색 | 실림 | 숨김 | |", "|---|---|---|---|---|---|");
+    for (const k of [...r.keywords].sort((a, b) => SECTIONS.indexOf(a.category) - SECTIONS.indexOf(b.category) || b.kept - a.kept))
+      lines.push(`| ${k.category} | ${k.query} | ${k.fetchedNow} | ${k.kept} | ${k.hidden} | ${k.hot ? "🔥" : ""}${k.dead ? "💤" : ""} |`);
+    lines.push("", "</details>");
+  }
   if (r.failedFeeds.length) {
     lines.push("", "### ⚠️ 실패한 피드", "", "| 섹션 | 소스 | 이유 |", "|---|---|---|");
     for (const f of r.failedFeeds) lines.push(`| ${f.category} | ${f.source} | ${f.error.replace(/\|/g, "/")} |`);

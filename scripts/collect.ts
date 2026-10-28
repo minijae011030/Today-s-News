@@ -12,14 +12,15 @@
  *   article.ts  원문·PDF 읽기           gemini.ts   Gemini 호출
  *   enrich.ts   요약·섹션 확인          concept.ts  오늘의 개념
  *   space.ts    오늘의 우주 사진        output.ts   저장·Actions 요약
- *   glossary.ts 용어 사전
+ *   glossary.ts 용어 사전              keywords.ts 키워드 성적표·핫 키워드
  */
 import { readFile } from "node:fs/promises";
-import { DROPPED, KEEP_DAYS, MAX_NEW_PER_BUCKET, MIGRATE, PRESS_LABEL, report, type FeedSource, type NewsItem } from "./collect/config.ts";
+import { DROPPED, KEEP_DAYS, MAX_NEW_BY_SECTION, MAX_NEW_PER_BUCKET, MIGRATE, PRESS_LABEL, report, type FeedSource, type NewsItem } from "./collect/config.ts";
 import { fillMissingPdfs } from "./collect/article.ts";
 import { makeConcept } from "./collect/concept.ts";
 import { enrich } from "./collect/enrich.ts";
 import { updateGlossary } from "./collect/glossary.ts";
+import { hotSources, loadKeywords, saveKeywords, scoreKeywords, updateHot } from "./collect/keywords.ts";
 import { save, writeActionsSummary } from "./collect/output.ts";
 import { fetchSource } from "./collect/sources.ts";
 import { makeSpacePhoto } from "./collect/space.ts";
@@ -38,11 +39,13 @@ async function loadPrevious(): Promise<Map<string, NewsItem>> {
   );
 }
 
-// 묶음(섹션별. 보도자료·기술 블로그처럼 뜸하게 올라오는 소스는 소스별)마다 "이미 실린 가장 최근 기사"보다 새 기사만, 최신순으로 최대 MAX_NEW_PER_BUCKET건.
+// 묶음(섹션별. 보도자료·기술 블로그처럼 뜸하게 올라오는 소스는 소스별)마다 "이미 실린 가장 최근 기사"보다 새 기사만, 최신순으로 상한까지.
 // (이게 없으면 상한에 걸려 못 받은 예전 기사들이 다음 수집마다 줄줄이 다시 들어옴)
 function pickNew(fetched: NewsItem[], known: Map<string, NewsItem>): NewsItem[] {
   // 뜸한 소스(보도자료·keepDays 블로그)를 섹션과 같이 세면, 오늘 기사 때문에 며칠 전 블로그 글이 "옛날 글"로 걸러짐
-  const bucket = (n: NewsItem) => (n.label || n.keepDays ? `${n.category}:${n.source}` : n.category);
+  const perSource = (n: NewsItem) => !!(n.label || n.keepDays);
+  const bucket = (n: NewsItem) => (perSource(n) ? `${n.category}:${n.source}` : n.category);
+  const limit = (n: NewsItem) => (perSource(n) ? MAX_NEW_PER_BUCKET : (MAX_NEW_BY_SECTION[n.category] ?? MAX_NEW_PER_BUCKET));
   const latest: Record<string, string> = {};
   for (const n of known.values()) {
     const b = bucket(n);
@@ -55,7 +58,7 @@ function pickNew(fetched: NewsItem[], known: Map<string, NewsItem>): NewsItem[] 
     const b = bucket(n);
     if (!n.key || !n.link || known.has(n.key) || seen.has(n.key)) continue; // 같은 기사가 여러 키워드에 걸린 경우
     if (latest[b] && n.publishedAt <= latest[b]) continue;
-    if ((taken[b] ?? 0) >= MAX_NEW_PER_BUCKET) continue;
+    if ((taken[b] ?? 0) >= limit(n)) continue;
     taken[b] = (taken[b] ?? 0) + 1;
     seen.add(n.key);
     picked.push(n);
@@ -64,7 +67,9 @@ function pickNew(fetched: NewsItem[], known: Map<string, NewsItem>): NewsItem[] 
 }
 
 async function main() {
-  const sources: FeedSource[] = JSON.parse(await readFile("feeds.json", "utf8"));
+  const fixed: FeedSource[] = JSON.parse(await readFile("feeds.json", "utf8"));
+  const keywords = await loadKeywords();
+  const sources = [...fixed, ...hotSources(keywords)]; // 고정 키워드 + 요즘 뜨는 키워드(2주짜리)
   const prev = await loadPrevious();
   const fetched = (await Promise.all(sources.map(fetchSource))).flat();
   const fresh = pickNew(fetched, prev);
@@ -83,6 +88,9 @@ async function main() {
     report.newCount++;
     report.newByCategory[n.category] = (report.newByCategory[n.category] ?? 0) + 1;
   }
+  scoreKeywords(keywords, sources, fetched, items);
+  await updateHot(keywords, fixed, items); // 일주일에 한 번, 다음 수집부터 적용
+  await saveKeywords(keywords);
   await updateGlossary(items.filter((n) => !n.hidden));
   await makeConcept(items);
   await makeSpacePhoto();

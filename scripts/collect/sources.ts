@@ -67,6 +67,7 @@ async function fetchNaver(src: Extract<FeedSource, { type: "naver" }>): Promise<
     const link = it.originallink || it.link;
     return {
       ...baseItem(src, stripHtml(it.title, 500)),
+      via: src.query,
       link,
       source: pressName(link),
       publishedAt: new Date(it.pubDate).toISOString(),

@@ -18,6 +18,14 @@
   { "category": "경제", "type": "naver", "query": "스테이블코인", "majorOnly": true },
   { "category": "경제", "type": "naver", "query": "주가 폭락", "majorOnly": true },
   { "category": "경제", "type": "naver", "query": "비트코인", "majorOnly": true },
+  { "category": "경제", "type": "naver", "query": "은행 횡령", "majorOnly": true },
+  { "category": "경제", "type": "naver", "query": "보이스피싱", "majorOnly": true },
+  { "category": "경제", "type": "naver", "query": "금융사고 제재", "majorOnly": true },
+  { "category": "경제", "type": "naver", "query": "보험사 건전성", "majorOnly": true },
+  { "category": "경제", "type": "naver", "query": "상장폐지", "majorOnly": true },
+  { "category": "경제", "type": "naver", "query": "사모펀드 MBK", "majorOnly": true },
+  { "category": "경제", "type": "naver", "query": "국민연금 기금", "majorOnly": true },
+  { "category": "경제", "type": "naver", "query": "코리아 디스카운트", "majorOnly": true },
   { "category": "경제", "type": "rss", "url": "https://www.federalreserve.gov/feeds/press_all.xml" },
 
   { "category": "정치", "type": "naver", "query": "여야 충돌", "majorOnly": true },
@@ -40,6 +48,7 @@
   { "category": "IT", "type": "naver", "query": "해킹 개인정보 유출", "majorOnly": true },
   { "category": "IT", "type": "naver", "query": "AI 반도체", "majorOnly": true },
   { "category": "IT", "type": "naver", "query": "핀테크", "majorOnly": true },
+  { "category": "IT", "type": "naver", "query": "구글 애플 인앱결제", "majorOnly": true },
 
   { "category": "과학", "type": "naver", "query": "천문학 연구" },
   { "category": "과학", "type": "naver", "query": "블랙홀 관측" },

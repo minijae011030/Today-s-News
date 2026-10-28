@@ -34,6 +34,7 @@ export type NewsItem = {
   spaceFact?: string; // 과학: 알고 보면 재밌는 과학 지식 (예전 이름 그대로 씀)
   keyPoints?: string[]; // 보도자료 주요 내용
   terms?: string[]; // 용어 풀이할 전문 용어 (보도자료·경제·정치)
+  via?: string; // 어느 검색어로 들어왔는지 (키워드 성적표용)
 };
 
 export const PRESS_LABEL = "보도자료"; // 금감원·금융위 보도자료: 섹션 이름이자 라벨
@@ -53,7 +54,9 @@ export const SHARED_DIR = "public/data"; // 로컬 첫 실행 때 봇이 만든 
 
 export const KEEP_DAYS = 3;
 export const MAX_PER_FEED = 7; // 키워드/피드당 최신 몇 건만
-export const MAX_NEW_PER_BUCKET = 6; // 한 번 수집에 섹션(보도자료는 기관)당 새 글 최대 수
+export const MAX_NEW_PER_BUCKET = 6; // 한 번 수집에 섹션(보도자료·블로그는 소스)당 새 글 최대 수
+// 섹션별로 다르게: 공부용인 경제는 넉넉히, 취미인 과학·문화는 조금만 (전체 Gemini 사용량은 오히려 줄어듦)
+export const MAX_NEW_BY_SECTION: Record<string, number> = { 경제: 10, 과학: 2, 문화: 2 };
 export const BATCH = 8; // Gemini 한 번에 넘길 기사 수
 export const BODY_CHARS = 1200; // LLM에 넘길 본문 길이 (리드 몇 문단이면 요약엔 충분)
 export const PRESS_CHARS = 6000; // 보도자료 PDF는 핵심이 본문이라 더 길게
@@ -75,4 +78,16 @@ export const report = {
   concept: null as string | null,
   spacePhoto: null as string | null,
   newTerms: [] as string[], // 이번에 사전에 추가된 용어
+  keywords: [] as KeywordRow[], // 키워드 성적표
+  newHot: [] as string[], // 이번에 새로 잡힌 핫 키워드
+};
+
+export type KeywordRow = {
+  category: string;
+  query: string;
+  hot: boolean; // 자동으로 잡은 핫 키워드인지
+  fetchedNow: number; // 이번 수집에서 검색된 수
+  kept: number; // 보관 중 기사 중 섹션에 실린 수
+  hidden: number; // 보관 중 기사 중 섹션에 안 맞아 숨긴 수
+  dead: boolean; // 며칠째 실린 기사가 없음
 };
