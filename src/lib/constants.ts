@@ -1,4 +1,4 @@
-export const SECTIONS = ["경제", "정치", "사회", "IT", "과학", "문화"] as const;
+export const SECTIONS = ["경제", "정치", "IT", "과학", "문화"] as const;
 
 export const PAGE_SIZE = 10;
 

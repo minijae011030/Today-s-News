@@ -17,7 +17,7 @@ export function useNews() {
     // 섹션 개편 전 데이터도 새 섹션으로 보이게 (다음 수집 때 데이터도 바뀜)
     const migrate: Record<string, string> = { 국제: "경제", 우주: "과학", 예술: "문화", 책: "문화", 엔터: "문화" };
     return all
-      .filter((n) => !n.hidden) // 섹션에 안 맞는 기사는 숨김
+      .filter((n) => !n.hidden && n.category !== "사회") // 섹션에 안 맞는 기사·없앤 섹션은 숨김
       .map((n) => (migrate[n.category] ? { ...n, category: migrate[n.category] } : n));
   }, []);
 

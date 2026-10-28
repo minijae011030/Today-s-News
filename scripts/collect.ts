@@ -37,7 +37,7 @@ export type NewsItem = {
   // LLM이 채우는 필드
   summary?: string;
   tags?: string[];
-  essayPoint?: string; // 경제·정치·사회: 논술 포인트
+  essayPoint?: string; // 경제·정치: 논술 포인트
   label?: string; // "보도자료"처럼 기사와 구분할 라벨
   attachment?: string; // 보도자료 PDF 주소
   keyPoints?: string[]; // 보도자료 주요 내용 (PDF 기반)
@@ -75,7 +75,8 @@ const SHARED = "public/data/news.json"; // 로컬 첫 실행 때 봇이 만든 �
 const KEEP_DAYS = 3;
 // 섹션 개편: 예전 섹션 이름 → 새 섹션
 const MIGRATE: Record<string, string> = { 국제: "경제", 우주: "과학", 예술: "문화", 책: "문화", 엔터: "문화" };
-const SECTION_LIST = ["경제", "정치", "사회", "IT", "과학", "문화"];
+const SECTION_LIST = ["경제", "정치", "IT", "과학", "문화"];
+const DROPPED = new Set(["사회"]); // 없앤 섹션: 기존 기사도 정리
 
 const MAX_NEW_PER_SECTION = 6; // 한 번 수집에 섹션당 새 기사 최대 수 (8섹션 × 6 = 최대 48건)
 const MAX_PER_FEED = 7; // 키워드/피드당 최신 몇 건만 (양이 많을수록 LLM 비용·시간이 늘어남)
@@ -507,11 +508,11 @@ async function save(items: NewsItem[]): Promise<void> {
 const PROMPT = `다음 뉴스 목록 각각에 대해 JSON 배열로만 답해.
 각 원소: {
   "idx": number,
-  "fit": "이 기사가 실제로 속하는 섹션 하나 (경제, 정치, 사회, IT, 과학, 문화 중). 국제 뉴스는 내용에 따라 경제(금리·환율·무역)·정치(외교·정상회담)·사회(전쟁·재난)로. 문화에는 전시·공연·책·영화·드라마가 들어감. 정치는 법안·정책 내용이 있는 기사만, 정당끼리 비난만 오가는 기사는 null. 검색 키워드가 비유로만 쓰였거나(예: '의료의 블랙홀', '우주 최강') 어느 섹션에도 안 맞으면 null",
+  "fit": "이 기사가 실제로 속하는 섹션 하나 (경제, 정치, IT, 과학, 문화 중). 국제 뉴스는 내용에 따라 경제(금리·환율·무역)·정치(외교·정상회담)로, 사건·사고·사회 이슈는 null. 문화에는 전시·공연·책·영화·드라마가 들어감. 정치는 법안·정책 내용이 있는 기사만, 정당끼리 비난만 오가는 기사는 null. 검색 키워드가 비유로만 쓰였거나(예: '의료의 블랙홀', '우주 최강') 어느 섹션에도 안 맞으면 null",
   "titleKo": "제목이 한국어가 아니면 자연스러운 한국어 제목, 한국어면 null",
   "summary": "한국어 요약. body가 있으면 핵심 사실(누가, 무엇을, 왜, 수치)을 담아 3~4문장. body가 null이면 snippet 기준으로 1~2문장",
   "tags": ["키워드", 최대 3개],
-  "essayPoint": "경제·정치·사회만: 금융감독원 논술 관점에서 이 기사의 쟁점과 연결되는 개념을 2문장으로 (경제: 금융소비자보호, 건전성 규제, 자본시장 공정성, 통화정책 파급, 환율과 금융안정 등 / 정치: 법안·정책이 금융시장과 소비자에 미치는 영향 / 사회: 저출생·고령화·기후 같은 사회 문제가 금융과 가계에 미치는 영향). 의견이 갈리는 사안은 양쪽 입장을 함께 쓰고 어느 편도 들지 마. 다른 섹션은 null",
+  "essayPoint": "경제·정치만: 금융감독원 논술 관점에서 이 기사의 쟁점과 연결되는 개념을 2문장으로 (경제: 금융소비자보호, 건전성 규제, 자본시장 공정성, 통화정책 파급, 환율과 금융안정 등 / 정치: 법안·정책이 금융시장과 소비자에 미치는 영향. 의견이 갈리는 사안은 양쪽 입장을 함께 쓰고 어느 편도 들지 마. 다른 섹션은 null",
   "spaceFact": "과학만: 이 기사와 연결된, 일반인이 '오 신기하다' 할 만한 과학 지식을 2~3문장으로 쉽게 설명 (기사에 나온 현상·천체·원리가 무엇이고 왜 흥미로운지). 다른 섹션은 null"
 }
 category는 검색 키워드로 붙은 임시 섹션이라 틀릴 수 있어. essayPoint와 spaceFact는 category가 아니라 fit 기준으로 판단해.
@@ -838,7 +839,7 @@ async function makeConcept(items: NewsItem[]): Promise<void> {
   if (history[0]?.date === today) return; // 오늘 건 이미 있음
 
   const pool = items
-    .filter((n) => ["경제", "정치", "사회"].includes(n.category) && n.summary)
+    .filter((n) => ["경제", "정치"].includes(n.category) && n.summary)
     .sort((a, b) => Number(!!b.label) - Number(!!a.label)) // 보도자료 먼저
     .slice(0, 20)
     .map((n) => ({ id: n.id, category: n.category, title: n.title, summary: n.summary, essayPoint: n.essayPoint }));
@@ -927,7 +928,7 @@ async function loadPrevious(): Promise<Map<string, NewsItem>> {
     const prev: NewsItem[] = JSON.parse(raw);
     // 예전 데이터는 id가 제목 기반이었으니 key로 옮기고 새 ID 부여
     return new Map(
-      prev.map((n) => {
+      prev.filter((n) => !DROPPED.has(n.category)).map((n) => {
         const fixed = { ...n, ...withIds(n.key ?? n.id), category: MIGRATE[n.category] ?? n.category };
         return [fixed.key, fixed];
       }),

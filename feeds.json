@@ -17,11 +17,6 @@
   { "category": "정치", "type": "naver", "query": "금융 관련 법안" },
   { "category": "정치", "type": "naver", "query": "정상회담" },
 
-  { "category": "사회", "type": "naver", "query": "저출생" },
-  { "category": "사회", "type": "naver", "query": "고령화 사회" },
-  { "category": "사회", "type": "naver", "query": "기후 위기" },
-  { "category": "사회", "type": "naver", "query": "청년 고용" },
-
   { "category": "IT", "type": "rss", "url": "https://news.hada.io/rss/news" },
   { "category": "IT", "type": "rss", "url": "https://toss.tech/rss.xml", "keepDays": 14 },
   { "category": "IT", "type": "rss", "url": "https://tech.kakao.com/feed/", "keepDays": 14 },
