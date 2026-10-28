@@ -1,23 +1,20 @@
 {
-  "updatedAt": "2026-10-28T11:51:52.314Z",
-  "count": 1136,
-  "summarized": 1053,
+  "updatedAt": "2026-10-28T12:02:16.650Z",
+  "count": 1145,
+  "summarized": 1061,
   "fetched": 404,
-  "newCount": 27,
+  "newCount": 11,
   "newByCategory": {
-    "과학": 1,
-    "문화": 3,
-    "경제": 12,
     "정치": 6,
-    "IT": 5
+    "경제": 1,
+    "문화": 1,
+    "IT": 3
   },
-  "summarizedNow": 24,
-  "bodyFound": 22,
-  "pdfRead": 0,
-  "hidden": 1,
+  "summarizedNow": 27,
+  "bodyFound": 25,
+  "pdfRead": 19,
+  "hidden": 0,
   "moved": [
-    "IT→문화",
-    "IT→경제",
     "IT→경제"
   ],
   "llmFailedBatches": 0,
@@ -25,19 +22,31 @@
   "concept": null,
   "spacePhoto": null,
   "newTerms": [
-    "LTA",
-    "거주자 외화예금",
-    "위탁매매",
-    "예실차",
-    "지급여력비율",
-    "주주환원율"
+    "신용공여",
+    "미공개중요정보",
+    "시장질서 교란행위",
+    "감사인지정",
+    "탄소중립",
+    "혁신금융",
+    "가상자산사업자",
+    "소비자보호",
+    "모범관행",
+    "리스크관리",
+    "ETP",
+    "애프터마켓",
+    "불공정거래",
+    "실실적배당형",
+    "ETF",
+    "신용융자",
+    "반대매매",
+    "공모발행"
   ],
   "keywords": [
     {
       "category": "경제",
       "query": "금융감독원",
       "hot": false,
-      "fetchedNow": 7,
+      "fetchedNow": 5,
       "kept": 12,
       "hidden": 1,
       "dead": false
@@ -181,7 +190,7 @@
       "category": "경제",
       "query": "비트코인",
       "hot": false,
-      "fetchedNow": 1,
+      "fetchedNow": 2,
       "kept": 0,
       "hidden": 0,
       "dead": false
@@ -290,7 +299,7 @@
       "query": "국정감사 공방",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 0,
+      "kept": 1,
       "hidden": 0,
       "dead": false
     },
@@ -317,7 +326,7 @@
       "query": "이재명 대통령",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 23,
+      "kept": 25,
       "hidden": 5,
       "dead": false
     },
@@ -326,7 +335,7 @@
       "query": "오세훈",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 2,
+      "kept": 4,
       "hidden": 1,
       "dead": false
     },
@@ -335,7 +344,7 @@
       "query": "국민의힘 민주당",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 7,
+      "kept": 8,
       "hidden": 0,
       "dead": false
     },
@@ -363,7 +372,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 25,
-      "hidden": 4,
+      "hidden": 5,
       "dead": false
     },
     {
@@ -380,7 +389,7 @@
       "query": "구글 애플 인앱결제",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 3,
+      "kept": 4,
       "hidden": 16,
       "dead": false
     },
@@ -433,8 +442,8 @@
       "category": "문화",
       "query": "클래식 공연",
       "hot": false,
-      "fetchedNow": 6,
-      "kept": 1,
+      "fetchedNow": 7,
+      "kept": 2,
       "hidden": 0,
       "dead": false
     },
