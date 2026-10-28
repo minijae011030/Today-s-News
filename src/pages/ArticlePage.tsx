@@ -1,4 +1,5 @@
 import { Label } from "../components/atoms/Label";
+import { LabelBadge } from "../components/atoms/LabelBadge";
 import { Notice } from "../components/atoms/Notice";
 import { StoryImage } from "../components/atoms/StoryImage";
 import { Tag } from "../components/atoms/Tag";
@@ -41,6 +42,11 @@ export function ArticlePage({
       >
         {item.category}
       </a>
+      {item.label && (
+        <span className="ml-3 align-middle">
+          <LabelBadge label={item.label} />
+        </span>
+      )}
 
       <h2 className="mt-3 font-serif text-[clamp(1.8rem,4.5vw,2.6rem)] leading-tight font-bold">
         {titleOf(item)}
@@ -65,6 +71,20 @@ export function ArticlePage({
         </time>
       </div>
 
+      {item.keyPoints && item.keyPoints.length > 0 && (
+        <section className="mt-8">
+          <Label>주요 내용</Label>
+          <ul className="mt-2 space-y-2">
+            {item.keyPoints.map((p) => (
+              <li key={p} className="flex gap-3 font-serif leading-[1.75]">
+                <span aria-hidden className="mt-[0.75em] h-px w-3 shrink-0 bg-ink" />
+                <span>{p}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {item.essayPoint && (
         <section className="mt-8">
           <Label>논점</Label>
@@ -74,7 +94,7 @@ export function ArticlePage({
 
       {item.spaceFact && (
         <section className="mt-8 border-y border-ink py-5">
-          <Label>우주 노트</Label>
+          <Label>과학 노트</Label>
           <p className="mt-2 font-serif text-lg leading-[1.85]">
             {item.spaceFact}
           </p>
@@ -110,6 +130,17 @@ export function ArticlePage({
       >
         Read the original article
       </a>
+
+      {item.attachment && (
+        <a
+          href={item.attachment}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-10 ml-2 inline-block border border-ink px-5 py-3 text-sm font-semibold hover:bg-ink hover:text-paper"
+        >
+          Press release PDF
+        </a>
+      )}
 
       {related.length > 0 && (
         <aside className="mt-16 border-t-2 border-ink pt-3">
