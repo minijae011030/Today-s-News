@@ -47,7 +47,8 @@ export function GlossaryPage({
   }, [focusId, entries.length]);
 
   return (
-    <main>
+    // 용어가 적어도 화면을 채워서 푸터가 바로 올라오지 않게 (검색 화면과 같은 방식)
+    <main className="min-h-[calc(100svh-14rem)]">
       <h2 className="mt-8 font-serif text-4xl font-bold">용어 사전</h2>
       <p className="mt-1 text-sm text-muted">
         {entries.length} terms from press releases, economy and politics stories. Definitions are written by AI.
