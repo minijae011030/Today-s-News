@@ -86,6 +86,7 @@ export function ArticlePage({
 
       <div className="mt-6 flex flex-wrap gap-x-4 gap-y-1 border-y border-rule py-3 text-sm text-ink-soft">
         <span className="font-semibold text-ink">{item.source}</span>
+        {(item.coverage ?? 1) > 1 && <span>{item.coverage}개 매체 보도</span>}
         <time dateTime={item.publishedAt}>
           {formatPublished(item.publishedAt)}
         </time>

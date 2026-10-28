@@ -19,10 +19,11 @@ import { DROPPED, KEEP_DAYS, MAX_NEW_BY_SECTION, MAX_NEW_PER_BUCKET, MIGRATE, PR
 import { fillMissingPdfs } from "./collect/article.ts";
 import { makeConcept } from "./collect/concept.ts";
 import { enrich } from "./collect/enrich.ts";
+import { StoryIndex, hideDuplicates, isPhotoOnly } from "./collect/dedupe.ts";
 import { updateGlossary } from "./collect/glossary.ts";
 import { hotSources, loadKeywords, saveKeywords, scoreKeywords, updateHot } from "./collect/keywords.ts";
 import { save, writeActionsSummary } from "./collect/output.ts";
-import { fetchSource } from "./collect/sources.ts";
+import { cleanBoardTitle, fetchSource } from "./collect/sources.ts";
 import { makeSpacePhoto } from "./collect/space.ts";
 import { readData } from "./collect/util.ts";
 
@@ -35,7 +36,12 @@ async function loadPrevious(): Promise<Map<string, NewsItem>> {
   return new Map(
     prev
       .filter((n) => !DROPPED.has(n.category))
-      .map((n) => [n.key, { ...n, category: n.label === PRESS_LABEL ? PRESS_LABEL : (MIGRATE[n.category] ?? n.category) }]),
+      .map((n) => [
+        n.key,
+        n.label === PRESS_LABEL
+          ? { ...n, category: PRESS_LABEL, title: cleanBoardTitle(n.title) }
+          : { ...n, category: MIGRATE[n.category] ?? n.category },
+      ]),
   );
 }
 
@@ -54,14 +60,25 @@ function pickNew(fetched: NewsItem[], known: Map<string, NewsItem>): NewsItem[] 
   const taken: Record<string, number> = {};
   const seen = new Set<string>();
   const picked: NewsItem[] = [];
+  const stories = new StoryIndex(known.values()); // 제목만 다른 같은 소식 걸러내기
   for (const n of [...fetched].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))) {
     const b = bucket(n);
     if (!n.key || !n.link || known.has(n.key) || seen.has(n.key)) continue; // 같은 기사가 여러 키워드에 걸린 경우
     if (latest[b] && n.publishedAt <= latest[b]) continue;
+    if (isPhotoOnly(n.title)) continue; // [포토] 기사는 사진 한 장뿐이라 요약할 게 없음
+    const same = stories.findSame(n);
+    if (same) {
+      // 같은 소식: 요약은 안 하고 숨긴 채로 저장 (그래야 다음 수집 때 또 들어오지 않음)
+      same.coverage = (same.coverage ?? 1) + 1; // 여러 매체가 다룬 소식 = 큰 소식
+      seen.add(n.key);
+      picked.push({ ...n, hidden: true, duplicate: true });
+      continue;
+    }
     if ((taken[b] ?? 0) >= limit(n)) continue;
     taken[b] = (taken[b] ?? 0) + 1;
     seen.add(n.key);
     picked.push(n);
+    stories.add(n);
   }
   return picked;
 }
@@ -71,6 +88,8 @@ async function main() {
   const keywords = await loadKeywords();
   const sources = [...fixed, ...hotSources(keywords)]; // 고정 키워드 + 요즘 뜨는 키워드(2주짜리)
   const prev = await loadPrevious();
+  const dup = hideDuplicates([...prev.values()]); // 이미 쌓인 중복도 정리 (처음 한 번 많이 숨겨지고, 이후엔 거의 0)
+  if (dup) console.log(`🧹 같은 소식 중복 ${dup}건 숨김`);
   const fetched = (await Promise.all(sources.map(fetchSource))).flat();
   const fresh = pickNew(fetched, prev);
 

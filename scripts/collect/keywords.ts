@@ -26,9 +26,9 @@ export async function loadKeywords(): Promise<KeywordFile> {
   return { firstSeen: k?.firstSeen ?? {}, hot, hotUpdatedAt: k?.hotUpdatedAt };
 }
 
-// 핫 키워드도 주요 언론사 기사만 받는 네이버 검색으로
+// 핫 키워드도 네이버 검색으로 (기본: 주요 언론사만)
 export const hotSources = (k: KeywordFile): FeedSource[] =>
-  k.hot.map((h) => ({ category: h.category, type: "naver", query: h.query, majorOnly: true }));
+  k.hot.map((h) => ({ category: h.category, type: "naver", query: h.query }));
 
 export function scoreKeywords(k: KeywordFile, sources: FeedSource[], fetched: NewsItem[], items: NewsItem[]): void {
   const today = kstToday();

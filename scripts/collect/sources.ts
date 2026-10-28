@@ -52,8 +52,9 @@ async function fetchNaver(src: Extract<FeedSource, { type: "naver" }>): Promise<
   const secret = process.env.NAVER_CLIENT_SECRET;
   if (!id || !secret) throw new Error("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET 없음");
 
-  // 주요 언론사만 받을 땐 넉넉히 받아서 거른 뒤 MAX_PER_FEED건
-  const display = src.majorOnly ? 30 : MAX_PER_FEED;
+  // 주요 언론사만 받을 땐(기본) 넉넉히 받아서 거른 뒤 MAX_PER_FEED건
+  const majorOnly = !src.allPress;
+  const display = majorOnly ? 30 : MAX_PER_FEED;
   const url = `https://naverapihub.apigw.ntruss.com/search/v1/news?query=${encodeURIComponent(src.query)}&display=${display}&sort=date`;
   const res = await fetch(url, {
     headers: { "X-NCP-APIGW-API-KEY-ID": id, "X-NCP-APIGW-API-KEY": secret },
@@ -62,7 +63,7 @@ async function fetchNaver(src: Extract<FeedSource, { type: "naver" }>): Promise<
   if (!res.ok) throw new Error(`네이버 ${res.status}: ${(await res.text()).slice(0, 150)}`);
   const data: { items?: NaverNews[] } = await res.json();
 
-  const list = (data.items ?? []).filter((it) => !src.majorOnly || isMajorPress(it.originallink || it.link));
+  const list = (data.items ?? []).filter((it) => !majorOnly || isMajorPress(it.originallink || it.link));
   return list.slice(0, MAX_PER_FEED).map((it) => {
     const link = it.originallink || it.link;
     return {
@@ -93,7 +94,7 @@ async function fetchBoard(src: Extract<FeedSource, { type: "board" }>): Promise<
     const pathId = href.split("?")[0].match(new RegExp(`^${listPath}/(\\d+)$`))?.[1];
     const id = pathId ?? href.match(/nttId=(\d+)/)?.[1];
     if (!id || seen.has(id)) continue;
-    const title = (a.textContent ?? "").replace(/\s+/g, " ").replace(/^(새글|NEW)\s*/i, "").trim();
+    const title = cleanBoardTitle(a.textContent ?? "");
     if (title.length < 5) continue;
     seen.add(id);
 
@@ -122,6 +123,15 @@ async function fetchBoard(src: Extract<FeedSource, { type: "board" }>): Promise<
   if (out.length === 0) throw new Error("목록에서 게시글을 못 찾음 (페이지 구조가 바뀌었을 수 있음)");
   return out;
 }
+
+// 게시판 제목에 붙는 "새글", "금일 등록된 게시글" 같은 표시와 끝의 " -" 정리
+export const cleanBoardTitle = (t: string) =>
+  t
+    .replace(/\s+/g, " ")
+    .replace(/^(새글|NEW)\s*/i, "")
+    .replace(/\s*금일 등록된 게시글\s*$/, "")
+    .replace(/\s*-\s*$/, "")
+    .trim();
 
 // 소스 하나 수집 (실패해도 전체는 계속)
 export async function fetchSource(src: FeedSource): Promise<NewsItem[]> {

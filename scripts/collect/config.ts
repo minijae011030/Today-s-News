@@ -7,7 +7,7 @@ try {
 
 export type FeedSource = { category: string; keepDays?: number; label?: string } & (
   | { type: "rss"; url: string }
-  | { type: "naver"; query: string; majorOnly?: boolean } // majorOnly: 주요 언론사 기사만
+  | { type: "naver"; query: string; allPress?: boolean } // 기본은 주요 언론사 기사만, allPress면 모든 매체
   | { type: "board"; url: string; source: string } // RSS 없는 게시판 (금감원·금융위 보도자료)
 );
 
@@ -35,6 +35,8 @@ export type NewsItem = {
   keyPoints?: string[]; // 보도자료 주요 내용
   terms?: string[]; // 용어 풀이할 전문 용어 (보도자료·경제·정치)
   via?: string; // 어느 검색어로 들어왔는지 (키워드 성적표용)
+  coverage?: number; // 같은 소식을 다룬 매체 수 (중복으로 걸러진 기사 포함)
+  duplicate?: boolean; // 다른 기사와 같은 소식이라 숨김
 };
 
 export const PRESS_LABEL = "보도자료"; // 금감원·금융위 보도자료: 섹션 이름이자 라벨

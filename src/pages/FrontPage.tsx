@@ -4,14 +4,27 @@ import { SectionColumns } from "../components/organisms/SectionColumns";
 import { SpaceFeature } from "../components/organisms/SpaceFeature";
 import type { Concept, NewsItem, SpacePhoto } from "../types/news";
 
-// 1면 톱 (우주 사진이 없을 때만): 공부용 섹션의 사진 있는 최신 기사 → 요약 있는 최신 기사
+// 많이 보도된 소식 먼저: 최근 하루 안의 기사는 다룬 매체 수 순, 같으면 최신순 (그 외엔 원래 순서)
+const DAY = 24 * 3600_000;
+function byImportance(items: NewsItem[]): NewsItem[] {
+  const now = Date.now();
+  const recent = (n: NewsItem) => now - Date.parse(n.publishedAt) < DAY;
+  return [...items].sort(
+    (a, b) =>
+      Number(recent(b)) - Number(recent(a)) ||
+      (recent(a) ? (b.coverage ?? 1) - (a.coverage ?? 1) : 0) ||
+      b.publishedAt.localeCompare(a.publishedAt),
+  );
+}
+
+// 1면 톱 (우주 사진이 없을 때만): 공부용 섹션에서 많이 보도된 사진 있는 기사 → 요약 있는 기사
 const LEAD_SECTIONS = ["경제", "정치", "IT"];
 function pickLead(items: NewsItem[]): NewsItem {
-  const study = items.filter((n) => LEAD_SECTIONS.includes(n.category) && n.summary);
+  const study = byImportance(items.filter((n) => LEAD_SECTIONS.includes(n.category) && n.summary));
   return study.find((n) => n.image) ?? study[0] ?? items.find((n) => n.summary) ?? items[0];
 }
 
-// 오른쪽 주요 기사: 한 섹션이 도배하지 않게 섹션별 최신 1건씩, 공부용 섹션 먼저
+// 오른쪽 주요 기사: 한 섹션이 도배하지 않게 섹션별 1건씩(많이 보도된 소식 먼저), 공부용 섹션 먼저
 const SIDE_ORDER = ["보도자료", "경제", "정치", "IT", "과학", "문화"];
 function pickSide(items: NewsItem[], lead: NewsItem | null, count: number): NewsItem[] {
   const out: NewsItem[] = [];
@@ -35,10 +48,11 @@ export function FrontPage({
   concept: Concept | null;
   space: SpacePhoto | null;
 }) {
+  const ranked = byImportance(items);
   const lead = pickLead(items);
   // 우주 사진이 톱이면 오른쪽 목록에 톱기사 자리가 비니까 lead도 목록 후보에 넣음
   // 우주 사진이 크니까 옆 목록도 길게 채움
-  const side = pickSide(items, space ? null : lead, space ? 8 : 5);
+  const side = pickSide(ranked, space ? null : lead, space ? 8 : 5);
 
   return (
     <main>

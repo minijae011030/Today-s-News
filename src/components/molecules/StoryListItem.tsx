@@ -29,7 +29,10 @@ export function StoryListItem({ item }: { item: NewsItem }) {
               {item.summary}
             </span>
           )}
-          <span className="mt-2 block text-xs text-muted">{item.source}</span>
+          <span className="mt-2 block text-xs text-muted">
+            {item.source}
+            {(item.coverage ?? 1) > 1 && <> · 외 {item.coverage! - 1}개 매체 보도</>}
+          </span>
         </span>
         <StoryImage src={item.image} ratio="aspect-[4/3]" className="hidden sm:block" />
       </a>

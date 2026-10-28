@@ -16,6 +16,7 @@ export type NewsItem = {
   attachment?: string; // 보도자료 PDF
   keyPoints?: string[]; // 보도자료 주요 내용
   terms?: string[]; // 용어 풀이 링크를 걸 용어
+  coverage?: number; // 같은 소식을 다룬 매체 수
   image?: string;
 };
 
@@ -40,8 +41,10 @@ export type SpacePhoto = {
   title: string;
   titleKo: string;
   story: string;
-  image: string;
+  image?: string; // 사진 (영상이면 미리보기 이미지)
   hdImage?: string;
+  video?: string; // NASA가 올린 mp4
+  embed?: string; // 유튜브·비메오 임베드
   credit: string;
   link: string;
 };

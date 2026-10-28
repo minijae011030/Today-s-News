@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { NewsItem } from "../../types/news";
 import { href } from "../../lib/route";
 import { AppPrompt } from "../organisms/AppPrompt";
+import { BottomNav } from "../organisms/BottomNav";
 import { CompactHeader } from "../organisms/CompactHeader";
 import { Footer } from "../organisms/Footer";
 import { Masthead } from "../organisms/Masthead";
@@ -12,6 +13,7 @@ export function PageLayout({
   activeSection,
   isFront,
   isGlossary = false,
+  isSearch = false,
   items,
   version,
   onRefresh,
@@ -20,6 +22,7 @@ export function PageLayout({
   activeSection?: string;
   isFront: boolean;
   isGlossary?: boolean;
+  isSearch?: boolean;
   items: NewsItem[] | null;
   version: number;
   onRefresh: () => Promise<number | null>;
@@ -39,6 +42,7 @@ export function PageLayout({
       label={isGlossary ? "용어 사전" : isFront ? undefined : activeSection}
       labelHref={isGlossary ? href.glossary() : activeSection ? href.section(activeSection) : undefined}
     />
+    <BottomNav current={isFront ? "front" : isSearch ? "search" : isGlossary ? "glossary" : null} />
     <AppPrompt />
     </>
   );

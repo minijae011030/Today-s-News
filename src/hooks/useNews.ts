@@ -42,10 +42,15 @@ export function useNews() {
     // 오늘의 우주 사진 (NASA APOD)
     fetchData("space.json")
       .then((r) => (r.ok ? r.json() : null))
-      // 진짜 APOD 사진일 때만 1면 톱으로 (아니면 기사로 대체)
-      .then((d) =>
-        setSpace(d?.image && /apod\.nasa\.gov\/apod\/image\/|assets\.science\.nasa\.gov\/.*\/apod\/|img\.youtube\.com|vimeocdn/.test(d.image) ? d : null),
-      )
+      // 진짜 APOD 사진·영상일 때만 1면 톱으로 (아니면 기사로 대체)
+      .then((d) => {
+        const apod = /apod\.nasa\.gov\/apod\/image\/|assets\.science\.nasa\.gov\/.*\/apod\//;
+        const ok =
+          (d?.image && (apod.test(d.image) || /img\.youtube\.com|vimeocdn/.test(d.image))) ||
+          (d?.video && apod.test(d.video)) ||
+          (d?.embed && /youtube(-nocookie)?\.com\/embed\/|player\.vimeo\.com\/video\//.test(d.embed));
+        setSpace(ok ? d : null);
+      })
       .catch(() => {});
   }, [version]);
 

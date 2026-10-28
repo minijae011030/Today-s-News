@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { href } from "../../lib/route";
-import { BookIcon } from "../atoms/BookIcon";
-import { SearchIcon } from "../atoms/SearchIcon";
 
 /**
- * 스크롤로 큰 제호가 지나가면 위에 붙는 간략 헤더: 현재 섹션 | 작은 제호 | 용어 사전·검색
+ * 스크롤로 큰 제호가 지나가면 위에 붙는 간략 헤더: 현재 섹션 | 작은 제호 | (PC) 용어 사전·검색
  * (큰 헤더 #masthead가 화면에서 사라졌는지 IntersectionObserver로 봄)
  */
 export function CompactHeader({ label, labelHref }: { label?: string; labelHref?: string }) {
@@ -40,12 +38,13 @@ export function CompactHeader({ label, labelHref }: { label?: string; labelHref?
         >
           Today&rsquo;s News
         </a>
-        <span className="flex justify-self-end">
-          <a href={href.glossary()} aria-label="용어 사전" className="p-1.5 text-ink hover:text-ink-soft">
-            <BookIcon className="size-6" />
+        {/* PC만 (폰은 하단 탭바) */}
+        <span className="hidden gap-5 justify-self-end text-sm sm:flex">
+          <a href={href.glossary()} className="hover:underline">
+            용어 사전
           </a>
-          <a href={href.search()} aria-label="Search" className="p-1.5 text-ink hover:text-ink-soft">
-            <SearchIcon className="size-6" />
+          <a href={href.search()} className="hover:underline">
+            Search
           </a>
         </span>
       </div>
