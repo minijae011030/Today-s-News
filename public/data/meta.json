@@ -1,48 +1,41 @@
 {
-  "updatedAt": "2026-10-28T07:01:23.777Z",
-  "count": 945,
-  "summarized": 929,
-  "fetched": 420,
-  "newCount": 48,
+  "updatedAt": "2026-10-28T08:01:10.092Z",
+  "count": 985,
+  "summarized": 955,
+  "fetched": 433,
+  "newCount": 29,
   "newByCategory": {
-    "보도자료": 4,
+    "경제": 17,
+    "정치": 5,
     "문화": 2,
-    "경제": 14,
-    "정치": 6,
-    "과학": 3,
-    "IT": 19
+    "IT": 4,
+    "과학": 1
   },
-  "summarizedNow": 37,
-  "bodyFound": 27,
-  "pdfRead": 4,
+  "summarizedNow": 26,
+  "bodyFound": 22,
+  "pdfRead": 0,
   "hidden": 0,
   "moved": [
-    "IT→과학",
+    "정치→경제",
     "IT→경제",
     "IT→경제",
+    "IT→경제",
+    "과학→경제",
     "IT→경제",
     "IT→경제"
   ],
   "llmFailedBatches": 0,
   "failedFeeds": [],
   "concept": null,
-  "spacePhoto": null,
+  "spacePhoto": "가니메데와 이오의 상호 엄폐 현상",
   "newTerms": [
-    "전자금융거래법",
-    "금융소비자보호",
-    "FOMC",
-    "긴축",
-    "녹색금융",
-    "통화정책",
-    "사이드카",
-    "레버리지",
-    "이해상충",
-    "바이오시밀러",
-    "연결 기준",
-    "기준금리",
-    "수의계약",
-    "하도급법",
-    "영업이익"
+    "R&D",
+    "국고채",
+    "공개매수",
+    "M&A",
+    "인앱결제",
+    "과징금",
+    "시정명령"
   ],
   "keywords": [
     {
@@ -50,7 +43,7 @@
       "query": "금융감독원",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 2,
+      "kept": 4,
       "hidden": 0,
       "dead": false
     },
@@ -59,7 +52,7 @@
       "query": "기준금리",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 1,
+      "kept": 3,
       "hidden": 0,
       "dead": false
     },
@@ -77,7 +70,7 @@
       "query": "자본시장 제도",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 0,
+      "kept": 1,
       "hidden": 0,
       "dead": false
     },
@@ -96,7 +89,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 1,
-      "hidden": 0,
+      "hidden": 2,
       "dead": false
     },
     {
@@ -114,7 +107,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 4,
-      "hidden": 0,
+      "hidden": 1,
       "dead": false
     },
     {
@@ -159,7 +152,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 1,
-      "hidden": 0,
+      "hidden": 1,
       "dead": false
     },
     {
@@ -167,7 +160,7 @@
       "query": "소비자물가",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 0,
+      "kept": 1,
       "hidden": 0,
       "dead": false
     },
@@ -193,7 +186,7 @@
       "category": "경제",
       "query": "비트코인",
       "hot": false,
-      "fetchedNow": 6,
+      "fetchedNow": 5,
       "kept": 0,
       "hidden": 0,
       "dead": false
@@ -202,7 +195,7 @@
       "category": "경제",
       "query": "은행 횡령",
       "hot": false,
-      "fetchedNow": 5,
+      "fetchedNow": 6,
       "kept": 0,
       "hidden": 0,
       "dead": false
@@ -211,9 +204,9 @@
       "category": "경제",
       "query": "보이스피싱",
       "hot": false,
-      "fetchedNow": 4,
-      "kept": 0,
-      "hidden": 0,
+      "fetchedNow": 7,
+      "kept": 2,
+      "hidden": 3,
       "dead": false
     },
     {
@@ -329,8 +322,8 @@
       "query": "이재명 대통령",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 4,
-      "hidden": 0,
+      "kept": 7,
+      "hidden": 1,
       "dead": false
     },
     {
@@ -347,7 +340,7 @@
       "query": "국민의힘 민주당",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 0,
+      "kept": 2,
       "hidden": 0,
       "dead": false
     },
@@ -365,7 +358,7 @@
       "query": "해킹 개인정보 유출",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 0,
+      "kept": 2,
       "hidden": 0,
       "dead": false
     },
@@ -373,8 +366,8 @@
       "category": "IT",
       "query": "AI 반도체",
       "hot": false,
-      "fetchedNow": 7,
-      "kept": 6,
+      "fetchedNow": 6,
+      "kept": 8,
       "hidden": 0,
       "dead": false
     },
@@ -392,8 +385,8 @@
       "query": "구글 애플 인앱결제",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 0,
-      "hidden": 0,
+      "kept": 2,
+      "hidden": 4,
       "dead": false
     },
     {
@@ -419,8 +412,8 @@
       "query": "과학 연구 성과",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 2,
-      "hidden": 0,
+      "kept": 4,
+      "hidden": 1,
       "dead": false
     },
     {
@@ -446,7 +439,7 @@
       "query": "클래식 공연",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 0,
+      "kept": 1,
       "hidden": 0,
       "dead": false
     },
@@ -473,7 +466,7 @@
       "query": "베스트셀러",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 0,
+      "kept": 1,
       "hidden": 0,
       "dead": false
     },
@@ -481,9 +474,9 @@
       "category": "문화",
       "query": "영화 개봉",
       "hot": false,
-      "fetchedNow": 7,
-      "kept": 1,
-      "hidden": 0,
+      "fetchedNow": 3,
+      "kept": 0,
+      "hidden": 1,
       "dead": false
     },
     {
@@ -494,11 +487,34 @@
       "kept": 0,
       "hidden": 0,
       "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "증권사 해킹 사고",
+      "hot": true,
+      "fetchedNow": 5,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
+    },
+    {
+      "category": "경제",
+      "query": "코스피 6000선 회복",
+      "hot": true,
+      "fetchedNow": 7,
+      "kept": 0,
+      "hidden": 1,
+      "dead": false
+    },
+    {
+      "category": "IT",
+      "query": "현대모비스 해커톤",
+      "hot": true,
+      "fetchedNow": 3,
+      "kept": 0,
+      "hidden": 0,
+      "dead": false
     }
   ],
-  "newHot": [
-    "경제:증권사 해킹 사고",
-    "경제:코스피 6000선 회복",
-    "IT:현대모비스 해커톤"
-  ]
+  "newHot": []
 }
