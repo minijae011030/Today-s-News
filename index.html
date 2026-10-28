@@ -14,6 +14,11 @@
       rel="stylesheet"
     />
     <title>Today's News</title>
+    <script>
+      // 홈 화면 앱으로 열렸는지: 표준 방식 + iOS 전용 navigator.standalone (화면 그리기 전에 판단해서 깜빡임 없음)
+      if (matchMedia("(display-mode: standalone)").matches || navigator.standalone === true)
+        document.documentElement.classList.add("standalone");
+    </script>
 
     <!-- 링크 공유 미리보기 (카카오톡·슬랙·X 등). 크롤러는 JS를 안 돌려서 사이트 공통 정보만 -->
     <meta name="description" content="금감원·금융위 보도자료를 PDF까지 읽어 요약하고, 경제·정치·IT·과학·문화 뉴스를 매시간 정리합니다." />

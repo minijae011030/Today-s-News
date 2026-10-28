@@ -31,14 +31,18 @@ export function Masthead({
     return () => window.removeEventListener("resize", updateFade);
   }, [active, isGlossary]);
 
-  const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const now = new Date();
+  const today = now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const todayShort = now.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
   const util = "hover:text-ink hover:underline underline-offset-4";
 
   return (
     <header id="masthead" className="pt-4">
-      {/* PC: 신문 상단 한 줄 (날짜 | 용어 사전 · 검색). 폰은 하단 탭바로 */}
-      <div className="hidden items-center justify-between text-xs text-ink-soft sm:flex">
-        <span>{today}</span>
+      {/* 신문 상단 한 줄 (날짜 | 용어 사전 · 검색)
+          폰에서 앱으로 설치해 쓸 땐 하단 탭바가 있어서 숨김. 브라우저(사파리)에선 브라우저 툴바와 겹쳐서 탭바 대신 이걸 씀 */}
+      <div className="flex items-center justify-between text-xs text-ink-soft max-sm:standalone:hidden">
+        <span className="sm:hidden">{todayShort}</span>
+        <span className="max-sm:hidden">{today}</span>
         <span className="flex gap-5">
           <a href={href.glossary()} aria-current={isGlossary ? "page" : undefined} className={`${util} ${isGlossary ? "font-semibold text-ink" : ""}`}>
             용어 사전

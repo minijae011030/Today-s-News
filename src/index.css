@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* 홈 화면에 설치해서 앱처럼 열었을 때만 (브라우저 탭에서는 아님)
+   <html class="standalone">은 index.html에서 붙임 (iOS는 미디어 쿼리가 안 맞는 경우가 있어서 JS로 판단) */
+@custom-variant standalone (&:where(.standalone, .standalone *));
+
 @theme {
   --font-masthead: "Playfair Display", "Noto Serif KR", Georgia, serif;
   --font-serif: "Noto Serif KR", Georgia, "Times New Roman", serif;
