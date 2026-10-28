@@ -28,8 +28,8 @@ export function Footer({
             Today&rsquo;s News
           </a>
           <p className="mt-3 max-w-[42ch] font-serif leading-[1.75]">
-            경제에서 우주, 예술에서 책까지. 매일 아침부터 저녁까지 세상의 소식을
-            읽고, 한 사람을 위해 다시 엮는 신문.
+            금감원·금융위 보도자료와 경제·정치·IT·과학·문화 뉴스를 매시간 모아
+            요약합니다.
           </p>
         </div>
 

@@ -7,6 +7,7 @@ import { Tag } from "../components/atoms/Tag";
 import { ArticleNav } from "../components/molecules/ArticleNav";
 import { EssayPoint } from "../components/molecules/EssayPoint";
 import { HeadlineList } from "../components/molecules/HeadlineList";
+import { ShareButton } from "../components/molecules/ShareButton";
 import { makeTermLinker } from "../components/molecules/TermText";
 import { TermPopup } from "../components/organisms/TermPopup";
 import { termKey, type TermInfo } from "../lib/glossary";
@@ -159,6 +160,12 @@ export function ArticlePage({
       >
         Read the original article
       </a>
+
+      <ShareButton
+        item={item}
+        title={parts.title}
+        className="mt-10 ml-2 inline-block border border-ink px-5 py-3 text-sm font-semibold hover:bg-ink hover:text-paper"
+      />
 
       {item.attachment && (
         <a

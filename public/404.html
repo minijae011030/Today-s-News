@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>Today's News</title>
+    <script>
+      // 없는 주소(보관 기간이 지나 사라진 기사의 공유 링크 등) → 1면으로
+      location.replace(location.pathname.split("/").slice(0, 2).join("/") + "/");
+    </script>
+  </head>
+  <body></body>
+</html>
