@@ -3,6 +3,7 @@ import { LabelBadge } from "../components/atoms/LabelBadge";
 import { Notice } from "../components/atoms/Notice";
 import { StoryImage } from "../components/atoms/StoryImage";
 import { Tag } from "../components/atoms/Tag";
+import { ArticleNav } from "../components/molecules/ArticleNav";
 import { EssayPoint } from "../components/molecules/EssayPoint";
 import { HeadlineList } from "../components/molecules/HeadlineList";
 import { formatPublished, titleOf } from "../lib/format";
@@ -28,9 +29,12 @@ export function ArticlePage({
     );
   }
 
-  const related = items
-    .filter((n) => n.category === item.category && n.id !== item.id)
-    .slice(0, 4);
+  // 같은 섹션 글 (최신순). 목록에서 바로 아래가 이전(더 오래된) 글, 바로 위가 다음(더 최근) 글
+  const sameSection = items.filter((n) => n.category === item.category);
+  const index = sameSection.findIndex((n) => n.id === item.id);
+  const prev = sameSection[index + 1];
+  const next = index > 0 ? sameSection[index - 1] : undefined;
+  const related = sameSection.filter((n) => n.id !== item.id && n !== prev && n !== next).slice(0, 4);
   const showSnippet =
     item.snippet && !item.snippet.startsWith(item.title.slice(0, 15));
 
@@ -148,6 +152,8 @@ export function ArticlePage({
           <HeadlineList items={related} />
         </aside>
       )}
+
+      <ArticleNav prev={prev} next={next} />
     </main>
   );
 }
