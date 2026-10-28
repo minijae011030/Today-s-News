@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import type { NewsItem } from "../../types/news";
+import { href } from "../../lib/route";
 import { AppPrompt } from "../organisms/AppPrompt";
+import { CompactHeader } from "../organisms/CompactHeader";
 import { Footer } from "../organisms/Footer";
 import { Masthead } from "../organisms/Masthead";
 import { PullToRefresh } from "../organisms/PullToRefresh";
@@ -32,7 +34,11 @@ export function PageLayout({
         <Footer items={items} version={version} />
       </div>
     </PullToRefresh>
-    {/* 당겨서 새로고침이 움직이는 영역 밖에 둬야 화면 아래에 고정됨 */}
+    {/* 당겨서 새로고침이 움직이는 영역 밖에 둬야 화면에 고정됨 */}
+    <CompactHeader
+      label={isGlossary ? "용어 사전" : isFront ? undefined : activeSection}
+      labelHref={isGlossary ? href.glossary() : activeSection ? href.section(activeSection) : undefined}
+    />
     <AppPrompt />
     </>
   );

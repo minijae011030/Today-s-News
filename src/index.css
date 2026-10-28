@@ -106,3 +106,16 @@ input[type="search"]::-webkit-search-decoration {
 .term-link:hover {
   text-decoration-style: solid;
 }
+
+/* 가로 스크롤 메뉴: 스크롤바 숨김 (가장자리 흐림으로 더 있다는 걸 보여줌) */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* 위에 붙는 간략 헤더에 가리지 않게 (앵커·scrollIntoView) */
+html {
+  scroll-padding-top: 4rem;
+}
