@@ -1,7 +1,7 @@
-/* 해시 라우팅: #/ , #/section/경제?page=2&label=보도자료 , #/article/<id> */
+/* 해시 라우팅: #/ , #/section/보도자료?page=2&filter=금융감독원 , #/article/<id> */
 export type Route =
   | { name: "front" }
-  | { name: "section"; section: string; page: number; label?: string }
+  | { name: "section"; section: string; page: number; filter?: string }
   | { name: "article"; id: string };
 
 export function parseHash(): Route {
@@ -10,19 +10,19 @@ export function parseHash(): Route {
   const value = raw ? decodeURIComponent(raw) : "";
   const params = new URLSearchParams(query);
   const page = Math.max(1, Number(params.get("page")) || 1);
-  const label = params.get("label") || undefined;
+  const filter = params.get("filter") || undefined;
   if (kind === "section" && value)
-    return { name: "section", section: value, page, label };
+    return { name: "section", section: value, page, filter };
   if (kind === "article" && value) return { name: "article", id: value };
   return { name: "front" };
 }
 
 export const href = {
   front: "#/",
-  section: (s: string, page = 1, label?: string) => {
+  section: (s: string, page = 1, filter?: string) => {
     const q = new URLSearchParams();
     if (page > 1) q.set("page", String(page));
-    if (label) q.set("label", label);
+    if (filter) q.set("filter", filter);
     const qs = q.toString();
     return `#/section/${encodeURIComponent(s)}${qs ? `?${qs}` : ""}`;
   },

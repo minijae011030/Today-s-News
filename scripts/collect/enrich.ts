@@ -1,5 +1,5 @@
 // Gemini로 요약 · 섹션 확인 · 논술 포인트
-import { BATCH, BODY_CHARS, PRESS_CHARS, PRESS_LABEL, SECTIONS, report, type NewsItem } from "./config.ts";
+import { BATCH, BODY_CHARS, NEWS_SECTIONS, PRESS_CHARS, PRESS_LABEL, report, type NewsItem } from "./config.ts";
 import { readArticle } from "./article.ts";
 import { callGemini, geminiKey } from "./gemini.ts";
 import { chunk, parseJson, runPool, sleep } from "./util.ts";
@@ -11,10 +11,10 @@ const PROMPT = `다음 뉴스 목록 각각에 대해 JSON 배열로만 답해.
   "titleKo": "제목이 한국어가 아니면 자연스러운 한국어 제목, 한국어면 null",
   "summary": "한국어 요약. body가 있으면 핵심 사실(누가, 무엇을, 왜, 수치)을 담아 3~4문장. body가 null이면 snippet 기준으로 1~2문장",
   "tags": ["키워드", 최대 3개],
-  "essayPoint": "경제·정치만: 금융감독원 논술 관점에서 이 기사의 쟁점과 연결되는 개념을 2문장으로 (경제: 금융소비자보호, 건전성 규제, 자본시장 공정성, 통화정책 파급, 환율과 금융안정 등 / 정치: 법안·정책이 금융시장과 소비자에 미치는 영향. 의견이 갈리는 사안은 양쪽 입장을 함께 쓰고 어느 편도 들지 마. 다른 섹션은 null",
+  "essayPoint": "경제·정치 기사와 보도자료만: 금융감독원 논술 관점에서 이 기사의 쟁점과 연결되는 개념을 2문장으로 (경제: 금융소비자보호, 건전성 규제, 자본시장 공정성, 통화정책 파급, 환율과 금융안정 등 / 정치: 법안·정책이 금융시장과 소비자에 미치는 영향. 의견이 갈리는 사안은 양쪽 입장을 함께 쓰고 어느 편도 들지 마. 다른 섹션은 null",
   "spaceFact": "과학만: 이 기사와 연결된, 일반인이 '오 신기하다' 할 만한 과학 지식을 2~3문장으로 쉽게 설명 (기사에 나온 현상·천체·원리가 무엇이고 왜 흥미로운지). 다른 섹션은 null"
 }
-category는 검색 키워드로 붙은 임시 섹션이라 틀릴 수 있어. essayPoint와 spaceFact는 category가 아니라 fit 기준으로 판단해.
+category는 검색 키워드로 붙은 임시 섹션이라 틀릴 수 있어. essayPoint와 spaceFact는 category가 아니라 fit 기준으로 판단해 (보도자료는 fit과 상관없이 essayPoint를 써).
 summary와 essayPoint는 제공된 title, snippet, body에 있는 내용만 근거로 쓰고 지어내지 마. 정치 기사는 사실만 쓰고 평가나 판단을 붙이지 마. 문체는 '~습니다/~입니다'.
 label이 "보도자료"면 금융당국이 직접 낸 자료(body는 첨부 PDF 전문일 수 있음)이니, summary에 무엇을 발표·시행하는지와 시행 시기·대상을 꼭 담고,
 "keyPoints"에 주요 내용을 3~5개 (각 한 문장, 수치·시행일·대상 포함) 배열로 넣어. 보도자료가 아니면 keyPoints는 null. spaceFact는 널리 확립된 과학 지식만 써.`;
@@ -32,15 +32,16 @@ type LlmResult = {
 
 function apply(n: NewsItem, o: LlmResult): void {
   // 보도자료는 섹션 고정, 그 외엔 LLM이 고른 섹션으로 (어디에도 안 맞으면 숨김)
-  const fit = n.label === PRESS_LABEL ? n.category : o.fit;
-  if (!fit || !SECTIONS.includes(fit)) {
-    n.hidden = true;
-    report.hidden++;
-    return;
-  }
-  if (fit !== n.category) {
-    report.moved.push(`${n.category}→${fit}`);
-    n.category = fit;
+  if (n.label !== PRESS_LABEL) {
+    if (!o.fit || !NEWS_SECTIONS.includes(o.fit)) {
+      n.hidden = true;
+      report.hidden++;
+      return;
+    }
+    if (o.fit !== n.category) {
+      report.moved.push(`${n.category}→${o.fit}`);
+      n.category = o.fit;
+    }
   }
   n.summary = o.summary;
   n.tags = o.tags ?? [];

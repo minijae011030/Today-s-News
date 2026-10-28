@@ -43,7 +43,7 @@ export function ArticlePage({
         >
           {item.category}
         </a>
-        <LabelBadge label={item.label} />
+        <LabelBadge label={item.label} source={item.source} />
       </div>
 
       <h2 className="mt-3 font-serif text-[clamp(1.8rem,4.5vw,2.6rem)] leading-tight font-bold">

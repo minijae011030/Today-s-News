@@ -26,7 +26,7 @@ export function LeadStory({
         <a href={href.article(lead.id)} tabIndex={-1} aria-hidden>
           <StoryImage src={lead.image} credit={lead.source} ratio="natural" maxHeight="max-h-[26rem]" className="mb-4" priority />
         </a>
-        <Kicker category={lead.category} publishedAt={lead.publishedAt} label={lead.label} />
+        <Kicker category={lead.category} publishedAt={lead.publishedAt} label={lead.label} source={lead.source} />
         <a href={href.article(lead.id)} className="group block">
           <h2 className="mt-2 font-serif text-[clamp(1.6rem,3.2vw,2.4rem)] leading-tight font-bold group-hover:text-ink-soft">
             {titleOf(lead)}
@@ -49,7 +49,7 @@ export function LeadStory({
             key={n.id}
             className={i > 0 ? "mt-4 border-t border-rule pt-4" : ""}
           >
-            <Kicker category={n.category} publishedAt={n.publishedAt} label={n.label} />
+            <Kicker category={n.category} publishedAt={n.publishedAt} label={n.label} source={n.source} />
             <HeadlineLink
               item={n}
               className="mt-1 text-[1.05rem] font-semibold"

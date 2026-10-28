@@ -1,4 +1,4 @@
-// 오늘의 개념 (KST 기준 하루 한 번): 경제·정치 기사에서 논술에 쓸 개념 하나
+// 오늘의 개념 (KST 기준 하루 한 번): 보도자료·경제·정치에서 논술에 쓸 개념 하나
 import { mkdir, writeFile } from "node:fs/promises";
 import { DATA_DIR, PRESS_LABEL, report, type NewsItem } from "./config.ts";
 import { callGemini, geminiKey } from "./gemini.ts";
@@ -21,7 +21,7 @@ export async function makeConcept(items: NewsItem[]): Promise<void> {
   if (history[0]?.date === today) return; // 오늘 건 이미 있음
 
   const pool = items
-    .filter((n) => !n.hidden && n.summary && ["경제", "정치"].includes(n.category))
+    .filter((n) => !n.hidden && n.summary && [PRESS_LABEL, "경제", "정치"].includes(n.category))
     .sort((a, b) => Number(b.label === PRESS_LABEL) - Number(a.label === PRESS_LABEL)) // 보도자료 먼저
     .slice(0, 20)
     .map((n) => ({ id: n.id, category: n.category, title: n.title, summary: n.summary, essayPoint: n.essayPoint }));

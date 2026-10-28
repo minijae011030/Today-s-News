@@ -15,7 +15,7 @@ export default defineConfig({
       manifest: {
         name: "Today's News",
         short_name: "Today",
-        description: "경제·정치·IT·과학·문화 뉴스 큐레이터",
+        description: "금감원·금융위 보도자료와 경제·정치·IT·과학·문화 뉴스 큐레이터",
         lang: "ko",
         theme_color: "#ffffff",
         background_color: "#ffffff",
