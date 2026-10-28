@@ -13,13 +13,13 @@ export function Masthead({
   return (
     <header className="pt-4">
       <div className="relative">
-        {/* 검색: 제호 왼쪽 (신문 사이트처럼) */}
+        {/* 검색: 제호 오른쪽 */}
         <a
           href={href.search()}
           aria-label="Search"
-          className="absolute top-1/2 left-0 -translate-y-1/2 p-2 text-ink hover:text-ink-soft"
+          className="absolute top-1/2 right-0 -translate-y-1/2 p-1.5 text-ink hover:text-ink-soft sm:p-2"
         >
-          <SearchIcon />
+          <SearchIcon className="size-6 sm:size-8 lg:size-9" />
         </a>
         <a href={href.front} className="block py-3 text-center sm:py-5">
           <h1 className="font-masthead text-[clamp(2.6rem,9vw,5rem)] leading-none font-black tracking-tight">
