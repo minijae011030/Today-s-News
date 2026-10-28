@@ -47,7 +47,7 @@ export function GlossaryPage({
   }, [focusId, entries.length]);
 
   return (
-    <main className="mx-auto max-w-190">
+    <main>
       <h2 className="mt-8 font-serif text-4xl font-bold">용어 사전</h2>
       <p className="mt-1 text-sm text-muted">
         {entries.length} terms from press releases, economy and politics stories. Definitions are written by AI.
@@ -90,7 +90,7 @@ export function GlossaryPage({
           {groups.map(([g, list]) => (
             <section key={g} id={`group-${g}`} className="mt-10 scroll-mt-4">
               <h3 className="border-b-2 border-ink pb-1 font-serif text-2xl font-bold">{g}</h3>
-              <dl>
+              <dl className="lg:grid lg:grid-cols-2 lg:gap-x-12">
                 {list.map((e) => {
                   const id = `term-${termKey(e.term)}`;
                   const related = searchItems(items, e.term).length;

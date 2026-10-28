@@ -57,7 +57,9 @@ export function ArticlePage({
     item.snippet && !item.snippet.startsWith(item.title.slice(0, 15));
 
   return (
-    <main className="mx-auto max-w-170 pt-8">
+    // PC: 왼쪽 본문 + 오른쪽 같은 섹션 기사 (1면과 같은 전체 폭). 폰: 위에서 아래로 본문 → More in → 이전/다음
+    <main className="pt-8 lg:grid lg:grid-cols-[minmax(0,1fr)_19rem] lg:gap-x-16">
+      <div className="min-w-0">
       <div className="flex items-center gap-3">
         <a
           href={href.section(item.category)}
@@ -163,8 +165,10 @@ export function ArticlePage({
         </a>
       )}
 
+      </div>
+
       {related.length > 0 && (
-        <aside className="mt-16 border-t-2 border-ink pt-3">
+        <aside className="mt-16 border-t-2 border-ink pt-3 lg:row-span-2 lg:mt-0 lg:self-start lg:sticky lg:top-20">
           <h3 className="font-serif text-lg font-bold">
             More in {item.category}
           </h3>
@@ -172,7 +176,9 @@ export function ArticlePage({
         </aside>
       )}
 
-      <ArticleNav prev={prev} next={next} />
+      <div className="min-w-0 lg:col-start-1">
+        <ArticleNav prev={prev} next={next} />
+      </div>
 
       {open && (
         <TermPopup

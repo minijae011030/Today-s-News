@@ -61,7 +61,7 @@ export function SearchPage({ q, page, items }: { q: string; page: number; items:
 
   return (
     // 결과가 적어도 화면을 채워서 푸터가 바로 올라오지 않게
-    <main className="mx-auto min-h-[calc(100svh-14rem)] max-w-190">
+    <main className="min-h-[calc(100svh-14rem)]">
       <form
         role="search"
         onSubmit={(e) => {

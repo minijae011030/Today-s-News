@@ -33,7 +33,7 @@ export function SectionPage({
   const showTabs = groups.length > 0;
 
   return (
-    <main className="mx-auto max-w-190">
+    <main>
       <h2 className="mt-8 font-serif text-4xl font-bold">{section}</h2>
       <p className="mt-1 text-sm text-muted">
         {shown.length} {shown.length === 1 ? (isPress ? "release" : "story") : isPress ? "releases" : "stories"} from the
