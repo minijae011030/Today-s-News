@@ -40,6 +40,22 @@ export function GlossaryPage({
     return [...map.entries()];
   }, [shown]);
 
+  // 지금 화면 위쪽에 걸린 초성 묶음 (인덱스에서 강조)
+  const [current, setCurrent] = useState<string>();
+  useEffect(() => {
+    const onScroll = () => {
+      let now: string | undefined;
+      for (const [g] of groups) {
+        const el = document.getElementById(`group-${g}`);
+        if (el && el.getBoundingClientRect().top <= 140) now = g;
+      }
+      setCurrent(now ?? groups[0]?.[0]);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [groups]);
+
   const focusId = focus ? `term-${termKey(lookup.get(termKey(focus))?.term ?? focus)}` : undefined;
   useEffect(() => {
     if (!focusId) return;
@@ -70,26 +86,34 @@ export function GlossaryPage({
             />
           </div>
 
-          {/* 초성 바로가기 */}
+          {/* 초성 바로가기: 스크롤해도 위(작은 헤더 바로 아래)에 붙어 있고, 지금 보고 있는 초성은 검게 */}
           {!filter && (
-            <nav aria-label="Index" className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-sm">
-              {groups.map(([g]) => (
-                <button
-                  key={g}
-                  type="button"
-                  onClick={() => document.getElementById(`group-${g}`)?.scrollIntoView({ behavior: "smooth" })}
-                  className="font-semibold text-ink-soft hover:text-ink"
-                >
-                  {g}
-                </button>
-              ))}
+            <nav
+              aria-label="Index"
+              className="sticky top-12 z-20 -mx-4 mt-4 border-b border-rule bg-paper/95 px-4 backdrop-blur sm:top-14 sm:-mx-6 sm:px-6"
+            >
+              <div className="no-scrollbar flex gap-1 overflow-x-auto overscroll-x-none py-2 text-sm">
+                {groups.map(([g]) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() => document.getElementById(`group-${g}`)?.scrollIntoView({ behavior: "smooth" })}
+                    aria-current={current === g ? "true" : undefined}
+                    className={`min-w-8 shrink-0 px-1.5 py-1 font-semibold transition-colors ${
+                      current === g ? "bg-ink text-paper" : "text-muted hover:text-ink"
+                    }`}
+                  >
+                    {g}
+                  </button>
+                ))}
+              </div>
             </nav>
           )}
 
           {shown.length === 0 && <Notice>No terms match &ldquo;{filter.trim()}&rdquo;.</Notice>}
 
           {groups.map(([g, list]) => (
-            <section key={g} id={`group-${g}`} className="mt-10 scroll-mt-4">
+            <section key={g} id={`group-${g}`} className="mt-10 scroll-mt-28 sm:scroll-mt-32">
               <h3 className="border-b-2 border-ink pb-1 font-serif text-2xl font-bold">{g}</h3>
               <dl className="lg:grid lg:grid-cols-2 lg:gap-x-12">
                 {list.map((e) => {

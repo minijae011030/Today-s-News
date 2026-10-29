@@ -54,6 +54,8 @@ export default function App() {
           section={route.section}
           page={route.page}
           filter={route.filter}
+          period={route.period}
+          q={route.q}
           items={full!.filter((n) => n.category === route.section)}
           space={route.section === "과학" ? space : null}
         />

@@ -4,17 +4,14 @@ import { LeadStory } from "../components/organisms/LeadStory";
 import { SectionColumns } from "../components/organisms/SectionColumns";
 import type { Concept, NewsItem } from "../types/news";
 
-// 많이 보도된 소식 먼저: 최근 하루 안의 기사는 다룬 매체 수 순, 같으면 최신순 (그 외엔 원래 순서)
-const DAY = 24 * 3600_000;
+// 많이 보도된 소식 먼저, 단 오래될수록 점수가 줄어듦 (6시간마다 반으로)
+// → 어제 저녁 큰 소식이 다음 날 아침까지 톱을 차지하지 않게
+//   예) 17시간 전 14개 매체 = 2.0점 < 1시간 전 4개 매체 = 3.5점
+const HALF_LIFE_H = 6;
 function byImportance(items: NewsItem[]): NewsItem[] {
   const now = Date.now();
-  const recent = (n: NewsItem) => now - Date.parse(n.publishedAt) < DAY;
-  return [...items].sort(
-    (a, b) =>
-      Number(recent(b)) - Number(recent(a)) ||
-      (recent(a) ? (b.coverage ?? 1) - (a.coverage ?? 1) : 0) ||
-      b.publishedAt.localeCompare(a.publishedAt),
-  );
+  const score = (n: NewsItem) => (n.coverage ?? 1) * 0.5 ** ((now - Date.parse(n.publishedAt)) / 3_600_000 / HALF_LIFE_H);
+  return [...items].sort((a, b) => score(b) - score(a) || b.publishedAt.localeCompare(a.publishedAt));
 }
 
 // 1면 톱: 공부용 섹션에서 많이 보도된 사진 있는 기사 → 요약 있는 기사
