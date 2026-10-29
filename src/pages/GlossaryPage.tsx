@@ -3,7 +3,7 @@ import { Notice } from "../components/atoms/Notice";
 import { SearchIcon } from "../components/atoms/SearchIcon";
 import { initialOf, termKey, type TermInfo } from "../lib/glossary";
 import { href } from "../lib/route";
-import { searchItems } from "../lib/search";
+import { countMatches } from "../lib/search";
 import type { NewsItem } from "../types/news";
 
 /** 용어 사전: 기사에서 모인 경제·금융 용어를 가나다순으로 */
@@ -39,6 +39,9 @@ export function GlossaryPage({
     }
     return [...map.entries()];
   }, [shown]);
+
+  // 용어마다 관련 기사 수: 기사 목록이 바뀔 때만 한 번 계산 (스크롤할 때마다 다시 세지 않게)
+  const related_ = useMemo(() => new Map(entries.map((e) => [e.term, countMatches(items, e.term)])), [entries, items]);
 
   // 지금 화면 위쪽에 걸린 초성 묶음 (인덱스에서 강조)
   const [current, setCurrent] = useState<string>();
@@ -118,7 +121,7 @@ export function GlossaryPage({
               <dl className="lg:grid lg:grid-cols-2 lg:gap-x-12">
                 {list.map((e) => {
                   const id = `term-${termKey(e.term)}`;
-                  const related = searchItems(items, e.term).length;
+                  const related = related_.get(e.term) ?? 0;
                   return (
                     <div
                       key={e.term}

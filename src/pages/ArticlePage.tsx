@@ -11,7 +11,7 @@ import { ShareButton } from "../components/molecules/ShareButton";
 import { makeTermLinker } from "../components/molecules/TermText";
 import { TermPopup } from "../components/organisms/TermPopup";
 import { termKey, type TermInfo } from "../lib/glossary";
-import { searchItems } from "../lib/search";
+import { countMatches } from "../lib/search";
 import { formatPublished, photoOf, titleParts } from "../lib/format";
 import { href } from "../lib/route";
 import type { NewsItem } from "../types/news";
@@ -202,7 +202,7 @@ export function ArticlePage({
         <TermPopup
           info={open.info}
           anchor={open.anchor}
-          relatedCount={searchItems(items, open.info.term).length}
+          relatedCount={countMatches(items, open.info.term)}
           onClose={() => setOpen(null)}
         />
       )}
