@@ -20,33 +20,36 @@ export function DateField({
   className?: string;
 }) {
   return (
-    <label className={`relative block min-w-0 py-2.5 pr-8 ${className}`}>
+    <label className={`block min-w-0 py-2.5 pr-3 ${className}`}>
       <span className="block text-[0.65rem] font-semibold tracking-[0.12em] text-muted uppercase">{label}</span>
-      <input
-        type="date"
-        value={value ?? ""}
-        min={min}
-        max={max}
-        onChange={(e) => {
-          const v = e.target.value;
-          // 연·월·일이 다 채워졌을 때만 (입력 중간값 무시), 비우면 해제
-          if (!v || /^\d{4}-\d{2}-\d{2}$/.test(v)) onChange(v || undefined);
-        }}
-        className={`date-field mt-0.5 w-full bg-transparent font-serif text-[1.05rem] ${value ? "text-ink" : "text-muted"}`}
-      />
-      {value && (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            onChange(undefined);
+      {/* 날짜 · 달력 아이콘 · × 를 한 줄에 세로 가운데 맞춤 */}
+      <span className="mt-0.5 flex items-center gap-1">
+        <input
+          type="date"
+          value={value ?? ""}
+          min={min}
+          max={max}
+          onChange={(e) => {
+            const v = e.target.value;
+            // 연·월·일이 다 채워졌을 때만 (입력 중간값 무시), 비우면 해제
+            if (!v || /^\d{4}-\d{2}-\d{2}$/.test(v)) onChange(v || undefined);
           }}
-          aria-label={`${label} 지우기`}
-          className="absolute right-1 bottom-2.5 z-10 px-1.5 text-lg leading-none text-muted hover:text-ink"
-        >
-          ×
-        </button>
-      )}
+          className={`date-field min-w-0 flex-1 bg-transparent font-serif text-[1.05rem] ${value ? "text-ink" : "text-muted"}`}
+        />
+        {value && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              onChange(undefined);
+            }}
+            aria-label={`${label} 지우기`}
+            className="flex size-6 shrink-0 items-center justify-center text-lg leading-none text-muted hover:text-ink"
+          >
+            ×
+          </button>
+        )}
+      </span>
     </label>
   );
 }
