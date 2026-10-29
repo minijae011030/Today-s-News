@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { SearchIcon } from "../components/atoms/SearchIcon";
 import { Notice } from "../components/atoms/Notice";
+import { DateField } from "../components/molecules/DateField";
 import { FilterTabs } from "../components/molecules/FilterTabs";
 import { Pagination } from "../components/molecules/Pagination";
 import { StoryListItem } from "../components/molecules/StoryListItem";
@@ -10,21 +11,12 @@ import { href } from "../lib/route";
 import { searchItems } from "../lib/search";
 import type { NewsItem, SpacePhoto } from "../types/news";
 
-// 보도자료 기간 필터 (KST 기준). 전체 = 보관 중인 3달치
-const PERIODS = [
-  { key: "", name: "전체" },
-  { key: "today", name: "오늘" },
-  { key: "week", name: "1주" },
-  { key: "month", name: "1개월" },
-] as const;
-const kstDate = (t: number) => new Date(t + 9 * 3600_000).toISOString().slice(0, 10);
-function inPeriod(iso: string, period?: string): boolean {
-  const t = Date.parse(iso);
-  if (period === "today") return kstDate(t) === kstDate(Date.now());
-  if (period === "week") return Date.now() - t <= 7 * 86_400_000;
-  if (period === "month") return Date.now() - t <= 30 * 86_400_000;
-  return true;
-}
+// 보도자료 기간 필터: 시작일~종료일 (KST 날짜, 둘 다 포함). 비우면 그쪽은 제한 없음
+const kstDate = (iso: string | number) => new Date(new Date(iso).getTime() + 9 * 3600_000).toISOString().slice(0, 10);
+const inRangeOf = (iso: string, from?: string, to?: string) => {
+  const d = kstDate(iso);
+  return (!from || d >= from) && (!to || d <= to);
+};
 
 const kstDay = (iso: string) =>
   new Date(iso).toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "long", timeZone: "Asia/Seoul" });
@@ -33,7 +25,8 @@ export function SectionPage({
   section,
   page,
   filter,
-  period,
+  from,
+  to,
   q = "",
   items,
   space = null,
@@ -41,7 +34,8 @@ export function SectionPage({
   section: string;
   page: number;
   filter?: string;
-  period?: string; // 보도자료: today | week | month
+  from?: string; // 보도자료 기간 시작일 (YYYY-MM-DD)
+  to?: string; // 보도자료 기간 종료일
   q?: string; // 보도자료 안에서 검색
   items: NewsItem[];
   space?: SpacePhoto | null; // 과학 섹션 맨 위: NASA 오늘의 우주 사진·영상
@@ -63,16 +57,26 @@ export function SectionPage({
     const t = setTimeout(() => setSearched(query.trim()), 300);
     return () => clearTimeout(t);
   }, [query]);
-  const opts = { period, q: searched || undefined };
+  const opts = { from, to, q: searched || undefined };
   useEffect(() => {
     if (!isPress) return;
-    const next = href.section(section, 1, active, { period, q: searched || undefined });
+    const next = href.section(section, 1, active, { from, to, q: searched || undefined });
     if (searched !== q && window.location.hash !== next) history.replaceState(null, "", next);
-  }, [isPress, section, active, period, searched, q]);
+  }, [isPress, section, active, from, to, searched, q]);
+  // 날짜를 고르면 주소를 바꿔서 이동 (뒤로 가기로 되돌릴 수 있게)
+  const setRange = (next: { from?: string; to?: string }) => {
+    let f = "from" in next ? next.from : from;
+    let t = "to" in next ? next.to : to;
+    if (f && t && f > t) [f, t] = [t, f]; // 거꾸로 고르면 바꿔줌
+    location.hash = href.section(section, 1, active, { from: f || undefined, to: t || undefined, q: searched || undefined });
+  };
+  // 달력에서 고를 수 있는 범위: 보관 중인 가장 오래된 보도자료 ~ 오늘
+  const oldest = items.length ? kstDate(items[items.length - 1].publishedAt) : undefined;
+  const today = kstDate(Date.now());
 
   const inRange = useMemo(
-    () => (isPress ? items.filter((n) => inPeriod(n.publishedAt, period)) : items),
-    [isPress, items, period],
+    () => (isPress ? items.filter((n) => inRangeOf(n.publishedAt, from, to)) : items),
+    [isPress, items, from, to],
   );
   const matched = useMemo(() => {
     if (!isPress || !searched) return inRange;
@@ -80,7 +84,7 @@ export function SectionPage({
     return inRange.filter((n) => hit.has(n.id)); // 날짜순 그대로
   }, [isPress, inRange, searched]);
   const shown = active ? matched.filter((n) => groupOf(n) === active) : matched;
-  const filtering = isPress && (!!period || !!searched);
+  const filtering = isPress && (!!from || !!to || !!searched);
 
   const totalPages = Math.max(1, Math.ceil(shown.length / PAGE_SIZE));
   const current = Math.min(page, totalPages);
@@ -95,34 +99,36 @@ export function SectionPage({
         {filtering ? (searched ? <> matching &ldquo;{searched}&rdquo;</> : null) : <> from the past {isPress ? "three months" : "three days"}</>}
       </p>
 
-      {/* 보도자료: 기간 + 검색 */}
+      {/* 보도자료: 기간 + 검색. 신문 목차처럼 가는 세로선으로 나눈 한 줄 (폰: 날짜 두 칸 + 아래 검색) */}
       {isPress && (
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <nav aria-label="Period" className="flex gap-1">
-            {PERIODS.map((p) => {
-              const on = (period ?? "") === p.key;
-              return (
-                <a
-                  key={p.key}
-                  href={href.section(section, 1, active, { period: p.key || undefined, q: searched || undefined })}
-                  aria-current={on ? "true" : undefined}
-                  className={`border px-3 py-1.5 text-sm ${on ? "border-ink bg-ink font-semibold text-paper" : "border-ink/20 text-ink-soft hover:border-ink"}`}
-                >
-                  {p.name}
-                </a>
-              );
-            })}
-          </nav>
-          <label className="flex items-center gap-2 border-b border-ink pb-1 sm:w-72">
-            <SearchIcon className="size-4 shrink-0" />
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="보도자료에서 찾기"
-              aria-label="보도자료에서 찾기"
-              className="min-w-0 flex-1 bg-transparent font-serif outline-none placeholder:text-muted"
-            />
+        <div className="mt-6 grid grid-cols-2 border-y border-ink sm:grid-cols-[11rem_11rem_1fr]">
+          <DateField label="From" value={from} min={oldest} max={to ?? today} onChange={(v) => setRange({ from: v })} />
+          <DateField
+            label="To"
+            value={to}
+            min={from ?? oldest}
+            max={today}
+            onChange={(v) => setRange({ to: v })}
+            className="border-l border-rule pl-4"
+          />
+          <label className="col-span-2 flex min-w-0 flex-col border-t border-rule py-2.5 sm:col-span-1 sm:border-t-0 sm:border-l sm:pl-4">
+            <span className="text-[0.65rem] font-semibold tracking-[0.12em] text-muted uppercase">Search</span>
+            <span className="mt-0.5 flex items-center gap-2">
+              <SearchIcon className="size-4 shrink-0 text-muted" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="보도자료에서 찾기"
+                aria-label="보도자료에서 찾기"
+                className="min-w-0 flex-1 bg-transparent font-serif text-[1.05rem] outline-none placeholder:text-muted"
+              />
+              {query && (
+                <button type="button" onClick={() => setQuery("")} aria-label="검색어 지우기" className="px-1.5 text-lg leading-none text-muted hover:text-ink">
+                  ×
+                </button>
+              )}
+            </span>
           </label>
         </div>
       )}
