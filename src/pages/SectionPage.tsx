@@ -25,8 +25,8 @@ export function SectionPage({
   section,
   page,
   filter,
-  from,
-  to,
+  from: fromProp,
+  to: toProp,
   q = "",
   items,
   space = null,
@@ -46,6 +46,11 @@ export function SectionPage({
   const groups = [...new Set(items.map(groupOf).filter((g): g is string => !!g))];
   const active = filter && groups.includes(filter) ? filter : undefined;
 
+  // 기간: 주소(?from=&to=)에서 시작하되 화면 안에서 바로 바꿈 (주소만 조용히 갱신 → 맨 위로 튀지 않음)
+  const [range, setRangeState] = useState({ from: fromProp, to: toProp });
+  useEffect(() => setRangeState({ from: fromProp, to: toProp }), [fromProp, toProp]);
+  const { from, to } = range;
+
   // 보도자료 검색어: 치는 대로 바로 거르지 않고 0.3초 멈추면 (한글 조합 중 깜빡임 방지), 주소에도 남김
   const [query, setQuery] = useState(q);
   const [searched, setSearched] = useState(q);
@@ -61,14 +66,14 @@ export function SectionPage({
   useEffect(() => {
     if (!isPress) return;
     const next = href.section(section, 1, active, { from, to, q: searched || undefined });
-    if (searched !== q && window.location.hash !== next) history.replaceState(null, "", next);
-  }, [isPress, section, active, from, to, searched, q]);
-  // 날짜를 고르면 주소를 바꿔서 이동 (뒤로 가기로 되돌릴 수 있게)
+    if (window.location.hash !== next) history.replaceState(null, "", next);
+  }, [isPress, section, active, from, to, searched]);
+  // 날짜 고르기
   const setRange = (next: { from?: string; to?: string }) => {
     let f = "from" in next ? next.from : from;
     let t = "to" in next ? next.to : to;
     if (f && t && f > t) [f, t] = [t, f]; // 거꾸로 고르면 바꿔줌
-    location.hash = href.section(section, 1, active, { from: f || undefined, to: t || undefined, q: searched || undefined });
+    setRangeState({ from: f || undefined, to: t || undefined });
   };
   // 달력에서 고를 수 있는 범위: 보관 중인 가장 오래된 보도자료 ~ 오늘
   const oldest = items.length ? kstDate(items[items.length - 1].publishedAt) : undefined;
@@ -87,7 +92,9 @@ export function SectionPage({
   const filtering = isPress && (!!from || !!to || !!searched);
 
   const totalPages = Math.max(1, Math.ceil(shown.length / PAGE_SIZE));
-  const current = Math.min(page, totalPages);
+  // 화면 안에서 필터를 바꿨으면 1페이지부터
+  const changed = from !== fromProp || to !== toProp || searched !== q;
+  const current = Math.min(changed ? 1 : page, totalPages);
   const visible = shown.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
   const showTabs = groups.length > 0;
 

@@ -123,3 +123,19 @@ input[type="search"]::-webkit-search-decoration {
 html {
   scroll-padding-top: 4rem;
 }
+
+/* 보도자료 기간 입력: 브라우저 기본 테두리·배경 없애고 글씨만 */
+.date-field {
+  appearance: none;
+  border: 0;
+  outline: none;
+  padding: 0;
+  min-height: 1.6em;
+}
+.date-field::-webkit-date-and-time-value {
+  text-align: left;
+}
+.date-field::-webkit-calendar-picker-indicator {
+  opacity: 0.45;
+  cursor: pointer;
+}
