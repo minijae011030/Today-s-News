@@ -1,48 +1,45 @@
 {
-  "updatedAt": "2026-10-29T11:01:33.963Z",
-  "count": 1900,
-  "summarized": 1667,
-  "fetched": 422,
-  "newCount": 28,
+  "updatedAt": "2026-10-29T22:03:04.430Z",
+  "count": 1796,
+  "summarized": 1548,
+  "fetched": 427,
+  "newCount": 29,
   "newByCategory": {
-    "정치": 6,
-    "IT": 6,
-    "경제": 11,
+    "보도자료": 1,
+    "경제": 14,
+    "정치": 7,
     "문화": 2,
-    "과학": 3
+    "과학": 1,
+    "IT": 4
   },
-  "summarizedNow": 25,
-  "bodyFound": 20,
-  "pdfRead": 0,
+  "summarizedNow": 26,
+  "bodyFound": 22,
+  "pdfRead": 1,
   "hidden": 1,
   "moved": [
     "IT→경제",
+    "IT→정치",
+    "IT→정치",
     "IT→경제",
-    "IT→경제",
-    "경제→IT",
-    "IT→과학"
+    "과학→경제",
+    "IT→경제"
   ],
   "llmFailedBatches": 0,
   "failedFeeds": [],
-  "concept": null,
+  "concept": "금융회사 신속정리제도",
   "spacePhoto": null,
   "newTerms": [
-    "퇴직연금",
-    "고객확인 의무",
-    "인공지능",
-    "태아보험",
-    "의료자문",
-    "체외충격파",
-    "불법추심",
-    "투자설명회",
-    "모범규준",
-    "펀드 클래스",
-    "선취판매수수료",
-    "DSR",
-    "자기자본비율규제",
-    "보이스피싱",
-    "금융사기",
-    "소득공제"
+    "순매도",
+    "순회수",
+    "시가총액",
+    "예금금리",
+    "북클로징",
+    "순환매",
+    "단기매매차익",
+    "선취수수료",
+    "본인가",
+    "상장폐지",
+    "정리매매"
   ],
   "keywords": [
     {
@@ -50,8 +47,8 @@
       "query": "금융감독원",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 43,
-      "hidden": 8,
+      "kept": 44,
+      "hidden": 9,
       "dead": false
     },
     {
@@ -59,8 +56,8 @@
       "query": "기준금리",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 37,
-      "hidden": 8,
+      "kept": 38,
+      "hidden": 12,
       "dead": false
     },
     {
@@ -85,8 +82,8 @@
       "category": "경제",
       "query": "공매도",
       "hot": false,
-      "fetchedNow": 7,
-      "kept": 0,
+      "fetchedNow": 6,
+      "kept": 1,
       "hidden": 0,
       "dead": false
     },
@@ -104,7 +101,7 @@
       "query": "미국 연준",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 5,
+      "kept": 6,
       "hidden": 0,
       "dead": false
     },
@@ -113,8 +110,8 @@
       "query": "환율",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 40,
-      "hidden": 8,
+      "kept": 39,
+      "hidden": 10,
       "dead": false
     },
     {
@@ -168,14 +165,14 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 3,
-      "hidden": 1,
+      "hidden": 3,
       "dead": false
     },
     {
       "category": "경제",
       "query": "스테이블코인",
       "hot": false,
-      "fetchedNow": 3,
+      "fetchedNow": 4,
       "kept": 1,
       "hidden": 0,
       "dead": false
@@ -185,7 +182,7 @@
       "query": "주가 폭락",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 6,
+      "kept": 7,
       "hidden": 2,
       "dead": false
     },
@@ -193,7 +190,7 @@
       "category": "경제",
       "query": "비트코인",
       "hot": false,
-      "fetchedNow": 5,
+      "fetchedNow": 3,
       "kept": 1,
       "hidden": 2,
       "dead": false
@@ -213,7 +210,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 10,
-      "hidden": 26,
+      "hidden": 28,
       "dead": false
     },
     {
@@ -240,7 +237,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 5,
-      "hidden": 0,
+      "hidden": 1,
       "dead": false
     },
     {
@@ -293,8 +290,8 @@
       "query": "대통령실 야당",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 1,
-      "hidden": 1,
+      "kept": 0,
+      "hidden": 3,
       "dead": false
     },
     {
@@ -310,7 +307,7 @@
       "category": "정치",
       "query": "특검 공방",
       "hot": false,
-      "fetchedNow": 6,
+      "fetchedNow": 7,
       "kept": 0,
       "hidden": 1,
       "dead": false
@@ -329,8 +326,8 @@
       "query": "이재명 대통령",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 63,
-      "hidden": 23,
+      "kept": 68,
+      "hidden": 24,
       "dead": false
     },
     {
@@ -338,8 +335,8 @@
       "query": "오세훈",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 13,
-      "hidden": 13,
+      "kept": 12,
+      "hidden": 14,
       "dead": false
     },
     {
@@ -347,8 +344,8 @@
       "query": "국민의힘 민주당",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 27,
-      "hidden": 4,
+      "kept": 25,
+      "hidden": 8,
       "dead": false
     },
     {
@@ -356,7 +353,7 @@
       "query": "개발자 채용",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 2,
+      "kept": 3,
       "hidden": 0,
       "dead": false
     },
@@ -365,8 +362,8 @@
       "query": "해킹 개인정보 유출",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 19,
-      "hidden": 22,
+      "kept": 16,
+      "hidden": 26,
       "dead": false
     },
     {
@@ -374,15 +371,15 @@
       "query": "AI 반도체",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 83,
-      "hidden": 9,
+      "kept": 86,
+      "hidden": 11,
       "dead": false
     },
     {
       "category": "IT",
       "query": "핀테크",
       "hot": false,
-      "fetchedNow": 6,
+      "fetchedNow": 4,
       "kept": 2,
       "hidden": 0,
       "dead": false
@@ -392,8 +389,8 @@
       "query": "구글 애플 인앱결제",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 6,
-      "hidden": 22,
+      "kept": 3,
+      "hidden": 25,
       "dead": false
     },
     {
@@ -401,8 +398,8 @@
       "query": "천문학 연구",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 2,
-      "hidden": 5,
+      "kept": 3,
+      "hidden": 6,
       "dead": false
     },
     {
@@ -418,9 +415,9 @@
       "category": "과학",
       "query": "과학 연구 성과",
       "hot": false,
-      "fetchedNow": 6,
+      "fetchedNow": 7,
       "kept": 32,
-      "hidden": 9,
+      "hidden": 11,
       "dead": false
     },
     {
@@ -445,7 +442,7 @@
       "category": "문화",
       "query": "클래식 공연",
       "hot": false,
-      "fetchedNow": 6,
+      "fetchedNow": 7,
       "kept": 3,
       "hidden": 0,
       "dead": false
@@ -454,8 +451,8 @@
       "category": "문화",
       "query": "연극",
       "hot": false,
-      "fetchedNow": 5,
-      "kept": 7,
+      "fetchedNow": 7,
+      "kept": 9,
       "hidden": 9,
       "dead": false
     },
@@ -481,16 +478,16 @@
       "category": "문화",
       "query": "영화 개봉",
       "hot": false,
-      "fetchedNow": 6,
+      "fetchedNow": 7,
       "kept": 5,
-      "hidden": 2,
+      "hidden": 3,
       "dead": false
     },
     {
       "category": "문화",
       "query": "드라마",
       "hot": false,
-      "fetchedNow": 6,
+      "fetchedNow": 7,
       "kept": 10,
       "hidden": 1,
       "dead": false
@@ -508,7 +505,7 @@
       "category": "경제",
       "query": "코스피 6000선 회복",
       "hot": true,
-      "fetchedNow": 5,
+      "fetchedNow": 7,
       "kept": 0,
       "hidden": 1,
       "dead": false
