@@ -1,47 +1,47 @@
 {
-  "updatedAt": "2026-10-28T23:03:32.152Z",
-  "count": 1300,
-  "summarized": 1182,
-  "fetched": 424,
-  "newCount": 26,
+  "updatedAt": "2026-10-29T00:03:28.330Z",
+  "count": 1376,
+  "summarized": 1256,
+  "fetched": 432,
+  "newCount": 29,
   "newByCategory": {
-    "경제": 12,
-    "문화": 2,
-    "정치": 4,
-    "IT": 6,
-    "과학": 2
+    "경제": 14,
+    "정치": 6,
+    "IT": 5,
+    "문화": 3,
+    "과학": 1
   },
-  "summarizedNow": 59,
-  "bodyFound": 62,
-  "pdfRead": 44,
-  "hidden": 3,
+  "summarizedNow": 74,
+  "bodyFound": 67,
+  "pdfRead": 39,
+  "hidden": 0,
   "moved": [
+    "과학→문화",
+    "IT→경제",
     "IT→경제",
     "IT→경제",
     "IT→경제"
   ],
-  "llmFailedBatches": 1,
+  "llmFailedBatches": 0,
   "failedFeeds": [],
   "concept": null,
   "spacePhoto": null,
   "newTerms": [
-    "혁신금융서비스",
-    "소멸시효",
-    "밸류에이션",
-    "적층세라믹콘덴서",
-    "프로젝트파이낸싱",
-    "D램",
-    "국채",
-    "가산금리",
-    "잉여현금흐름",
-    "자본지출",
-    "재무진단",
-    "보험사기",
-    "통장매매",
-    "불법사금융",
-    "연체율",
-    "온체인",
-    "탈중앙화거래소"
+    "발행어음",
+    "준법감시인",
+    "책무구조도",
+    "불완전판매",
+    "시세조종",
+    "종합금융투자사업자",
+    "단기금융업",
+    "정책금융",
+    "보통주자본",
+    "위험가중자산",
+    "파생상품",
+    "주택담보대출",
+    "선불충전금",
+    "기본자본",
+    "인내자본"
   ],
   "keywords": [
     {
@@ -49,8 +49,8 @@
       "query": "금융감독원",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 13,
-      "hidden": 2,
+      "kept": 14,
+      "hidden": 5,
       "dead": false
     },
     {
@@ -58,7 +58,7 @@
       "query": "기준금리",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 12,
+      "kept": 15,
       "hidden": 3,
       "dead": false
     },
@@ -112,7 +112,7 @@
       "query": "환율",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 19,
+      "kept": 21,
       "hidden": 5,
       "dead": false
     },
@@ -130,7 +130,7 @@
       "query": "세법 개정안",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 0,
+      "kept": 1,
       "hidden": 0,
       "dead": false
     },
@@ -138,8 +138,8 @@
       "category": "경제",
       "query": "가상자산 규제",
       "hot": false,
-      "fetchedNow": 4,
-      "kept": 0,
+      "fetchedNow": 7,
+      "kept": 1,
       "hidden": 0,
       "dead": false
     },
@@ -174,7 +174,7 @@
       "category": "경제",
       "query": "스테이블코인",
       "hot": false,
-      "fetchedNow": 1,
+      "fetchedNow": 3,
       "kept": 0,
       "hidden": 0,
       "dead": false
@@ -184,7 +184,7 @@
       "query": "주가 폭락",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 1,
+      "kept": 2,
       "hidden": 2,
       "dead": false
     },
@@ -192,9 +192,9 @@
       "category": "경제",
       "query": "비트코인",
       "hot": false,
-      "fetchedNow": 3,
+      "fetchedNow": 4,
       "kept": 0,
-      "hidden": 0,
+      "hidden": 2,
       "dead": false
     },
     {
@@ -211,8 +211,8 @@
       "query": "보이스피싱",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 4,
-      "hidden": 11,
+      "kept": 5,
+      "hidden": 12,
       "dead": false
     },
     {
@@ -328,8 +328,8 @@
       "query": "이재명 대통령",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 30,
-      "hidden": 9,
+      "kept": 36,
+      "hidden": 10,
       "dead": false
     },
     {
@@ -364,7 +364,7 @@
       "query": "해킹 개인정보 유출",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 4,
+      "kept": 5,
       "hidden": 3,
       "dead": false
     },
@@ -373,7 +373,7 @@
       "query": "AI 반도체",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 35,
+      "kept": 40,
       "hidden": 6,
       "dead": false
     },
@@ -381,7 +381,7 @@
       "category": "IT",
       "query": "핀테크",
       "hot": false,
-      "fetchedNow": 6,
+      "fetchedNow": 7,
       "kept": 0,
       "hidden": 0,
       "dead": false
@@ -392,7 +392,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 4,
-      "hidden": 18,
+      "hidden": 19,
       "dead": false
     },
     {
@@ -401,7 +401,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 2,
-      "hidden": 3,
+      "hidden": 4,
       "dead": false
     },
     {
@@ -418,8 +418,8 @@
       "query": "과학 연구 성과",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 10,
-      "hidden": 1,
+      "kept": 11,
+      "hidden": 2,
       "dead": false
     },
     {
@@ -427,7 +427,7 @@
       "query": "노벨상",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 0,
+      "kept": 1,
       "hidden": 0,
       "dead": false
     },
@@ -454,7 +454,7 @@
       "query": "연극",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 3,
+      "kept": 5,
       "hidden": 4,
       "dead": false
     },
@@ -480,7 +480,7 @@
       "category": "문화",
       "query": "영화 개봉",
       "hot": false,
-      "fetchedNow": 4,
+      "fetchedNow": 7,
       "kept": 0,
       "hidden": 1,
       "dead": false
@@ -489,7 +489,7 @@
       "category": "문화",
       "query": "드라마",
       "hot": false,
-      "fetchedNow": 7,
+      "fetchedNow": 5,
       "kept": 5,
       "hidden": 0,
       "dead": false
