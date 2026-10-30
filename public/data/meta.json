@@ -1,40 +1,32 @@
 {
-  "updatedAt": "2026-10-30T10:01:13.082Z",
-  "count": 1887,
-  "summarized": 1454,
+  "updatedAt": "2026-10-30T11:01:18.291Z",
+  "count": 1888,
+  "summarized": 1440,
   "fetched": 420,
-  "newCount": 28,
+  "newCount": 21,
   "newByCategory": {
-    "과학": 1,
+    "정치": 5,
+    "경제": 7,
     "문화": 3,
-    "정치": 8,
-    "경제": 11,
-    "IT": 5
+    "IT": 4,
+    "과학": 2
   },
-  "summarizedNow": 25,
-  "bodyFound": 21,
+  "summarizedNow": 18,
+  "bodyFound": 16,
   "pdfRead": 0,
-  "hidden": 1,
+  "hidden": 4,
   "moved": [
-    "경제→IT",
-    "과학→문화",
-    "IT→경제",
-    "IT→경제",
-    "IT→정치",
-    "IT→정치"
+    "경제→문화"
   ],
   "llmFailedBatches": 0,
   "failedFeeds": [],
   "concept": null,
   "spacePhoto": null,
   "newTerms": [
-    "기조적 인플레이션",
-    "회계연도",
-    "순이자비용",
-    "규제",
-    "신성장 동력",
-    "데브옵스",
-    "개인정보"
+    "기대수익률",
+    "국채 금리",
+    "콜금리",
+    "금융공기업"
   ],
   "keywords": [
     {
@@ -51,7 +43,7 @@
       "query": "기준금리",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 51,
+      "kept": 53,
       "hidden": 29,
       "dead": false
     },
@@ -69,7 +61,7 @@
       "query": "자본시장 제도",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 14,
+      "kept": 16,
       "hidden": 4,
       "dead": false
     },
@@ -87,7 +79,7 @@
       "query": "불공정거래",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 11,
+      "kept": 12,
       "hidden": 9,
       "dead": false
     },
@@ -104,9 +96,9 @@
       "category": "경제",
       "query": "환율",
       "hot": false,
-      "fetchedNow": 7,
-      "kept": 75,
-      "hidden": 16,
+      "fetchedNow": 6,
+      "kept": 76,
+      "hidden": 18,
       "dead": false
     },
     {
@@ -133,7 +125,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 9,
-      "hidden": 5,
+      "hidden": 6,
       "dead": false
     },
     {
@@ -159,7 +151,7 @@
       "query": "소비자물가",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 7,
+      "kept": 8,
       "hidden": 5,
       "dead": false
     },
@@ -186,8 +178,8 @@
       "query": "비트코인",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 4,
-      "hidden": 8,
+      "kept": 5,
+      "hidden": 11,
       "dead": false
     },
     {
@@ -267,7 +259,7 @@
       "query": "여야 충돌",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 10,
+      "kept": 12,
       "hidden": 6,
       "dead": false
     },
@@ -321,7 +313,7 @@
       "query": "이재명 대통령",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 103,
+      "kept": 105,
       "hidden": 40,
       "dead": false
     },
@@ -330,7 +322,7 @@
       "query": "오세훈",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 21,
+      "kept": 22,
       "hidden": 36,
       "dead": false
     },
@@ -340,7 +332,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 38,
-      "hidden": 16,
+      "hidden": 18,
       "dead": false
     },
     {
@@ -357,7 +349,7 @@
       "query": "해킹 개인정보 유출",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 23,
+      "kept": 24,
       "hidden": 40,
       "dead": false
     },
@@ -367,14 +359,14 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 137,
-      "hidden": 20,
+      "hidden": 24,
       "dead": false
     },
     {
       "category": "IT",
       "query": "핀테크",
       "hot": false,
-      "fetchedNow": 2,
+      "fetchedNow": 1,
       "kept": 4,
       "hidden": 4,
       "dead": false
@@ -473,8 +465,8 @@
       "category": "문화",
       "query": "영화 개봉",
       "hot": false,
-      "fetchedNow": 5,
-      "kept": 8,
+      "fetchedNow": 7,
+      "kept": 10,
       "hidden": 11,
       "dead": false
     },
