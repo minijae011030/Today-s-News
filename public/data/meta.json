@@ -1,57 +1,48 @@
 {
-  "updatedAt": "2026-10-30T09:01:22.158Z",
-  "count": 1881,
-  "summarized": 1459,
-  "fetched": 421,
-  "newCount": 27,
+  "updatedAt": "2026-10-30T10:01:13.082Z",
+  "count": 1887,
+  "summarized": 1454,
+  "fetched": 420,
+  "newCount": 28,
   "newByCategory": {
-    "보도자료": 1,
-    "경제": 13,
-    "정치": 6,
-    "문화": 2,
-    "과학": 2,
-    "IT": 3
+    "과학": 1,
+    "문화": 3,
+    "정치": 8,
+    "경제": 11,
+    "IT": 5
   },
-  "summarizedNow": 24,
-  "bodyFound": 23,
-  "pdfRead": 1,
-  "hidden": 3,
+  "summarizedNow": 25,
+  "bodyFound": 21,
+  "pdfRead": 0,
+  "hidden": 1,
   "moved": [
+    "경제→IT",
+    "과학→문화",
     "IT→경제",
     "IT→경제",
     "IT→정치",
-    "IT→경제"
+    "IT→정치"
   ],
   "llmFailedBatches": 0,
   "failedFeeds": [],
   "concept": null,
   "spacePhoto": null,
   "newTerms": [
-    "자금세탁",
-    "금리",
-    "채권",
-    "수익률",
-    "공모채",
-    "사모채",
-    "커버드콜",
-    "콜옵션",
-    "지주회사",
-    "흡수합병",
-    "지분법이익",
-    "블록체인",
-    "출고가",
-    "보증",
-    "역성장",
-    "지분",
-    "지수"
+    "기조적 인플레이션",
+    "회계연도",
+    "순이자비용",
+    "규제",
+    "신성장 동력",
+    "데브옵스",
+    "개인정보"
   ],
   "keywords": [
     {
       "category": "경제",
       "query": "금융감독원",
       "hot": false,
-      "fetchedNow": 4,
-      "kept": 56,
+      "fetchedNow": 1,
+      "kept": 57,
       "hidden": 14,
       "dead": false
     },
@@ -78,7 +69,7 @@
       "query": "자본시장 제도",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 13,
+      "kept": 14,
       "hidden": 4,
       "dead": false
     },
@@ -96,7 +87,7 @@
       "query": "불공정거래",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 10,
+      "kept": 11,
       "hidden": 9,
       "dead": false
     },
@@ -105,7 +96,7 @@
       "query": "미국 연준",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 9,
+      "kept": 10,
       "hidden": 3,
       "dead": false
     },
@@ -114,7 +105,7 @@
       "query": "환율",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 74,
+      "kept": 75,
       "hidden": 16,
       "dead": false
     },
@@ -141,7 +132,7 @@
       "query": "가상자산 규제",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 8,
+      "kept": 9,
       "hidden": 5,
       "dead": false
     },
@@ -168,7 +159,7 @@
       "query": "소비자물가",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 6,
+      "kept": 7,
       "hidden": 5,
       "dead": false
     },
@@ -177,7 +168,7 @@
       "query": "스테이블코인",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 13,
+      "kept": 14,
       "hidden": 3,
       "dead": false
     },
@@ -195,8 +186,8 @@
       "query": "비트코인",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 3,
-      "hidden": 7,
+      "kept": 4,
+      "hidden": 8,
       "dead": false
     },
     {
@@ -214,7 +205,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 12,
-      "hidden": 41,
+      "hidden": 44,
       "dead": false
     },
     {
@@ -248,8 +239,8 @@
       "category": "경제",
       "query": "사모펀드 MBK",
       "hot": false,
-      "fetchedNow": 5,
-      "kept": 2,
+      "fetchedNow": 6,
+      "kept": 3,
       "hidden": 0,
       "dead": false
     },
@@ -276,7 +267,7 @@
       "query": "여야 충돌",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 9,
+      "kept": 10,
       "hidden": 6,
       "dead": false
     },
@@ -330,8 +321,8 @@
       "query": "이재명 대통령",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 99,
-      "hidden": 38,
+      "kept": 103,
+      "hidden": 40,
       "dead": false
     },
     {
@@ -339,8 +330,8 @@
       "query": "오세훈",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 20,
-      "hidden": 34,
+      "kept": 21,
+      "hidden": 36,
       "dead": false
     },
     {
@@ -366,8 +357,8 @@
       "query": "해킹 개인정보 유출",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 22,
-      "hidden": 37,
+      "kept": 23,
+      "hidden": 40,
       "dead": false
     },
     {
@@ -375,7 +366,7 @@
       "query": "AI 반도체",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 133,
+      "kept": 137,
       "hidden": 20,
       "dead": false
     },
@@ -429,7 +420,7 @@
       "query": "노벨상",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 2,
+      "kept": 3,
       "hidden": 4,
       "dead": false
     },
@@ -456,7 +447,7 @@
       "query": "연극",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 19,
+      "kept": 21,
       "hidden": 18,
       "dead": false
     },
@@ -482,7 +473,7 @@
       "category": "문화",
       "query": "영화 개봉",
       "hot": false,
-      "fetchedNow": 4,
+      "fetchedNow": 5,
       "kept": 8,
       "hidden": 11,
       "dead": false
