@@ -1,49 +1,44 @@
 {
-  "updatedAt": "2026-10-30T00:01:23.029Z",
+  "updatedAt": "2026-10-30T01:01:20.972Z",
   "count": 1799,
-  "summarized": 1531,
-  "fetched": 426,
-  "newCount": 28,
+  "summarized": 1515,
+  "fetched": 423,
+  "newCount": 26,
   "newByCategory": {
-    "경제": 16,
+    "보도자료": 1,
+    "경제": 13,
     "문화": 3,
-    "정치": 5,
-    "과학": 1,
-    "IT": 3
+    "정치": 4,
+    "IT": 4,
+    "과학": 1
   },
-  "summarizedNow": 25,
-  "bodyFound": 24,
-  "pdfRead": 0,
-  "hidden": 1,
+  "summarizedNow": 23,
+  "bodyFound": 25,
+  "pdfRead": 1,
+  "hidden": 4,
   "moved": [
     "IT→경제",
     "IT→경제",
+    "정치→문화",
     "IT→경제",
-    "IT→경제",
-    "IT→경제",
-    "과학→경제",
-    "정치→문화"
+    "과학→문화"
   ],
   "llmFailedBatches": 0,
   "failedFeeds": [],
   "concept": null,
   "spacePhoto": null,
   "newTerms": [
-    "환율",
-    "알트코인",
-    "핀테크혁신펀드",
-    "안심차단서비스",
-    "비조치의견서",
-    "설명의무",
-    "상해등급",
-    "향후치료비",
-    "불법유사수신업자",
-    "리딩방",
-    "신용평가",
-    "공시체계",
-    "대손충당금적립률",
-    "상·매각",
-    "정책보증기관"
+    "RE100",
+    "시스템 반도체",
+    "세계국채지수",
+    "USDT",
+    "USDC",
+    "목표주가",
+    "LCOE",
+    "고정가격계약",
+    "신용생명보험",
+    "자금중개",
+    "채무자대리인"
   ],
   "keywords": [
     {
@@ -51,8 +46,8 @@
       "query": "금융감독원",
       "hot": false,
       "fetchedNow": 5,
-      "kept": 45,
-      "hidden": 10,
+      "kept": 47,
+      "hidden": 11,
       "dead": false
     },
     {
@@ -114,7 +109,7 @@
       "query": "환율",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 47,
+      "kept": 52,
       "hidden": 11,
       "dead": false
     },
@@ -140,7 +135,7 @@
       "category": "경제",
       "query": "가상자산 규제",
       "hot": false,
-      "fetchedNow": 5,
+      "fetchedNow": 6,
       "kept": 3,
       "hidden": 1,
       "dead": false
@@ -160,7 +155,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 9,
-      "hidden": 2,
+      "hidden": 3,
       "dead": false
     },
     {
@@ -177,8 +172,8 @@
       "query": "스테이블코인",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 1,
-      "hidden": 0,
+      "kept": 3,
+      "hidden": 1,
       "dead": false
     },
     {
@@ -186,7 +181,7 @@
       "query": "주가 폭락",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 8,
+      "kept": 9,
       "hidden": 3,
       "dead": false
     },
@@ -230,7 +225,7 @@
       "category": "경제",
       "query": "보험사 건전성",
       "hot": false,
-      "fetchedNow": 5,
+      "fetchedNow": 4,
       "kept": 2,
       "hidden": 0,
       "dead": false
@@ -330,8 +325,8 @@
       "query": "이재명 대통령",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 74,
-      "hidden": 25,
+      "kept": 77,
+      "hidden": 28,
       "dead": false
     },
     {
@@ -339,8 +334,8 @@
       "query": "오세훈",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 12,
-      "hidden": 14,
+      "kept": 13,
+      "hidden": 16,
       "dead": false
     },
     {
@@ -348,8 +343,8 @@
       "query": "국민의힘 민주당",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 28,
-      "hidden": 9,
+      "kept": 29,
+      "hidden": 10,
       "dead": false
     },
     {
@@ -367,7 +362,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 18,
-      "hidden": 26,
+      "hidden": 27,
       "dead": false
     },
     {
@@ -375,15 +370,15 @@
       "query": "AI 반도체",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 94,
-      "hidden": 13,
+      "kept": 98,
+      "hidden": 15,
       "dead": false
     },
     {
       "category": "IT",
       "query": "핀테크",
       "hot": false,
-      "fetchedNow": 5,
+      "fetchedNow": 6,
       "kept": 2,
       "hidden": 0,
       "dead": false
@@ -411,7 +406,7 @@
       "query": "블랙홀 관측",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 0,
+      "kept": 1,
       "hidden": 0,
       "dead": false
     },
@@ -419,8 +414,8 @@
       "category": "과학",
       "query": "과학 연구 성과",
       "hot": false,
-      "fetchedNow": 7,
-      "kept": 33,
+      "fetchedNow": 6,
+      "kept": 34,
       "hidden": 11,
       "dead": false
     },
@@ -456,7 +451,7 @@
       "query": "연극",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 10,
+      "kept": 11,
       "hidden": 10,
       "dead": false
     },
@@ -464,7 +459,7 @@
       "category": "문화",
       "query": "신간",
       "hot": false,
-      "fetchedNow": 7,
+      "fetchedNow": 5,
       "kept": 3,
       "hidden": 5,
       "dead": false
@@ -482,9 +477,9 @@
       "category": "문화",
       "query": "영화 개봉",
       "hot": false,
-      "fetchedNow": 7,
+      "fetchedNow": 6,
       "kept": 5,
-      "hidden": 6,
+      "hidden": 8,
       "dead": false
     },
     {
@@ -493,7 +488,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 13,
-      "hidden": 1,
+      "hidden": 2,
       "dead": false
     },
     {
