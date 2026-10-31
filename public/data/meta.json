@@ -1,33 +1,37 @@
 {
-  "updatedAt": "2026-10-31T02:01:10.205Z",
-  "count": 1864,
-  "summarized": 1378,
-  "fetched": 433,
-  "newCount": 25,
+  "updatedAt": "2026-10-31T03:01:14.298Z",
+  "count": 1866,
+  "summarized": 1368,
+  "fetched": 431,
+  "newCount": 24,
   "newByCategory": {
-    "정치": 7,
-    "경제": 10,
+    "경제": 9,
     "문화": 3,
-    "IT": 5
+    "정치": 7,
+    "IT": 4,
+    "과학": 1
   },
-  "summarizedNow": 22,
-  "bodyFound": 20,
+  "summarizedNow": 21,
+  "bodyFound": 19,
   "pdfRead": 0,
   "hidden": 1,
   "moved": [
     "IT→경제",
-    "IT→문화",
+    "과학→정치",
     "IT→경제",
-    "경제→정치"
+    "경제→문화",
+    "IT→과학",
+    "IT→경제",
+    "IT→경제"
   ],
   "llmFailedBatches": 0,
   "failedFeeds": [],
   "concept": null,
   "spacePhoto": null,
   "newTerms": [
-    "우대수수료율",
-    "여신전문금융업법규",
-    "투자위험 1등급"
+    "근저당권",
+    "국정조사",
+    "트래블룰"
   ],
   "keywords": [
     {
@@ -35,7 +39,7 @@
       "query": "금융감독원",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 62,
+      "kept": 64,
       "hidden": 14,
       "dead": false
     },
@@ -97,7 +101,7 @@
       "category": "경제",
       "query": "환율",
       "hot": false,
-      "fetchedNow": 7,
+      "fetchedNow": 6,
       "kept": 83,
       "hidden": 18,
       "dead": false
@@ -126,7 +130,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 12,
-      "hidden": 9,
+      "hidden": 10,
       "dead": false
     },
     {
@@ -134,7 +138,7 @@
       "query": "은행 대출 규제",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 3,
+      "kept": 4,
       "hidden": 0,
       "dead": false
     },
@@ -161,8 +165,8 @@
       "query": "스테이블코인",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 21,
-      "hidden": 9,
+      "kept": 22,
+      "hidden": 13,
       "dead": false
     },
     {
@@ -179,7 +183,7 @@
       "query": "비트코인",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 11,
+      "kept": 13,
       "hidden": 18,
       "dead": false
     },
@@ -225,7 +229,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 6,
-      "hidden": 1,
+      "hidden": 2,
       "dead": false
     },
     {
@@ -260,7 +264,7 @@
       "query": "여야 충돌",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 14,
+      "kept": 15,
       "hidden": 6,
       "dead": false
     },
@@ -314,8 +318,8 @@
       "query": "이재명 대통령",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 118,
-      "hidden": 43,
+      "kept": 120,
+      "hidden": 45,
       "dead": false
     },
     {
@@ -332,8 +336,8 @@
       "query": "국민의힘 민주당",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 43,
-      "hidden": 20,
+      "kept": 46,
+      "hidden": 21,
       "dead": false
     },
     {
@@ -359,8 +363,8 @@
       "query": "AI 반도체",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 149,
-      "hidden": 27,
+      "kept": 155,
+      "hidden": 28,
       "dead": false
     },
     {
@@ -404,7 +408,7 @@
       "query": "과학 연구 성과",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 44,
+      "kept": 45,
       "hidden": 15,
       "dead": false
     },
@@ -414,7 +418,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 6,
-      "hidden": 4,
+      "hidden": 5,
       "dead": false
     },
     {
@@ -430,7 +434,7 @@
       "category": "문화",
       "query": "클래식 공연",
       "hot": false,
-      "fetchedNow": 6,
+      "fetchedNow": 5,
       "kept": 5,
       "hidden": 1,
       "dead": false
@@ -440,8 +444,8 @@
       "query": "연극",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 26,
-      "hidden": 19,
+      "kept": 28,
+      "hidden": 20,
       "dead": false
     },
     {
