@@ -1,44 +1,46 @@
 {
-  "updatedAt": "2026-10-31T07:01:16.514Z",
-  "count": 1851,
-  "summarized": 1313,
-  "fetched": 420,
-  "newCount": 22,
+  "updatedAt": "2026-10-31T08:01:28.954Z",
+  "count": 1841,
+  "summarized": 1305,
+  "fetched": 415,
+  "newCount": 21,
   "newByCategory": {
-    "경제": 7,
-    "정치": 6,
-    "문화": 3,
-    "IT": 5,
-    "과학": 1
+    "문화": 2,
+    "경제": 12,
+    "정치": 4,
+    "IT": 3
   },
-  "summarizedNow": 19,
-  "bodyFound": 18,
+  "summarizedNow": 18,
+  "bodyFound": 17,
   "pdfRead": 0,
-  "hidden": 0,
+  "hidden": 2,
   "moved": [
-    "IT→정치",
+    "정치→경제",
+    "정치→경제",
     "IT→경제",
-    "정치→문화"
+    "IT→경제"
   ],
   "llmFailedBatches": 0,
-  "failedFeeds": [],
+  "failedFeeds": [
+    {
+      "category": "보도자료",
+      "source": "https://www.fsc.go.kr/no010101",
+      "error": "fetch failed"
+    }
+  ],
   "concept": null,
   "spacePhoto": null,
   "newTerms": [
-    "텀 프리미엄",
-    "탈중앙화금융",
-    "준비금 증명",
-    "D-테스트베드",
-    "캐시 트랩"
+    "대부업법"
   ],
   "keywords": [
     {
       "category": "경제",
       "query": "금융감독원",
       "hot": false,
-      "fetchedNow": 2,
-      "kept": 63,
-      "hidden": 14,
+      "fetchedNow": 3,
+      "kept": 61,
+      "hidden": 15,
       "dead": false
     },
     {
@@ -64,7 +66,7 @@
       "query": "자본시장 제도",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 16,
+      "kept": 15,
       "hidden": 4,
       "dead": false
     },
@@ -83,7 +85,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 11,
-      "hidden": 9,
+      "hidden": 7,
       "dead": false
     },
     {
@@ -99,7 +101,7 @@
       "category": "경제",
       "query": "환율",
       "hot": false,
-      "fetchedNow": 2,
+      "fetchedNow": 4,
       "kept": 83,
       "hidden": 16,
       "dead": false
@@ -144,8 +146,8 @@
       "category": "경제",
       "query": "코스피 외국인",
       "hot": false,
-      "fetchedNow": 5,
-      "kept": 15,
+      "fetchedNow": 6,
+      "kept": 14,
       "hidden": 6,
       "dead": false
     },
@@ -154,7 +156,7 @@
       "query": "소비자물가",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 9,
+      "kept": 8,
       "hidden": 6,
       "dead": false
     },
@@ -163,7 +165,7 @@
       "query": "스테이블코인",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 27,
+      "kept": 29,
       "hidden": 17,
       "dead": false
     },
@@ -172,15 +174,15 @@
       "query": "주가 폭락",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 24,
-      "hidden": 19,
+      "kept": 26,
+      "hidden": 20,
       "dead": false
     },
     {
       "category": "경제",
       "query": "비트코인",
       "hot": false,
-      "fetchedNow": 7,
+      "fetchedNow": 6,
       "kept": 18,
       "hidden": 22,
       "dead": false
@@ -199,8 +201,8 @@
       "query": "보이스피싱",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 13,
-      "hidden": 46,
+      "kept": 11,
+      "hidden": 43,
       "dead": false
     },
     {
@@ -234,7 +236,7 @@
       "category": "경제",
       "query": "사모펀드 MBK",
       "hot": false,
-      "fetchedNow": 7,
+      "fetchedNow": 6,
       "kept": 3,
       "hidden": 0,
       "dead": false
@@ -244,7 +246,7 @@
       "query": "국민연금 기금",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 6,
+      "kept": 7,
       "hidden": 7,
       "dead": false
     },
@@ -316,8 +318,8 @@
       "query": "이재명 대통령",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 127,
-      "hidden": 54,
+      "kept": 128,
+      "hidden": 55,
       "dead": false
     },
     {
@@ -334,8 +336,8 @@
       "query": "국민의힘 민주당",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 49,
-      "hidden": 24,
+      "kept": 48,
+      "hidden": 25,
       "dead": false
     },
     {
@@ -352,7 +354,7 @@
       "query": "해킹 개인정보 유출",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 30,
+      "kept": 28,
       "hidden": 42,
       "dead": false
     },
@@ -362,7 +364,7 @@
       "hot": false,
       "fetchedNow": 7,
       "kept": 160,
-      "hidden": 35,
+      "hidden": 39,
       "dead": false
     },
     {
@@ -379,8 +381,8 @@
       "query": "구글 애플 인앱결제",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 3,
-      "hidden": 26,
+      "kept": 2,
+      "hidden": 21,
       "dead": false
     },
     {
@@ -406,8 +408,8 @@
       "query": "과학 연구 성과",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 45,
-      "hidden": 15,
+      "kept": 43,
+      "hidden": 14,
       "dead": false
     },
     {
@@ -433,7 +435,7 @@
       "query": "클래식 공연",
       "hot": false,
       "fetchedNow": 4,
-      "kept": 5,
+      "kept": 4,
       "hidden": 1,
       "dead": false
     },
@@ -460,7 +462,7 @@
       "query": "베스트셀러",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 2,
+      "kept": 1,
       "hidden": 0,
       "dead": false
     },
@@ -478,8 +480,8 @@
       "query": "드라마",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 24,
-      "hidden": 6,
+      "kept": 26,
+      "hidden": 7,
       "dead": false
     },
     {
@@ -497,7 +499,7 @@
       "hot": true,
       "fetchedNow": 6,
       "kept": 0,
-      "hidden": 1,
+      "hidden": 0,
       "dead": true
     },
     {
