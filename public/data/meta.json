@@ -1,40 +1,43 @@
 {
-  "updatedAt": "2026-10-31T04:01:25.528Z",
-  "count": 1861,
-  "summarized": 1358,
-  "fetched": 422,
-  "newCount": 20,
+  "updatedAt": "2026-10-31T05:01:13.784Z",
+  "count": 1841,
+  "summarized": 1332,
+  "fetched": 419,
+  "newCount": 21,
   "newByCategory": {
-    "정치": 5,
-    "경제": 8,
-    "문화": 3,
-    "IT": 4
+    "IT": 4,
+    "정치": 3,
+    "경제": 11,
+    "문화": 2,
+    "과학": 1
   },
-  "summarizedNow": 17,
-  "bodyFound": 16,
+  "summarizedNow": 18,
+  "bodyFound": 21,
   "pdfRead": 0,
-  "hidden": 2,
+  "hidden": 5,
   "moved": [
-    "IT→경제",
-    "IT→경제",
-    "IT→정치",
-    "과학→문화"
+    "IT→경제"
   ],
   "llmFailedBatches": 0,
   "failedFeeds": [],
   "concept": null,
-  "spacePhoto": null,
+  "spacePhoto": "으스스한 행성의 밤",
   "newTerms": [
-    "파이낸싱",
-    "파생결합상품"
+    "낸드플래시",
+    "스태그플레이션",
+    "위험자산",
+    "경쟁입찰",
+    "금융정보분석원",
+    "금융감독원",
+    "과세 형평성"
   ],
   "keywords": [
     {
       "category": "경제",
       "query": "금융감독원",
       "hot": false,
-      "fetchedNow": 3,
-      "kept": 64,
+      "fetchedNow": 1,
+      "kept": 65,
       "hidden": 14,
       "dead": false
     },
@@ -43,7 +46,7 @@
       "query": "기준금리",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 60,
+      "kept": 62,
       "hidden": 29,
       "dead": false
     },
@@ -97,7 +100,7 @@
       "query": "환율",
       "hot": false,
       "fetchedNow": 4,
-      "kept": 83,
+      "kept": 84,
       "hidden": 18,
       "dead": false
     },
@@ -124,8 +127,8 @@
       "query": "가상자산 규제",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 13,
-      "hidden": 10,
+      "kept": 15,
+      "hidden": 11,
       "dead": false
     },
     {
@@ -141,7 +144,7 @@
       "category": "경제",
       "query": "코스피 외국인",
       "hot": false,
-      "fetchedNow": 5,
+      "fetchedNow": 4,
       "kept": 14,
       "hidden": 7,
       "dead": false
@@ -160,8 +163,8 @@
       "query": "스테이블코인",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 24,
-      "hidden": 13,
+      "kept": 25,
+      "hidden": 14,
       "dead": false
     },
     {
@@ -169,8 +172,8 @@
       "query": "주가 폭락",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 20,
-      "hidden": 12,
+      "kept": 21,
+      "hidden": 13,
       "dead": false
     },
     {
@@ -178,8 +181,8 @@
       "query": "비트코인",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 14,
-      "hidden": 18,
+      "kept": 16,
+      "hidden": 21,
       "dead": false
     },
     {
@@ -286,7 +289,7 @@
       "query": "국정감사 공방",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 4,
+      "kept": 5,
       "hidden": 2,
       "dead": false
     },
@@ -313,8 +316,8 @@
       "query": "이재명 대통령",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 123,
-      "hidden": 47,
+      "kept": 124,
+      "hidden": 53,
       "dead": false
     },
     {
@@ -331,8 +334,8 @@
       "query": "국민의힘 민주당",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 47,
-      "hidden": 21,
+      "kept": 48,
+      "hidden": 22,
       "dead": false
     },
     {
@@ -349,8 +352,8 @@
       "query": "해킹 개인정보 유출",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 29,
-      "hidden": 40,
+      "kept": 30,
+      "hidden": 41,
       "dead": false
     },
     {
@@ -358,8 +361,8 @@
       "query": "AI 반도체",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 159,
-      "hidden": 28,
+      "kept": 160,
+      "hidden": 29,
       "dead": false
     },
     {
@@ -421,7 +424,7 @@
       "query": "미술관 전시",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 5,
+      "kept": 6,
       "hidden": 4,
       "dead": false
     },
@@ -439,8 +442,8 @@
       "query": "연극",
       "hot": false,
       "fetchedNow": 7,
-      "kept": 29,
-      "hidden": 21,
+      "kept": 30,
+      "hidden": 22,
       "dead": false
     },
     {
